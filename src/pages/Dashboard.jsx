@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Smartphone, Laptop, Monitor, Cpu, Plus, ArrowRight, Loader2, Leaf, TrendingUp, Zap, Recycle } from 'lucide-react';
 import { getDashboard } from '../services/deviceService';
 import useAuthStore from '../context/authStore';
@@ -28,6 +28,14 @@ export default function Dashboard() {
   const { user } = useAuthStore();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Role-based routing
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+  if (user?.role === 'organization') {
+    return <Navigate to="/organization" replace />;
+  }
 
   useEffect(() => {
     getDashboard().then((res) => setData(res.data.data)).catch(console.error).finally(() => setLoading(false));

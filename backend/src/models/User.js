@@ -43,8 +43,24 @@ const User = sequelize.define('User', {
     allowNull: true,
   },
   role: {
-    type: DataTypes.ENUM('user', 'recycler', 'admin'),
+    type: DataTypes.ENUM('user', 'moderator', 'recycler', 'repair_provider', 'business', 'organization', 'admin'),
     defaultValue: 'user',
+  },
+  ecoKarmaTotal: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  bio: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  verificationStatus: {
+    type: DataTypes.ENUM('unverified', 'community_verified', 'admin_verified'),
+    defaultValue: 'unverified',
+  },
+  subscriptionTier: {
+    type: DataTypes.ENUM('free', 'basic', 'premium'),
+    defaultValue: 'free',
   },
   avatar: {
     type: DataTypes.STRING(500),

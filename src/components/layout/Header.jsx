@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 import useAuthStore from '../../context/authStore';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export default function Header() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -27,24 +29,27 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Home</Link>
-            <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-            <a href="#impact" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Impact</a>
+            <Link to="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.home')}</Link>
+            <Link to="/community" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.community')}</Link>
+            <Link to="/communities" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.communities')}</Link>
+            <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.features')}</a>
+            <a href="#impact" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.impact')}</a>
             {user ? (
               <div className="flex items-center gap-3">
                 <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors">
                   <LayoutDashboard className="w-4 h-4" />
-                  <span className="text-sm font-medium">Dashboard</span>
+                  <span className="text-sm font-medium">{t('nav.dashboard')}</span>
                 </Link>
-                <button onClick={handleLogout} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                  <LogOut className="w-5 h-5" />
+                <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors" title={t('nav.logout')}>
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm font-medium">{t('nav.logout')}</span>
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Login</Link>
+                <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{t('nav.login')}</Link>
                 <Link to="/register" className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition-colors">
-                  Get Started
+                  {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -60,17 +65,22 @@ export default function Header() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 px-6 py-4 space-y-3">
-          <Link to="/" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>Home</Link>
-          <a href="#features" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>Features</a>
+          <Link to="/" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>{t('nav.home')}</Link>
+          <Link to="/community" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>{t('nav.community')}</Link>
+          <Link to="/communities" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>{t('nav.communities')}</Link>
+          <a href="#features" className="block py-2 text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(false)}>{t('nav.features')}</a>
           {user ? (
             <>
-              <Link to="/dashboard" className="block py-2 text-emerald-600 font-medium" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="block py-2 text-red-500">Logout</button>
+              <Link to="/dashboard" className="block py-2 text-emerald-600 font-medium" onClick={() => setMenuOpen(false)}>{t('nav.dashboard')}</Link>
+              <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="flex items-center gap-2 py-2 text-red-600 font-medium">
+                <LogOut className="w-4 h-4" />
+                {t('nav.logout')}
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>Login</Link>
-              <Link to="/register" className="block py-2 text-emerald-600 font-medium" onClick={() => setMenuOpen(false)}>Get Started</Link>
+              <Link to="/login" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>{t('nav.login')}</Link>
+              <Link to="/register" className="block py-2 text-emerald-600 font-medium" onClick={() => setMenuOpen(false)}>{t('nav.register')}</Link>
             </>
           )}
         </div>
