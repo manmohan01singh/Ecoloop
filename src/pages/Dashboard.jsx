@@ -29,13 +29,13 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Role-based routing
-  if (user?.role === 'admin') {
-    return <Navigate to="/admin" replace />;
-  }
-  if (user?.role === 'organization') {
-    return <Navigate to="/organization" replace />;
-  }
+  // Role-based routing — each role gets its own dedicated dashboard
+  if (user?.role === 'admin') return <Navigate to="/admin" replace />;
+  if (user?.role === 'organization') return <Navigate to="/organization" replace />;
+  if (user?.role === 'moderator') return <Navigate to="/moderator" replace />;
+  if (user?.role === 'recycler') return <Navigate to="/recycler" replace />;
+  if (user?.role === 'repair_provider') return <Navigate to="/repair-provider" replace />;
+  if (user?.role === 'business') return <Navigate to="/business-dashboard" replace />;
 
   useEffect(() => {
     getDashboard().then((res) => setData(res.data.data)).catch(console.error).finally(() => setLoading(false));

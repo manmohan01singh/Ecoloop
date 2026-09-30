@@ -274,9 +274,6 @@ export const en = {
 
   // Footer
   footer: {
-    switchLanguage: 'Switch Language',
-    english: 'English',
-    indonesian: 'Bahasa Indonesia',
   },
 
   // Landing Page / Home

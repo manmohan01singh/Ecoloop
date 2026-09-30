@@ -21,6 +21,7 @@ import EcoKarma from './EcoKarma.js';
 import WasteDeposit from './WasteDeposit.js';
 import BusinessMaterial from './BusinessMaterial.js';
 import MaterialRequest from './MaterialRequest.js';
+import Review from './Review.js';
 
 // ── User ↔ Device ──────────────────────────────────────────────
 User.hasMany(Device, { foreignKey: 'userId', as: 'devices' });
@@ -120,6 +121,12 @@ MaterialRequest.belongsTo(BusinessMaterial, { foreignKey: 'materialId', as: 'mat
 User.hasMany(MaterialRequest, { foreignKey: 'requesterId', as: 'materialRequests' });
 MaterialRequest.belongsTo(User, { foreignKey: 'requesterId', as: 'requester' });
 
+// ── Reviews ────────────────────────────────────────────────────
+User.hasMany(Review, { foreignKey: 'reviewerId', as: 'givenReviews' });
+Review.belongsTo(User, { foreignKey: 'reviewerId', as: 'reviewer' });
+User.hasMany(Review, { foreignKey: 'revieweeId', as: 'receivedReviews' });
+Review.belongsTo(User, { foreignKey: 'revieweeId', as: 'reviewee' });
+
 export {
   User, Device,
   Community, CommunityMember,
@@ -130,5 +137,6 @@ export {
   Event, EventParticipant,
   Report, Notification, EcoKarma,
   WasteDeposit, BusinessMaterial, MaterialRequest,
+  Review,
 };
 export default sequelize;

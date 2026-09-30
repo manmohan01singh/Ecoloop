@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { MapPin, Search, Filter, Phone, Clock, CheckCircle, AlertCircle, Loader2, X, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Phone, Clock, CheckCircle, AlertCircle, Loader2, X, Plus } from 'lucide-react';
 import { getLocations, submitLocation } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 
 const CATEGORY_LABELS = {
-  recycling_center: 'Pusat Daur Ulang',
-  waste_bank: 'Bank Sampah',
-  collector: 'Pengepul',
-  repair_shop: 'Toko Servis',
-  collection_point: 'Titik Pengumpulan',
-  community_hub: 'Hub Komunitas',
-  donation_center: 'Pusat Donasi',
-  other: 'Lainnya',
+  recycling_center: 'Recycling Center',
+  waste_bank: 'Waste Bank',
+  collector: 'Collector',
+  repair_shop: 'Repair Shop',
+  collection_point: 'Collection Point',
+  community_hub: 'Community Hub',
+  donation_center: 'Donation Center',
+  other: 'Other',
 };
 
 const CATEGORY_COLORS = {
@@ -43,9 +43,9 @@ function SubmitModal({ onClose, onSubmitted }) {
     try {
       const data = { ...form, contact: { phone: form.phone }, lat: form.lat || undefined, lng: form.lng || undefined };
       await submitLocation(data);
-      toast.success('Lokasi diajukan! Akan direview oleh admin.');
+      toast.success('Location submitted! It will be reviewed by an admin.');
       onSubmitted(); onClose();
-    } catch (err) { toast.error(err.response?.data?.error?.message || 'Gagal'); }
+    } catch (err) { toast.error(err.response?.data?.error?.message || 'Failed'); }
     finally { setSaving(false); }
   };
 
@@ -53,51 +53,51 @@ function SubmitModal({ onClose, onSubmitted }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-bold text-gray-900">Ajukan Lokasi Baru</h2>
+          <h2 className="text-lg font-bold text-gray-900">Submit New Location</h2>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lokasi *</label>
-            <input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Contoh: Bank Sampah RW 05"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+            <input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="e.g. Community Waste Bank RW 05"
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Jenis *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
             <select value={form.category} onChange={e => set('category', e.target.value)}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
               {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-            <input value={form.address} onChange={e => set('address', e.target.value)} placeholder="Jl. Contoh No. 123"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <input value={form.address} onChange={e => set('address', e.target.value)} placeholder="Street address"
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kota *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
               <input value={form.city} onChange={e => set('city', e.target.value)} required placeholder="Jakarta"
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
               <input value={form.province} onChange={e => set('province', e.target.value)} placeholder="DKI Jakarta"
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
             <input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+62812..."
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
-            ⚠️ Lokasi yang diajukan akan direview oleh admin sebelum ditampilkan. Jangan mengklaim status "verified" untuk lokasi yang belum diverifikasi.
+            ⚠️ Submitted locations will be reviewed by an admin before being displayed. Do not claim "verified" status for unverified locations.
           </p>
           <button type="submit" disabled={saving}
             className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            {saving ? 'Menyimpan...' : 'Ajukan Lokasi'}
+            {saving ? 'Saving...' : 'Submit Location'}
           </button>
         </form>
       </div>
@@ -122,7 +122,7 @@ export default function MapPage() {
       if (filterCity) params.city = filterCity;
       const res = await getLocations(params);
       setLocations(res.data.data);
-    } catch { toast.error('Gagal memuat lokasi'); }
+    } catch { toast.error('Failed to load locations'); }
     finally { setLoading(false); }
   };
 
@@ -132,13 +132,13 @@ export default function MapPage() {
     <div className="p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Peta Sumber Daya</h1>
-          <p className="text-gray-500 text-sm mt-1">Bank sampah, pusat daur ulang, toko servis, dan titik pengumpulan</p>
+          <h1 className="text-2xl font-bold text-gray-900">Resource Map</h1>
+          <p className="text-gray-500 text-sm mt-1">Waste banks, recycling centers, repair shops, and collection points</p>
         </div>
         {isAuthenticated() && (
           <button onClick={() => setShowSubmit(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 text-sm">
-            <Plus className="w-4 h-4" /> Ajukan Lokasi
+            <Plus className="w-4 h-4" /> Submit Location
           </button>
         )}
       </div>
@@ -147,33 +147,32 @@ export default function MapPage() {
       <div className="flex flex-wrap gap-3 mb-6">
         <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
           className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="">Semua Jenis</option>
+          <option value="">All Types</option>
           {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <input value={filterCity} onChange={e => setFilterCity(e.target.value)}
-          placeholder="Filter kota..." onKeyDown={e => e.key === 'Enter' && fetchLocations()}
+          placeholder="Filter by city..." onKeyDown={e => e.key === 'Enter' && fetchLocations()}
           className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-44" />
         <button onClick={fetchLocations} className="px-4 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800">
-          Cari
+          Search
         </button>
       </div>
 
       {/* Demo notice */}
       <div className="mb-5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 flex items-start gap-2">
         <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-        <span>Semua lokasi yang ditampilkan adalah <strong>Demo Location</strong> dan belum diverifikasi. Jangan jadikan referensi lokasi nyata. Lokasi hanya terverifikasi setelah admin melakukan konfirmasi manual.</span>
+        <span>All locations shown are <strong>Demo Locations</strong> and have not been verified. Do not use as a reference for real locations. Locations are only verified after manual admin confirmation.</span>
       </div>
 
-      {/* Map placeholder + list layout */}
+      {/* Map placeholder + list */}
       <div className="flex gap-6">
-        {/* List */}
         <div className="flex-1 space-y-3">
           {loading ? (
             <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-emerald-600" /></div>
           ) : locations.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
               <MapPin className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Tidak ada lokasi ditemukan</p>
+              <p>No locations found</p>
             </div>
           ) : locations.map(loc => (
             <div key={loc.id}
@@ -201,7 +200,7 @@ export default function MapPage() {
                     <div className="mt-3 space-y-2 pt-3 border-t border-gray-100">
                       {loc.acceptedMaterials?.length > 0 && (
                         <div>
-                          <p className="text-xs font-medium text-gray-700 mb-1">Material Diterima:</p>
+                          <p className="text-xs font-medium text-gray-700 mb-1">Accepted Materials:</p>
                           <div className="flex flex-wrap gap-1">
                             {loc.acceptedMaterials.map(m => (
                               <span key={m} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{m}</span>
@@ -227,11 +226,11 @@ export default function MapPage() {
                       )}
                       <div className="flex items-center gap-1.5 text-xs">
                         {loc.verificationStatus === 'admin_verified' ? (
-                          <><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /><span className="text-emerald-600">Terverifikasi Admin</span></>
+                          <><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /><span className="text-emerald-600">Admin Verified</span></>
                         ) : loc.verificationStatus === 'community_verified' ? (
-                          <><CheckCircle className="w-3.5 h-3.5 text-blue-500" /><span className="text-blue-600">Terverifikasi Komunitas</span></>
+                          <><CheckCircle className="w-3.5 h-3.5 text-blue-500" /><span className="text-blue-600">Community Verified</span></>
                         ) : (
-                          <><AlertCircle className="w-3.5 h-3.5 text-amber-500" /><span className="text-amber-600">Belum Terverifikasi</span></>
+                          <><AlertCircle className="w-3.5 h-3.5 text-amber-500" /><span className="text-amber-600">Not Verified</span></>
                         )}
                       </div>
                     </div>
@@ -246,10 +245,10 @@ export default function MapPage() {
         <div className="hidden xl:block w-96 flex-shrink-0">
           <div className="sticky top-20 bg-gray-100 rounded-xl overflow-hidden h-[600px] flex flex-col items-center justify-center text-center p-8 border border-gray-200">
             <MapPin className="w-12 h-12 text-emerald-400 mb-4" />
-            <p className="font-semibold text-gray-700 mb-2">Peta Interaktif</p>
-            <p className="text-sm text-gray-500 mb-4">Install paket leaflet untuk peta interaktif:</p>
+            <p className="font-semibold text-gray-700 mb-2">Interactive Map</p>
+            <p className="text-sm text-gray-500 mb-4">Install leaflet to enable the interactive map:</p>
             <code className="text-xs bg-white px-3 py-2 rounded-lg border text-gray-600 font-mono">npm install leaflet react-leaflet</code>
-            <p className="text-xs text-gray-400 mt-4">Koordinat tersedia di semua {locations.length} lokasi</p>
+            <p className="text-xs text-gray-400 mt-4">Coordinates available for all {locations.length} locations</p>
           </div>
         </div>
       </div>

@@ -25,13 +25,27 @@ import BusinessExchange from './pages/BusinessExchange';
 import EcoImpact from './pages/EcoImpact';
 import EnhancedAdminDashboard from './pages/EnhancedAdminDashboard';
 import OrganizationDashboard from './pages/OrganizationDashboard';
+import ModeratorDashboard from './pages/ModeratorDashboard';
+import RecyclerDashboard from './pages/RecyclerDashboard';
+import RepairProviderDashboard from './pages/RepairProviderDashboard';
+import Profile from './pages/Profile';
+import BusinessDashboard from './pages/BusinessDashboard';
+import ReviewsPage from './pages/ReviewsPage';
 import useAuthStore from './context/authStore';
 import { LanguageProvider } from './context/LanguageContext';
-import LanguageSwitcher from './components/LanguageSwitcher';
+import EWasteChatbot from './components/EWasteChatbot';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated() ? children : <Navigate to="/login" />;
+}
+
+// Guards a route to a specific set of allowed roles
+function RoleRoute({ children, roles }) {
+  const { isAuthenticated, user } = useAuthStore();
+  if (!isAuthenticated()) return <Navigate to="/login" />;
+  if (!roles.includes(user?.role)) return <Navigate to="/dashboard" />;
+  return children;
 }
 
 function AppLayout({ children }) {
@@ -50,7 +64,7 @@ export default function App() {
     <LanguageProvider>
       <BrowserRouter>
         <Toaster position="top-center" />
-        <LanguageSwitcher />
+        <EWasteChatbot />
         <Routes>
           {/* Public pages */}
           <Route path="/" element={<AppLayout><Home /></AppLayout>} />
@@ -79,10 +93,18 @@ export default function App() {
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/business" element={<BusinessExchange />} />
             <Route path="/eco-impact" element={<EcoImpact />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
+
+            {/* Profile — all authenticated users */}
+            <Route path="/profile" element={<Profile />} />
             
             {/* Role-specific Dashboards */}
-            <Route path="/admin" element={<EnhancedAdminDashboard />} />
-            <Route path="/organization" element={<OrganizationDashboard />} />
+            <Route path="/admin" element={<RoleRoute roles={['admin']}><EnhancedAdminDashboard /></RoleRoute>} />
+            <Route path="/organization" element={<RoleRoute roles={['organization', 'admin']}><OrganizationDashboard /></RoleRoute>} />
+            <Route path="/moderator" element={<RoleRoute roles={['moderator', 'admin']}><ModeratorDashboard /></RoleRoute>} />
+            <Route path="/recycler" element={<RoleRoute roles={['recycler', 'admin']}><RecyclerDashboard /></RoleRoute>} />
+            <Route path="/repair-provider" element={<RoleRoute roles={['repair_provider', 'admin']}><RepairProviderDashboard /></RoleRoute>} />
+            <Route path="/business-dashboard" element={<RoleRoute roles={['business', 'admin']}><BusinessDashboard /></RoleRoute>} />
           </Route>
         </Routes>
       </BrowserRouter>

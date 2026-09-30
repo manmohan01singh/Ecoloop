@@ -40,6 +40,11 @@ const useAuthStore = create((set) => ({
     set({ user: null, token: null });
   },
 
+  updateUser: (updated) => {
+    localStorage.setItem('ecoloop_user', JSON.stringify(updated));
+    set({ user: updated });
+  },
+
   isAuthenticated: () => !!localStorage.getItem('ecoloop_token'),
 }));
 

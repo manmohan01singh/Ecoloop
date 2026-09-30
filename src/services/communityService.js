@@ -15,6 +15,18 @@ export const votePost = (id, value) => api.post(`/posts/${id}/vote`, { value });
 export const addComment = (id, data) => api.post(`/posts/${id}/comments`, data);
 export const deletePost = (id) => api.delete(`/posts/${id}`);
 
+// Upload up to 5 images for a post — returns array of { url, publicId, format, width, height }
+export const uploadPostImages = (files, onProgress) => {
+  const formData = new FormData();
+  Array.from(files).forEach(f => formData.append('files', f));
+  return api.post('/upload/post/image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: onProgress
+      ? (e) => onProgress(Math.round((e.loaded * 100) / (e.total || 1)))
+      : undefined,
+  });
+};
+
 export const getListings = (params) => api.get('/listings', { params });
 export const getListing = (id) => api.get(`/listings/${id}`);
 export const createListing = (data) => api.post('/listings', data);
@@ -63,6 +75,14 @@ export const getPlatformImpact = () => api.get('/karma/platform');
 
 export const getNotifications = () => api.get('/notifications');
 export const markAllRead = () => api.put('/notifications/read-all');
+
+// ── Reviews ────────────────────────────────────────────────────
+export const getReviewableUsers  = (params) => api.get('/reviews/reviewable', { params });
+export const getReviewsForUser   = (revieweeId, params) => api.get(`/reviews/${revieweeId}`, { params });
+export const createReview        = (data) => api.post('/reviews', data);
+export const deleteReview        = (id) => api.delete(`/reviews/${id}`);
+export const getMyGivenReviews   = () => api.get('/reviews/me/given');
+export const getMyReceivedReviews = () => api.get('/reviews/me/received');
 
 export const getAdminDashboard = () => api.get('/admin/dashboard');
 export const getAdminUsers = (params) => api.get('/admin/users', { params });

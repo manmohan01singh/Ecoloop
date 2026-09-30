@@ -91,6 +91,42 @@ export const uploadDeviceVideo = async (req, res, next) => {
   }
 };
 
+export const uploadPostImage = async (req, res, next) => {
+  try {
+    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+    if (!files.length) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'BAD_REQUEST', message: 'No file uploaded' },
+      });
+    }
+
+    const fs = await import('fs');
+    const results = await Promise.all(
+      files.map(async (file) => {
+        const result = await uploadToCloudinary(file.path, 'ecoloop/posts', 'image');
+        fs.unlinkSync(file.path);
+        return {
+          url: result.url,
+          publicId: result.publicId,
+          format: result.format,
+          width: result.width,
+          height: result.height,
+        };
+      })
+    );
+
+    res.json({
+      success: true,
+      data: results,
+      message: `${results.length} image(s) uploaded successfully`,
+    });
+  } catch (error) {
+    logger.error('Post image upload failed:', error.message);
+    next(error);
+  }
+};
+
 export const uploadAvatar = async (req, res, next) => {
   try {
     if (!req.file) {

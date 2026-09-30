@@ -216,7 +216,7 @@ export default function OrganizationDashboard() {
                           <span className="flex items-center gap-1">
                             <Users className="w-3 h-3" /> {event.participantCount}/{event.capacity || '∞'} participants
                           </span>
-                          <span>{new Date(event.startDate).toLocaleDateString('id-ID')}</span>
+                          <span>{new Date(event.startDate).toLocaleDateString('en')}</span>
                         </div>
                       </div>
                     </div>

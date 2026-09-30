@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, FileText, Package, AlertTriangle, CheckCircle, Loader2, Shield, MapPin, Wrench } from 'lucide-react';
+import { Users, FileText, Package, AlertTriangle, Loader2, Shield, MapPin, Wrench } from 'lucide-react';
 import { getAdminDashboard, getAdminUsers, updateAdminUser, getPendingLocations, verifyLocationAdmin, getPendingProviders, verifyProvider, getPendingReports, updateReportStatus } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import { Navigate } from 'react-router-dom';
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
           const r = await getPendingReports();
           setReports(r.data.data);
         }
-      } catch { toast.error('Gagal memuat data'); }
+      } catch { toast.error('Failed to load data'); }
       finally { setLoading(false); }
     };
     load();
@@ -48,9 +48,9 @@ export default function AdminDashboard() {
   const handleVerifyLocation = async (id, status) => {
     try {
       await verifyLocationAdmin(id, status);
-      toast.success(`Lokasi ${status}`);
+      toast.success(`Location ${status}`);
       setLocations(ls => ls.filter(l => l.id !== id));
-    } catch { toast.error('Gagal'); }
+    } catch { toast.error('Failed'); }
   };
 
   const handleVerifyProvider = async (id, status) => {
@@ -58,18 +58,18 @@ export default function AdminDashboard() {
       await verifyProvider(id, status);
       toast.success(`Provider ${status}`);
       setProviders(ps => ps.filter(p => p.id !== id));
-    } catch { toast.error('Gagal'); }
+    } catch { toast.error('Failed'); }
   };
 
   const handleUpdateReport = async (id, status, adminNote = '') => {
     try {
       await updateReportStatus(id, { status, adminNote });
-      toast.success('Status laporan diperbarui');
+      toast.success('Report status updated');
       setReports(rs => rs.map(r => r.id === id ? { ...r, status } : r));
-    } catch { toast.error('Gagal'); }
+    } catch { toast.error('Failed'); }
   };
 
-  const TABS = [['overview', 'Overview'], ['users', 'Pengguna'], ['locations', 'Lokasi'], ['providers', 'Provider'], ['reports', 'Laporan']];
+  const TABS = [['overview', 'Overview'], ['users', 'Users'], ['locations', 'Locations'], ['providers', 'Providers'], ['reports', 'Reports']];
 
   return (
     <div className="p-6 lg:p-8">
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-500 text-sm">Kelola platform EcoLoop</p>
+          <p className="text-gray-500 text-sm">Manage the EcoLoop platform</p>
         </div>
       </div>
 
@@ -99,12 +99,12 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: Users, label: 'Total Pengguna', value: data.stats.users, color: 'blue' },
-              { icon: FileText, label: 'Total Post', value: data.stats.posts, color: 'purple' },
-              { icon: Package, label: 'Total Listing', value: data.stats.listings, color: 'emerald' },
-              { icon: AlertTriangle, label: 'Laporan Pending', value: data.stats.pendingReports, color: 'red' },
-              { icon: Wrench, label: 'Provider Pending', value: data.stats.pendingProviders, color: 'orange' },
-              { icon: MapPin, label: 'Lokasi Pending', value: data.stats.pendingLocations, color: 'teal' },
+              { icon: Users, label: 'Total Users', value: data.stats.users, color: 'blue' },
+              { icon: FileText, label: 'Total Posts', value: data.stats.posts, color: 'purple' },
+              { icon: Package, label: 'Total Listings', value: data.stats.listings, color: 'emerald' },
+              { icon: AlertTriangle, label: 'Pending Reports', value: data.stats.pendingReports, color: 'red' },
+              { icon: Wrench, label: 'Pending Providers', value: data.stats.pendingProviders, color: 'orange' },
+              { icon: MapPin, label: 'Pending Locations', value: data.stats.pendingLocations, color: 'teal' },
             ].map(s => (
               <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5">
                 <div className={`w-10 h-10 bg-${s.color}-100 rounded-lg flex items-center justify-center mb-3`}>
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h3 className="font-bold text-gray-900 mb-4">Pengguna Terbaru</h3>
+            <h3 className="font-bold text-gray-900 mb-4">Recent Users</h3>
             <div className="space-y-3">
               {data.recentUsers.map(u => (
                 <div key={u.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full capitalize">{u.role}</p>
-                    <p className="text-xs text-gray-400 mt-1">{new Date(u.createdAt).toLocaleDateString('id-ID')}</p>
+                    <p className="text-xs text-gray-400 mt-1">{new Date(u.createdAt).toLocaleDateString('en')}</p>
                   </div>
                 </div>
               ))}
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>{['Nama', 'Email', 'Role', 'EcoKarma', 'Aksi'].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-700">{h}</th>)}</tr>
+              <tr>{['Name', 'Email', 'Role', 'EcoKarma', 'Actions'].map(h => <th key={h} className="text-left px-4 py-3 font-medium text-gray-700">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {users.map(u => (
@@ -146,17 +146,17 @@ export default function AdminDashboard() {
                   <td className="px-4 py-3 font-medium text-gray-900">{u.name}</td>
                   <td className="px-4 py-3 text-gray-600">{u.email}</td>
                   <td className="px-4 py-3">
-                    <select defaultValue={u.role} onChange={e => updateAdminUser(u.id, { role: e.target.value }).then(() => toast.success('Role diperbarui'))}
+                    <select defaultValue={u.role} onChange={e => updateAdminUser(u.id, { role: e.target.value }).then(() => toast.success('Role updated'))}
                       className="text-xs px-2 py-1 border border-gray-200 rounded-lg focus:outline-none">
                       {['user', 'moderator', 'recycler', 'repair_provider', 'business', 'organization', 'admin'].map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </td>
                   <td className="px-4 py-3 text-emerald-600 font-medium">{u.ecoKarmaTotal || 0}</td>
                   <td className="px-4 py-3">
-                    <select defaultValue={u.verificationStatus} onChange={e => updateAdminUser(u.id, { verificationStatus: e.target.value }).then(() => toast.success('Verifikasi diperbarui'))}
+                    <select defaultValue={u.verificationStatus} onChange={e => updateAdminUser(u.id, { verificationStatus: e.target.value }).then(() => toast.success('Verification updated'))}
                       className="text-xs px-2 py-1 border border-gray-200 rounded-lg focus:outline-none">
-                      <option value="unverified">Belum Terverifikasi</option>
-                      <option value="community_verified">Komunitas</option>
+                      <option value="unverified">Unverified</option>
+                      <option value="community_verified">Community</option>
                       <option value="admin_verified">Admin</option>
                     </select>
                   </td>
@@ -167,7 +167,7 @@ export default function AdminDashboard() {
         </div>
       ) : tab === 'locations' ? (
         <div className="space-y-3">
-          {locations.length === 0 ? <p className="text-center py-8 text-gray-400">Tidak ada lokasi pending</p> : locations.map(l => (
+          {locations.length === 0 ? <p className="text-center py-8 text-gray-400">No pending locations</p> : locations.map(l => (
             <div key={l.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between gap-4">
               <div>
                 <p className="font-semibold text-gray-900">{l.name}</p>
@@ -177,11 +177,11 @@ export default function AdminDashboard() {
               <div className="flex gap-2">
                 <button onClick={() => handleVerifyLocation(l.id, 'admin_verified')}
                   className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700">
-                  Verifikasi
+                  Verify
                 </button>
                 <button onClick={() => handleVerifyLocation(l.id, 'unverified')}
                   className="px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-200">
-                  Tolak
+                  Reject
                 </button>
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
         </div>
       ) : tab === 'providers' ? (
         <div className="space-y-3">
-          {providers.length === 0 ? <p className="text-center py-8 text-gray-400">Tidak ada provider pending</p> : providers.map(p => (
+          {providers.length === 0 ? <p className="text-center py-8 text-gray-400">No pending providers</p> : providers.map(p => (
             <div key={p.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between gap-4">
               <div>
                 <p className="font-semibold text-gray-900">{p.businessName}</p>
@@ -199,11 +199,11 @@ export default function AdminDashboard() {
               <div className="flex gap-2">
                 <button onClick={() => handleVerifyProvider(p.id, 'admin_verified')}
                   className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700">
-                  Verifikasi
+                  Verify
                 </button>
                 <button onClick={() => handleVerifyProvider(p.id, 'unverified')}
                   className="px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-200">
-                  Tolak
+                  Reject
                 </button>
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           ))}
-          {reports.length === 0 && <p className="text-center py-8 text-gray-400">Tidak ada laporan pending</p>}
+          {reports.length === 0 && <p className="text-center py-8 text-gray-400">No pending reports</p>}
         </div>
       ) : null}
     </div>

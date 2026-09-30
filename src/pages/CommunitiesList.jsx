@@ -6,17 +6,17 @@ import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 
 const CATEGORY_FILTERS = [
-  { value: '', label: 'Semua' },
-  { value: 'recycling', label: 'Daur Ulang' },
-  { value: 'repair', label: 'Perbaikan' },
-  { value: 'reuse', label: 'Pakai Ulang' },
+  { value: '', label: 'All' },
+  { value: 'recycling', label: 'Recycling' },
+  { value: 'repair', label: 'Repair' },
+  { value: 'reuse', label: 'Reuse' },
   { value: 'ewaste', label: 'E-Waste' },
-  { value: 'plastic', label: 'Plastik' },
-  { value: 'textile', label: 'Tekstil' },
-  { value: 'sustainability', label: 'Keberlanjutan' },
-  { value: 'circular_business', label: 'Bisnis Sirkular' },
-  { value: 'waste_problems', label: 'Masalah Sampah' },
-  { value: 'general', label: 'Umum' },
+  { value: 'plastic', label: 'Plastic' },
+  { value: 'textile', label: 'Textile' },
+  { value: 'sustainability', label: 'Sustainability' },
+  { value: 'circular_business', label: 'Circular Business' },
+  { value: 'waste_problems', label: 'Waste Problems' },
+  { value: 'general', label: 'General' },
 ];
 
 const CATEGORY_COLORS = {
@@ -58,7 +58,7 @@ function CommunityCard({ community }) {
           </div>
 
           <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-            {community.description || 'Tidak ada deskripsi'}
+            {community.description || 'No description'}
           </p>
 
           <div className="flex items-center justify-between">
@@ -67,7 +67,7 @@ function CommunityCard({ community }) {
                 <Users className="w-3.5 h-3.5" />
                 {community.memberCount.toLocaleString()}
               </span>
-              <span>{community.postCount} post</span>
+              <span>{community.postCount} posts</span>
             </div>
             <span className={`text-xs px-2 py-1 rounded-full font-medium ${CATEGORY_COLORS[community.category] || CATEGORY_COLORS.general}`}>
               {community.category.replace('_', ' ')}
@@ -103,7 +103,7 @@ export default function CommunitiesList() {
       setHasMore(newItems.length === 24);
       if (reset) setPage(1);
     } catch (err) {
-      toast.error('Gagal memuat komunitas');
+      toast.error('Failed to load communities');
     } finally {
       setLoading(false);
     }
@@ -122,14 +122,14 @@ export default function CommunitiesList() {
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Jelajahi Komunitas</h1>
-          <p className="text-gray-500 text-sm mt-1">Temukan dan bergabung dengan komunitas sesuai minat kamu</p>
+          <h1 className="text-2xl font-bold text-gray-900">Explore Communities</h1>
+          <p className="text-gray-500 text-sm mt-1">Find and join communities that match your interests</p>
         </div>
         {isAuthenticated() && (
           <Link
             to="/community/create"
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors text-sm">
-            <Plus className="w-4 h-4" /> Buat Komunitas
+            <Plus className="w-4 h-4" /> Create Community
           </Link>
         )}
       </div>
@@ -137,7 +137,6 @@ export default function CommunitiesList() {
       {/* Filters */}
       <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -145,13 +144,12 @@ export default function CommunitiesList() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari komunitas..."
+                placeholder="Search communities..."
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
             </div>
           </div>
 
-          {/* Category Filter */}
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -163,7 +161,6 @@ export default function CommunitiesList() {
         </div>
       </div>
 
-      {/* Communities Grid */}
       {loading && communities.length === 0 ? (
         <div className="flex justify-center py-16">
           <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
@@ -171,7 +168,7 @@ export default function CommunitiesList() {
       ) : communities.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p>Tidak ada komunitas yang ditemukan</p>
+          <p>No communities found</p>
         </div>
       ) : (
         <>
@@ -187,7 +184,7 @@ export default function CommunitiesList() {
                 onClick={handleLoadMore}
                 disabled={loading}
                 className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors">
-                {loading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                {loading ? 'Loading...' : 'Load More'}
               </button>
             </div>
           )}

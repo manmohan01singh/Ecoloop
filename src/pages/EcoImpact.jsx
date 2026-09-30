@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Zap, Recycle, Wrench, Calendar, Target, Loader2, TrendingUp } from 'lucide-react';
+import { Trophy, Zap, Recycle, Wrench, Calendar, Loader2, TrendingUp } from 'lucide-react';
 import { getMyKarma, getLeaderboard, getPlatformImpact } from '../services/communityService';
 import toast from 'react-hot-toast';
 
@@ -19,7 +19,7 @@ export default function EcoImpact() {
         setLeaderboard(l.data.data);
         setPlatform(p.data.data);
       })
-      .catch(() => toast.error('Gagal memuat data'))
+      .catch(() => toast.error('Failed to load data'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,13 +28,13 @@ export default function EcoImpact() {
   return (
     <div className="p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">EcoKarma & Dampak</h1>
-        <p className="text-gray-500 text-sm mt-1">Dampak nyata dari aksi sirkularmu</p>
+        <h1 className="text-2xl font-bold text-gray-900">EcoKarma & Impact</h1>
+        <p className="text-gray-500 text-sm mt-1">Real impact from your circular actions</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
-        {[['personal', 'Dampakku'], ['leaderboard', 'Leaderboard'], ['platform', 'Platform']].map(([k, l]) => (
+        {[['personal', 'My Impact'], ['leaderboard', 'Leaderboard'], ['platform', 'Platform']].map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)}
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${tab === k ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
             {l}
@@ -48,7 +48,7 @@ export default function EcoImpact() {
           <div className="p-6 bg-gray-900 rounded-2xl text-white">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-gray-400 text-sm">EcoKarma Total</p>
+                <p className="text-gray-400 text-sm">Total EcoKarma</p>
                 <p className="text-5xl font-bold mt-1">{karma.ecoKarmaTotal.toLocaleString()}</p>
               </div>
               <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center">
@@ -61,10 +61,10 @@ export default function EcoImpact() {
           {/* Impact stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Recycle, label: 'Item Beredar Ulang', value: karma.impact.listingsCompleted, color: 'emerald' },
-              { icon: Wrench, label: 'Perbaikan Selesai', value: karma.impact.repairsDone, color: 'orange' },
-              { icon: Zap, label: 'Sampah Terdeposit (kg)', value: karma.impact.totalKgDeposited, color: 'blue' },
-              { icon: Calendar, label: 'Event Diikuti', value: karma.impact.eventsJoined, color: 'purple' },
+              { icon: Recycle, label: 'Items Recirculated', value: karma.impact.listingsCompleted, color: 'emerald' },
+              { icon: Wrench, label: 'Repairs Completed', value: karma.impact.repairsDone, color: 'orange' },
+              { icon: Zap, label: 'Waste Deposited (kg)', value: karma.impact.totalKgDeposited, color: 'blue' },
+              { icon: Calendar, label: 'Events Joined', value: karma.impact.eventsJoined, color: 'purple' },
             ].map(s => (
               <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-4 text-center">
                 <s.icon className={`w-7 h-7 text-${s.color}-500 mx-auto mb-2`} />
@@ -78,7 +78,7 @@ export default function EcoImpact() {
           {karma.badges.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-5">
               <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-500" /> Badge Diraih
+                <Trophy className="w-5 h-5 text-amber-500" /> Badges Earned
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {karma.badges.map(b => (
@@ -95,13 +95,13 @@ export default function EcoImpact() {
           {/* Karma log */}
           {karma.logs.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <h2 className="font-bold text-gray-900 mb-4">Riwayat EcoKarma</h2>
+              <h2 className="font-bold text-gray-900 mb-4">EcoKarma History</h2>
               <div className="space-y-2">
                 {karma.logs.slice(0, 10).map(l => (
                   <div key={l.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{l.description || l.reason.replace('_', ' ')}</p>
-                      <p className="text-xs text-gray-400">{new Date(l.createdAt).toLocaleDateString('id-ID')}</p>
+                      <p className="text-xs text-gray-400">{new Date(l.createdAt).toLocaleDateString('en')}</p>
                     </div>
                     <span className="text-sm font-bold text-emerald-600">+{l.points}</span>
                   </div>
@@ -145,11 +145,11 @@ export default function EcoImpact() {
         <div className="space-y-4">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { label: 'Total Pengguna', value: platform.totalUsers },
-              { label: 'Listing Diselesaikan', value: platform.totalListingsCompleted },
-              { label: 'Perbaikan Diselesaikan', value: platform.totalRepairsCompleted },
-              { label: 'Sampah Terkelola (kg est.)', value: `${platform.totalWasteDepositedKg} kg` },
-              { label: 'Event Diselesaikan', value: platform.totalEventsCompleted },
+              { label: 'Total Users', value: platform.totalUsers },
+              { label: 'Listings Completed', value: platform.totalListingsCompleted },
+              { label: 'Repairs Completed', value: platform.totalRepairsCompleted },
+              { label: 'Waste Managed (kg est.)', value: `${platform.totalWasteDepositedKg} kg` },
+              { label: 'Events Completed', value: platform.totalEventsCompleted },
             ].map(s => (
               <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5 text-center">
                 <p className="text-3xl font-bold text-gray-900">{s.value}</p>

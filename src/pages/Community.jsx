@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Plus, Search, TrendingUp, Flame, Clock, Star, ArrowUp, ArrowDown, MessageSquare, Share2, Bookmark, Loader2 } from 'lucide-react';
-import { getPosts, getCommunities, votePost } from '../services/communityService';
+import { Users, Plus, TrendingUp, Flame, Clock, ArrowUp, ArrowDown, MessageSquare, Share2, Bookmark, Loader2 } from 'lucide-react';
+import { getPosts, getCommunities } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 
 const SORT_OPTIONS = [
   { value: 'hot', label: 'Hot', icon: Flame },
-  { value: 'new', label: 'Terbaru', icon: Clock },
+  { value: 'new', label: 'New', icon: Clock },
   { value: 'top', label: 'Top', icon: TrendingUp },
-  { value: 'discussed', label: 'Terdiskusi', icon: MessageSquare },
+  { value: 'discussed', label: 'Most Discussed', icon: MessageSquare },
 ];
 
 const CATEGORY_COLORS = {
@@ -29,23 +29,22 @@ function PostCard({ post, onVote }) {
   const { isAuthenticated } = useAuthStore();
 
   const handleVote = async (value) => {
-    if (!isAuthenticated()) { toast.error('Login untuk vote'); return; }
+    if (!isAuthenticated()) { toast.error('Log in to vote'); return; }
     const newValue = post.userVote === value ? 0 : value;
-    try { await onVote(post.id, newValue); } catch { toast.error('Gagal vote'); }
+    try { await onVote(post.id, newValue); } catch { toast.error('Failed to vote'); }
   };
 
   const timeAgo = (date) => {
     const s = Math.floor((new Date() - new Date(date)) / 1000);
-    if (s < 60) return `${s}d lalu`;
-    if (s < 3600) return `${Math.floor(s/60)}m lalu`;
-    if (s < 86400) return `${Math.floor(s/3600)}j lalu`;
-    return `${Math.floor(s/86400)} hari lalu`;
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
   };
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all">
       <div className="flex">
-        {/* Vote sidebar */}
         <div className="flex flex-col items-center gap-1 px-3 py-4 bg-gray-50 rounded-l-xl">
           <button onClick={() => handleVote(1)}
             className={`p-1 rounded hover:bg-emerald-100 transition-colors ${post.userVote === 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
@@ -60,7 +59,6 @@ function PostCard({ post, onVote }) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 p-4 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             {post.community && (
@@ -70,7 +68,7 @@ function PostCard({ post, onVote }) {
               </Link>
             )}
             <span className="text-xs text-gray-400">•</span>
-            <span className="text-xs text-gray-500">oleh {post.author?.name}</span>
+            <span className="text-xs text-gray-500">by {post.author?.name}</span>
             <span className="text-xs text-gray-400">{timeAgo(post.createdAt)}</span>
             {post.category && (
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[post.category] || CATEGORY_COLORS.general}`}>
@@ -89,16 +87,32 @@ function PostCard({ post, onVote }) {
             <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">{post.body}</p>
           )}
 
+          {/* Image strip */}
+          {post.images?.length > 0 && (
+            <Link to={`/community/post/${post.id}`} className="flex gap-1.5 mb-3 rounded-lg overflow-hidden">
+              {post.images.slice(0, 3).map((url, i) => (
+                <div key={i} className={`relative flex-1 rounded-lg overflow-hidden bg-gray-100 ${post.images.length === 1 ? 'h-48' : 'h-28'}`}>
+                  <img src={url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" loading="lazy" />
+                  {i === 2 && post.images.length > 3 && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">+{post.images.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </Link>
+          )}
+
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <Link to={`/community/post/${post.id}`} className="flex items-center gap-1 hover:text-gray-700">
               <MessageSquare className="w-3.5 h-3.5" />
-              {post.commentCount} komentar
+              {post.commentCount} comments
             </Link>
             <button className="flex items-center gap-1 hover:text-gray-700">
-              <Share2 className="w-3.5 h-3.5" /> Bagikan
+              <Share2 className="w-3.5 h-3.5" /> Share
             </button>
             <button className="flex items-center gap-1 hover:text-gray-700">
-              <Bookmark className="w-3.5 h-3.5" /> Simpan
+              <Bookmark className="w-3.5 h-3.5" /> Save
             </button>
           </div>
         </div>
@@ -118,7 +132,7 @@ export default function Community() {
     try {
       const res = await getPosts({ sort: s, limit: 30 });
       setPosts(res.data.data.items);
-    } catch { toast.error('Gagal memuat post'); }
+    } catch { toast.error('Failed to load posts'); }
     finally { setLoading(false); }
   };
 
@@ -144,18 +158,16 @@ export default function Community() {
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Komunitas</h1>
-          <p className="text-gray-500 text-sm mt-1">Diskusi, tips, dan aksi sirkular dari seluruh Indonesia</p>
+          <h1 className="text-2xl font-bold text-gray-900">Community</h1>
+          <p className="text-gray-500 text-sm mt-1">Discussions, tips, and circular actions</p>
         </div>
         <Link to="/community/create-post" className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors text-sm">
-          <Plus className="w-4 h-4" /> Buat Post
+          <Plus className="w-4 h-4" /> Create Post
         </Link>
       </div>
 
       <div className="flex gap-6">
-        {/* Main feed */}
         <div className="flex-1 min-w-0">
-          {/* Sort tabs */}
           <div className="flex items-center gap-1 mb-4 bg-gray-100 rounded-xl p-1 w-fit">
             {SORT_OPTIONS.map(s => (
               <button key={s.value} onClick={() => handleSort(s.value)}
@@ -173,27 +185,26 @@ export default function Community() {
               {posts.length === 0 && (
                 <div className="text-center py-16 text-gray-400">
                   <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>Belum ada post. Jadilah yang pertama!</p>
+                  <p>No posts yet. Be the first!</p>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="hidden lg:block w-72 flex-shrink-0 space-y-4">
           <div className="bg-gray-900 rounded-xl p-5 text-white">
-            <h3 className="font-semibold mb-2">Tentang EcoLoop Community</h3>
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">Ruang diskusi untuk gerakan ekonomi sirkular. Share tips, temukan solusi, dan aksi bersama.</p>
+            <h3 className="font-semibold mb-2">About EcoLoop Community</h3>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">A discussion space for the circular economy movement. Share tips, find solutions, and take action together.</p>
             <Link to="/community/create-post" className="block w-full text-center py-2 bg-emerald-500 rounded-lg text-sm font-medium hover:bg-emerald-400 transition-colors">
-              Buat Post
+              Create Post
             </Link>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-gray-900 text-sm">Komunitas Populer</h3>
-              <Link to="/communities" className="text-xs text-emerald-600 hover:underline">Semua</Link>
+              <h3 className="font-semibold text-gray-900 text-sm">Popular Communities</h3>
+              <Link to="/communities" className="text-xs text-emerald-600 hover:underline">All</Link>
             </div>
             <div className="space-y-2">
               {communities.map(c => (
@@ -209,7 +220,7 @@ export default function Community() {
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <h3 className="font-semibold text-gray-900 text-sm mb-3">Kategori</h3>
+            <h3 className="font-semibold text-gray-900 text-sm mb-3">Categories</h3>
             <div className="flex flex-wrap gap-1.5">
               {Object.keys(CATEGORY_COLORS).map(c => (
                 <Link key={c} to={`/community?category=${c}`}

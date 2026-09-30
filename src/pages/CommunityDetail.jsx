@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Users, Plus, ArrowLeft, Loader2, Shield, Calendar, MessageSquare, ArrowUp, ArrowDown, Trash2, Edit, Pin } from 'lucide-react';
+import { Users, Plus, ArrowLeft, Loader2, Shield, Calendar, MessageSquare, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 import { getCommunity, joinCommunity, leaveCommunity, getPosts, votePost, deletePost } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
@@ -23,19 +23,19 @@ function PostCard({ post, onVote, onDelete, canModerate }) {
   const [deleting, setDeleting] = useState(false);
 
   const handleVote = async (value) => {
-    if (!isAuthenticated()) { toast.error('Login untuk vote'); return; }
+    if (!isAuthenticated()) { toast.error('Log in to vote'); return; }
     const newValue = post.userVote === value ? 0 : value;
-    try { await onVote(post.id, newValue); } catch { toast.error('Gagal vote'); }
+    try { await onVote(post.id, newValue); } catch { toast.error('Failed to vote'); }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Hapus post ini?')) return;
+    if (!confirm('Delete this post?')) return;
     setDeleting(true);
     try {
       await onDelete(post.id);
-      toast.success('Post dihapus');
+      toast.success('Post deleted');
     } catch {
-      toast.error('Gagal menghapus post');
+      toast.error('Failed to delete post');
     } finally {
       setDeleting(false);
     }
@@ -45,10 +45,10 @@ function PostCard({ post, onVote, onDelete, canModerate }) {
 
   const timeAgo = (date) => {
     const s = Math.floor((new Date() - new Date(date)) / 1000);
-    if (s < 60) return `${s}d lalu`;
-    if (s < 3600) return `${Math.floor(s/60)}m lalu`;
-    if (s < 86400) return `${Math.floor(s/3600)}j lalu`;
-    return `${Math.floor(s/86400)} hari lalu`;
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
   };
 
   return (
@@ -70,7 +70,7 @@ function PostCard({ post, onVote, onDelete, canModerate }) {
 
         <div className="flex-1 p-4 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap text-xs text-gray-500">
-            <span>oleh {post.author?.name}</span>
+            <span>by {post.author?.name}</span>
             <span className="text-gray-400">•</span>
             <span>{timeAgo(post.createdAt)}</span>
             {post.category && (
@@ -93,18 +93,34 @@ function PostCard({ post, onVote, onDelete, canModerate }) {
             <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">{post.body}</p>
           )}
 
+          {/* Image strip */}
+          {post.images?.length > 0 && (
+            <Link to={`/community/post/${post.id}`} className="flex gap-1.5 mb-3 rounded-lg overflow-hidden">
+              {post.images.slice(0, 3).map((url, i) => (
+                <div key={i} className={`relative flex-1 rounded-lg overflow-hidden bg-gray-100 ${post.images.length === 1 ? 'h-48' : 'h-28'}`}>
+                  <img src={url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" loading="lazy" />
+                  {i === 2 && post.images.length > 3 && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">+{post.images.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </Link>
+          )}
+
           <Link to={`/community/post/${post.id}`} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700">
             <MessageSquare className="w-3.5 h-3.5" />
-            {post.commentCount} komentar
+            {post.commentCount} comments
           </Link>
-          
+
           {canDelete && (
-            <button 
+            <button
               onClick={handleDelete}
               disabled={deleting}
               className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 disabled:opacity-50">
               <Trash2 className="w-3.5 h-3.5" />
-              {deleting ? 'Menghapus...' : 'Hapus'}
+              {deleting ? 'Deleting...' : 'Delete'}
             </button>
           )}
         </div>
@@ -136,7 +152,7 @@ export default function CommunityDetail() {
       setCommunity(communityRes.data.data);
       setPosts(postsRes.data.data.items);
     } catch (err) {
-      toast.error('Gagal memuat komunitas');
+      toast.error('Failed to load community');
       navigate('/community');
     } finally {
       setLoading(false);
@@ -149,7 +165,7 @@ export default function CommunityDetail() {
 
   const handleJoinLeave = async () => {
     if (!isAuthenticated()) {
-      toast.error('Login terlebih dahulu');
+      toast.error('Please log in first');
       navigate('/login');
       return;
     }
@@ -158,15 +174,15 @@ export default function CommunityDetail() {
     try {
       if (community.isMember) {
         await leaveCommunity(community.id);
-        toast.success('Berhasil keluar dari komunitas');
+        toast.success('Left community');
         setCommunity({ ...community, isMember: false, memberCount: community.memberCount - 1 });
       } else {
         await joinCommunity(community.id);
-        toast.success('Berhasil bergabung!');
+        toast.success('Successfully joined!');
         setCommunity({ ...community, isMember: true, memberCount: community.memberCount + 1 });
       }
     } catch (err) {
-      toast.error(err.response?.data?.error?.message || 'Gagal');
+      toast.error(err.response?.data?.error?.message || 'Failed');
     } finally {
       setActionLoading(false);
     }
@@ -202,10 +218,9 @@ export default function CommunityDetail() {
       <button
         onClick={() => navigate('/community')}
         className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-6">
-        <ArrowLeft className="w-4 h-4" /> Kembali ke Komunitas
+        <ArrowLeft className="w-4 h-4" /> Back to Community
       </button>
 
-      {/* Community Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl overflow-hidden mb-6">
         {community.coverImage && (
           <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${community.coverImage})` }} />
@@ -229,19 +244,19 @@ export default function CommunityDetail() {
                   </span>
                 )}
               </div>
-              <p className="text-emerald-50 mb-4">{community.description || 'Tidak ada deskripsi'}</p>
+              <p className="text-emerald-50 mb-4">{community.description || 'No description'}</p>
               <div className="flex items-center gap-4 text-sm text-emerald-100">
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  {community.memberCount.toLocaleString()} anggota
+                  {community.memberCount.toLocaleString()} members
                 </span>
                 <span className="flex items-center gap-1">
                   <MessageSquare className="w-4 h-4" />
-                  {community.postCount.toLocaleString()} post
+                  {community.postCount.toLocaleString()} posts
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  Dibuat {new Date(community.createdAt).toLocaleDateString('id-ID')}
+                  Created {new Date(community.createdAt).toLocaleDateString('en')}
                 </span>
               </div>
             </div>
@@ -253,23 +268,21 @@ export default function CommunityDetail() {
                   ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'bg-white text-emerald-600 hover:bg-emerald-50'
               }`}>
-              {actionLoading ? 'Loading...' : community.isMember ? 'Keluar' : 'Bergabung'}
+              {actionLoading ? 'Loading...' : community.isMember ? 'Leave' : 'Join'}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex gap-6">
-        {/* Posts */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Post</h2>
+            <h2 className="font-semibold text-gray-900">Posts</h2>
             {community.isMember && (
               <Link
                 to="/community/create-post"
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">
-                <Plus className="w-4 h-4" /> Buat Post
+                <Plus className="w-4 h-4" /> Create Post
               </Link>
             )}
           </div>
@@ -278,7 +291,7 @@ export default function CommunityDetail() {
             {posts.length === 0 ? (
               <div className="text-center py-16 text-gray-400">
                 <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Belum ada post di komunitas ini</p>
+                <p>No posts in this community yet</p>
               </div>
             ) : (
               posts.map(p => <PostCard key={p.id} post={p} onVote={handleVote} onDelete={handleDeletePost} canModerate={isModerator} />)
@@ -286,32 +299,31 @@ export default function CommunityDetail() {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="hidden lg:block w-72 flex-shrink-0">
           <div className="bg-white border border-gray-200 rounded-xl p-4 sticky top-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Tentang Komunitas</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">About Community</h3>
             <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              {community.description || 'Tidak ada deskripsi'}
+              {community.description || 'No description'}
             </p>
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Kategori</span>
+                <span className="text-gray-500">Category</span>
                 <span className="font-medium">{community.category.replace('_', ' ')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Tipe</span>
-                <span className="font-medium">{community.isPrivate ? 'Privat' : 'Publik'}</span>
+                <span className="text-gray-500">Type</span>
+                <span className="font-medium">{community.isPrivate ? 'Private' : 'Public'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Dibuat oleh</span>
+                <span className="text-gray-500">Created by</span>
                 <span className="font-medium">{community.creator?.name}</span>
               </div>
             </div>
 
             {community.rules && community.rules.length > 0 && (
               <div className="mt-4 pt-4 border-t">
-                <h4 className="font-semibold text-gray-900 mb-2 text-sm">Aturan</h4>
+                <h4 className="font-semibold text-gray-900 mb-2 text-sm">Rules</h4>
                 <ol className="list-decimal list-inside space-y-1 text-xs text-gray-600">
                   {community.rules.map((rule, i) => (
                     <li key={i}>{rule}</li>

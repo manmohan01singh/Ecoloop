@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Wrench, MapPin, Star, CheckCircle, AlertCircle, Plus, Loader2, X, Clock, Phone } from 'lucide-react';
+import { Wrench, MapPin, CheckCircle, AlertCircle, Plus, Loader2, X, Clock, Phone } from 'lucide-react';
 import { getProviders, getRepairRequests, createRepairRequest, updateRepairStatus } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
@@ -11,7 +11,7 @@ const STATUS_STYLE = {
   completed: 'bg-green-100 text-green-700',
   cancelled: 'bg-gray-100 text-gray-600',
 };
-const STATUS_LABEL = { requested: 'Diminta', accepted: 'Diterima', in_progress: 'Dalam Proses', completed: 'Selesai', cancelled: 'Dibatalkan' };
+const STATUS_LABEL = { requested: 'Requested', accepted: 'Accepted', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' };
 
 function RequestModal({ onClose, onCreated }) {
   const [form, setForm] = useState({ itemName: '', category: '', description: '', city: '' });
@@ -23,9 +23,9 @@ function RequestModal({ onClose, onCreated }) {
     setSaving(true);
     try {
       await createRepairRequest(form);
-      toast.success('Permintaan perbaikan dikirim!');
+      toast.success('Repair request sent!');
       onCreated(); onClose();
-    } catch (err) { toast.error(err.response?.data?.error?.message || 'Gagal'); }
+    } catch (err) { toast.error(err.response?.data?.error?.message || 'Failed'); }
     finally { setSaving(false); }
   };
 
@@ -33,35 +33,35 @@ function RequestModal({ onClose, onCreated }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-bold text-gray-900">Minta Perbaikan</h2>
+          <h2 className="text-lg font-bold text-gray-900">Request a Repair</h2>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Barang *</label>
-            <input value={form.itemName} onChange={e => set('itemName', e.target.value)} required placeholder="Contoh: Mesin Cuci Samsung"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+            <input value={form.itemName} onChange={e => set('itemName', e.target.value)} required placeholder="e.g. Samsung Washing Machine"
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-            <input value={form.category} onChange={e => set('category', e.target.value)} placeholder="smartphone, laptop, ac, dll"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <input value={form.category} onChange={e => set('category', e.target.value)} placeholder="smartphone, laptop, ac, etc."
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Masalah *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Problem Description *</label>
             <textarea value={form.description} onChange={e => set('description', e.target.value)} required rows={3}
-              placeholder="Jelaskan kerusakan atau masalah yang terjadi..."
+              placeholder="Describe the damage or issue..."
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Kota</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
             <input value={form.city} onChange={e => set('city', e.target.value)} placeholder="Jakarta"
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <button type="submit" disabled={saving}
             className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            {saving ? 'Menyimpan...' : 'Kirim Permintaan'}
+            {saving ? 'Saving...' : 'Submit Request'}
           </button>
         </form>
       </div>
@@ -97,30 +97,29 @@ export default function RepairPage() {
   const handleStatusUpdate = async (id, status) => {
     try {
       await updateRepairStatus(id, { status });
-      toast.success(`Status diperbarui: ${STATUS_LABEL[status]}`);
+      toast.success(`Status updated: ${STATUS_LABEL[status]}`);
       const res = await getRepairRequests({ limit: 30 });
       setRequests(res.data.data.items);
-    } catch { toast.error('Gagal memperbarui status'); }
+    } catch { toast.error('Failed to update status'); }
   };
 
   return (
     <div className="p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Komunitas Repair</h1>
-          <p className="text-gray-500 text-sm mt-1">Temukan penyedia servis atau ajukan permintaan perbaikan</p>
+          <h1 className="text-2xl font-bold text-gray-900">Repair Community</h1>
+          <p className="text-gray-500 text-sm mt-1">Find service providers or submit a repair request</p>
         </div>
         {isAuthenticated() && (
           <button onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 text-sm">
-            <Plus className="w-4 h-4" /> Minta Perbaikan
+            <Plus className="w-4 h-4" /> Request Repair
           </button>
         )}
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
-        {[['providers', 'Penyedia Servis'], ['requests', 'Permintaan Perbaikan']].map(([k, l]) => (
+        {[['providers', 'Service Providers'], ['requests', 'Repair Requests']].map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)}
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${tab === k ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
             {l}
@@ -141,11 +140,11 @@ export default function RepairPage() {
                 <div className="flex items-center gap-1">
                   {p.verificationStatus === 'admin_verified' ? (
                     <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" />Terverifikasi
+                      <CheckCircle className="w-3 h-3" /> Verified
                     </span>
                   ) : (
                     <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />Belum Terverifikasi
+                      <AlertCircle className="w-3 h-3" /> Unverified
                     </span>
                   )}
                 </div>
@@ -164,7 +163,7 @@ export default function RepairPage() {
                   </div>
                 )}
                 <div className="flex items-center gap-2 text-xs text-gray-600">
-                  <CheckCircle className="w-3.5 h-3.5 text-gray-400" />{p.completedJobs} pekerjaan selesai
+                  <CheckCircle className="w-3.5 h-3.5 text-gray-400" />{p.completedJobs} jobs completed
                 </div>
               </div>
 
@@ -180,7 +179,7 @@ export default function RepairPage() {
           {providers.length === 0 && (
             <div className="col-span-full text-center py-16 text-gray-400">
               <Wrench className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Belum ada penyedia servis terdaftar</p>
+              <p>No service providers registered yet</p>
             </div>
           )}
         </div>
@@ -200,15 +199,15 @@ export default function RepairPage() {
                   <div className="flex items-center gap-3 text-xs text-gray-400">
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{r.city || 'N/A'}</span>
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" />
-                      {new Date(r.createdAt).toLocaleDateString('id-ID')}
+                      {new Date(r.createdAt).toLocaleDateString('en')}
                     </span>
-                    {r.estimatedCost && <span>Estimasi: Rp {Number(r.estimatedCost).toLocaleString('id')}</span>}
+                    {r.estimatedCost && <span>Estimated: Rp {Number(r.estimatedCost).toLocaleString('en')}</span>}
                   </div>
                 </div>
                 {isAuthenticated() && r.user?.id === user?.id && r.status === 'in_progress' && (
                   <button onClick={() => handleStatusUpdate(r.id, 'completed')}
                     className="flex-shrink-0 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700">
-                    Konfirmasi Selesai
+                    Confirm Completed
                   </button>
                 )}
               </div>
@@ -217,7 +216,7 @@ export default function RepairPage() {
           {requests.length === 0 && (
             <div className="text-center py-16 text-gray-400">
               <Wrench className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Belum ada permintaan perbaikan</p>
+              <p>No repair requests yet</p>
             </div>
           )}
         </div>

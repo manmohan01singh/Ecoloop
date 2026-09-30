@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import upload from '../middleware/upload.js';
 import { authenticate } from '../middleware/auth.js';
-import { uploadDeviceImage, uploadDeviceVideo, uploadAvatar } from '../controllers/upload.controller.js';
+import { uploadDeviceImage, uploadDeviceVideo, uploadAvatar, uploadPostImage } from '../controllers/upload.controller.js';
 import fs from 'fs';
 
 const router = Router();
@@ -22,5 +22,8 @@ router.post('/device/:id/video', upload.single('file'), uploadDeviceVideo);
 
 // Upload user avatar
 router.post('/avatar', upload.single('file'), uploadAvatar);
+
+// Upload post image (up to 5 images at once)
+router.post('/post/image', upload.array('files', 5), uploadPostImage);
 
 export default router;

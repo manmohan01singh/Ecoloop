@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, Filter, MapPin, Package, Loader2, X, ChevronDown } from 'lucide-react';
+import { Plus, Search, MapPin, Package, Loader2, X } from 'lucide-react';
 import { getListings, createListing } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = ['electronics', 'plastic', 'metal', 'paper_cardboard', 'glass', 'textile', 'furniture', 'appliances', 'organic', 'construction', 'other'];
 const ACTIONS = [
-  { value: 'give_away', label: 'Berikan', emoji: '🎁', color: 'bg-blue-100 text-blue-700' },
-  { value: 'sell', label: 'Jual', emoji: '💰', color: 'bg-amber-100 text-amber-700' },
-  { value: 'donate', label: 'Donasi', emoji: '❤️', color: 'bg-red-100 text-red-700' },
-  { value: 'repair', label: 'Perbaiki', emoji: '🔧', color: 'bg-orange-100 text-orange-700' },
-  { value: 'reuse', label: 'Pakai Ulang', emoji: '🔄', color: 'bg-green-100 text-green-700' },
-  { value: 'recycle', label: 'Daur Ulang', emoji: '♻️', color: 'bg-emerald-100 text-emerald-700' },
-  { value: 'parts', label: 'Suku Cadang', emoji: '🔩', color: 'bg-gray-100 text-gray-700' },
+  { value: 'give_away', label: 'Give Away', emoji: '🎁', color: 'bg-blue-100 text-blue-700' },
+  { value: 'sell', label: 'Sell', emoji: '💰', color: 'bg-amber-100 text-amber-700' },
+  { value: 'donate', label: 'Donate', emoji: '❤️', color: 'bg-red-100 text-red-700' },
+  { value: 'repair', label: 'Repair', emoji: '🔧', color: 'bg-orange-100 text-orange-700' },
+  { value: 'reuse', label: 'Reuse', emoji: '🔄', color: 'bg-green-100 text-green-700' },
+  { value: 'recycle', label: 'Recycle', emoji: '♻️', color: 'bg-emerald-100 text-emerald-700' },
+  { value: 'parts', label: 'Parts', emoji: '🔩', color: 'bg-gray-100 text-gray-700' },
 ];
 const CONDITIONS = ['like_new', 'good', 'fair', 'poor', 'for_parts'];
 
@@ -36,10 +36,10 @@ function CreateListingModal({ onClose, onCreated }) {
     setSaving(true);
     try {
       await createListing(form);
-      toast.success('Listing dibuat!');
+      toast.success('Listing created!');
       onCreated();
       onClose();
-    } catch (err) { toast.error(err.response?.data?.error?.message || 'Gagal'); }
+    } catch (err) { toast.error(err.response?.data?.error?.message || 'Failed'); }
     finally { setSaving(false); }
   };
 
@@ -47,23 +47,23 @@ function CreateListingModal({ onClose, onCreated }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Buat Listing Baru</h2>
+          <h2 className="text-lg font-bold text-gray-900">Create New Listing</h2>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Barang *</label>
-            <input value={form.title} onChange={e => set('title', e.target.value)} placeholder="Contoh: Laptop Lenovo bekas" required
+            <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+            <input value={form.title} onChange={e => set('title', e.target.value)} placeholder="e.g. Used Lenovo Laptop" required
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={3} placeholder="Ceritakan kondisi dan detail barang..."
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={3} placeholder="Describe the condition and details..."
               className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Aksi Sirkular *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Circular Action *</label>
             <div className="grid grid-cols-4 gap-2">
               {ACTIONS.map(a => (
                 <button key={a.value} type="button" onClick={() => set('circularAction', a.value)}
@@ -76,14 +76,14 @@ function CreateListingModal({ onClose, onCreated }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <select value={form.category} onChange={e => set('category', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kondisi</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
               <select value={form.condition} onChange={e => set('condition', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 {CONDITIONS.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
@@ -93,12 +93,12 @@ function CreateListingModal({ onClose, onCreated }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kota</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
               <input value={form.city} onChange={e => set('city', e.target.value)} placeholder="Jakarta"
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
               <input type="number" value={form.quantity} onChange={e => set('quantity', e.target.value)} min={1}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
             </div>
@@ -107,12 +107,12 @@ function CreateListingModal({ onClose, onCreated }) {
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.isFree} onChange={e => set('isFree', e.target.checked)} className="w-4 h-4 text-emerald-600 rounded" />
-              <span className="text-sm font-medium text-gray-700">Gratis</span>
+              <span className="text-sm font-medium text-gray-700">Free</span>
             </label>
             {!form.isFree && (
               <div className="flex items-center gap-2 flex-1">
                 <span className="text-sm text-gray-500">Rp</span>
-                <input type="number" value={form.price} onChange={e => set('price', e.target.value)} min={0} placeholder="Harga"
+                <input type="number" value={form.price} onChange={e => set('price', e.target.value)} min={0} placeholder="Price"
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
               </div>
             )}
@@ -121,7 +121,7 @@ function CreateListingModal({ onClose, onCreated }) {
           <button type="submit" disabled={saving}
             className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            {saving ? 'Menyimpan...' : 'Buat Listing'}
+            {saving ? 'Saving...' : 'Create Listing'}
           </button>
         </form>
       </div>
@@ -152,7 +152,7 @@ export default function Marketplace() {
       if (f.isFree !== '') params.isFree = f.isFree;
       const res = await getListings(params);
       setListings(res.data.data.items);
-    } catch { toast.error('Gagal memuat'); }
+    } catch { toast.error('Failed to load listings'); }
     finally { setLoading(false); }
   };
 
@@ -162,13 +162,13 @@ export default function Marketplace() {
     <div className="p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Marketplace Sirkular</h1>
-          <p className="text-gray-500 text-sm mt-1">{listings.length} item tersedia</p>
+          <h1 className="text-2xl font-bold text-gray-900">Circular Marketplace</h1>
+          <p className="text-gray-500 text-sm mt-1">{listings.length} items available</p>
         </div>
         {isAuthenticated() && (
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 text-sm">
-            <Plus className="w-4 h-4" /> Buat Listing
+            <Plus className="w-4 h-4" /> Create Listing
           </button>
         )}
       </div>
@@ -179,23 +179,23 @@ export default function Marketplace() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input value={filters.search} onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
             onKeyDown={e => e.key === 'Enter' && fetchListings()}
-            placeholder="Cari barang..." className="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            placeholder="Search items..." className="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
         </div>
         <select value={filters.circularAction} onChange={e => { const v = {...filters, circularAction: e.target.value}; setFilters(v); fetchListings(v); }}
           className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="">Semua Aksi</option>
+          <option value="">All Actions</option>
           {ACTIONS.map(a => <option key={a.value} value={a.value}>{a.emoji} {a.label}</option>)}
         </select>
         <select value={filters.category} onChange={e => { const v = {...filters, category: e.target.value}; setFilters(v); fetchListings(v); }}
           className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="">Semua Kategori</option>
+          <option value="">All Categories</option>
           {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
         </select>
         <select value={filters.isFree} onChange={e => { const v = {...filters, isFree: e.target.value}; setFilters(v); fetchListings(v); }}
           className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="">Gratis & Berbayar</option>
-          <option value="true">Gratis Saja</option>
-          <option value="false">Berbayar</option>
+          <option value="">Free &amp; Paid</option>
+          <option value="true">Free Only</option>
+          <option value="false">Paid</option>
         </select>
       </div>
 
@@ -224,7 +224,7 @@ export default function Marketplace() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={`text-sm font-bold ${l.isFree ? 'text-emerald-600' : 'text-gray-900'}`}>
-                    {l.isFree ? 'GRATIS' : `Rp ${Number(l.price).toLocaleString('id')}`}
+                    {l.isFree ? 'FREE' : `Rp ${Number(l.price).toLocaleString('en')}`}
                   </span>
                   <span className="text-xs text-gray-400 capitalize">{l.condition?.replace('_', ' ')}</span>
                 </div>
@@ -234,7 +234,7 @@ export default function Marketplace() {
           {listings.length === 0 && (
             <div className="col-span-full text-center py-16 text-gray-400">
               <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Tidak ada listing ditemukan</p>
+              <p>No listings found</p>
             </div>
           )}
         </div>
