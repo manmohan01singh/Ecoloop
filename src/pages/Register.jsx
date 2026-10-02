@@ -5,19 +5,33 @@ import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', city: '', state: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', city: '', state: '', role: 'user' });
   const [showPassword, setShowPassword] = useState(false);
   const { register, loading } = useAuthStore();
   const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const getRoleDashboard = (role) => {
+    const dashboards = {
+      admin: '/admin',
+      moderator: '/moderator',
+      recycler: '/recycler',
+      repair_provider: '/repair-provider',
+      business: '/business-dashboard',
+      organization: '/organization',
+      user: '/dashboard'
+    };
+    return dashboards[role] || '/dashboard';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await register(form);
       toast.success('Account created successfully!');
-      navigate('/dashboard');
+      // Redirect to appropriate dashboard based on role
+      navigate(getRoleDashboard(form.role));
     } catch (err) {
       toast.error(err.response?.data?.error?.message || 'Registration failed');
     }
@@ -143,6 +157,40 @@ export default function Register() {
                   />
                 </div>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Register As</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select 
+                  name="role" 
+                  value={form.role} 
+                  onChange={handleChange} 
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                >
+                  <option value="user">Regular User</option>
+                  <option value="recycler">Recycler</option>
+                  <option value="repair_provider">Repair Provider</option>
+                  <option value="business">Business</option>
+                  <option value="organization">Organization/NGO</option>
+                  <option value="moderator">Moderator</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1.5">
+                {form.role === 'user' && 'Track devices and participate in community'}
+                {form.role === 'recycler' && 'Manage recycling operations and collections'}
+                {form.role === 'repair_provider' && 'Offer repair services to the community'}
+                {form.role === 'business' && 'B2B material exchange and trading'}
+                {form.role === 'organization' && 'Host events and challenges for the community'}
+                {form.role === 'moderator' && 'Moderate content and manage reports'}
+              </p>
             </div>
 
             <div>

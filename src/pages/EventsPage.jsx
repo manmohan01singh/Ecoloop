@@ -86,6 +86,12 @@ export default function EventsPage() {
                   <Users className="w-3.5 h-3.5 text-gray-400" />
                   {ev.participantCount}{ev.capacity ? `/${ev.capacity}` : ''} participants
                 </div>
+                {ev.creator && (
+                  <div className="flex items-center gap-2 text-xs text-indigo-600 font-medium">
+                    <span className="text-indigo-400">🏢</span>
+                    Organized by {ev.creator.name}
+                  </div>
+                )}
               </div>
 
               {ev.goalDescription && (

@@ -5,7 +5,7 @@ import {
   Star, MapPin, Phone, TrendingUp, Package, AlertCircle
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
-import { getRepairRequests, updateRepairStatus } from '../services/communityService';
+import * as repairService from '../services/repairProviderService';
 import toast from 'react-hot-toast';
 
 const STATUS_STYLE = {
@@ -37,7 +37,7 @@ export default function RepairProviderDashboard() {
   const loadRequests = async () => {
     setLoading(true);
     try {
-      const res = await getRepairRequests({ limit: 50 });
+      const res = await repairService.getRepairRequests({ limit: 50 });
       setRequests(res.data.data.items);
     } catch { toast.error('Failed to load requests'); }
     finally { setLoading(false); }
@@ -47,10 +47,27 @@ export default function RepairProviderDashboard() {
 
   const handleStatus = async (id, status) => {
     try {
-      await updateRepairStatus(id, { status });
+      await repairService.updateRepairStatus(id, { status });
       setRequests(rs => rs.map(r => r.id === id ? { ...r, status } : r));
       toast.success(`Status updated to ${STATUS_LABEL[status]}`);
+      loadRequests(); // Reload to get fresh data
     } catch { toast.error('Failed to update'); }
+  };
+
+  const handleAccept = async (id) => {
+    try {
+      await repairService.acceptRepairRequest(id);
+      toast.success('Request accepted');
+      loadRequests();
+    } catch { toast.error('Failed to accept request'); }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      await repairService.rejectRepairRequest(id, { reason: 'Not available' });
+      toast.success('Request rejected');
+      loadRequests();
+    } catch { toast.error('Failed to reject request'); }
   };
 
   const pending = requests.filter(r => r.status === 'requested');
@@ -85,7 +102,7 @@ export default function RepairProviderDashboard() {
       {actions && (
         <div className="flex gap-2 flex-wrap">
           {actions.map(a => (
-            <button key={a.status} onClick={() => handleStatus(r.id, a.status)}
+            <button key={a.status} onClick={a.onClick || (() => handleStatus(r.id, a.status))}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${a.primary ? 'bg-orange-600 text-white hover:bg-orange-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
               {a.label}
             </button>
@@ -161,7 +178,7 @@ export default function RepairProviderDashboard() {
                       <p className="text-sm font-medium text-gray-900 truncate">{r.itemName}</p>
                       <p className="text-xs text-gray-400">{r.city} · {new Date(r.createdAt).toLocaleDateString('en')}</p>
                     </div>
-                    <button onClick={() => handleStatus(r.id, 'accepted')}
+                    <button onClick={() => handleAccept(r.id)}
                       className="px-3 py-1.5 bg-orange-600 text-white text-xs font-medium rounded-lg hover:bg-orange-700 flex-shrink-0">
                       Accept
                     </button>
@@ -181,8 +198,8 @@ export default function RepairProviderDashboard() {
             </div>
           ) : pending.map(r => (
             <RequestCard key={r.id} r={r} actions={[
-              { status: 'accepted', label: 'Accept', primary: true },
-              { status: 'cancelled', label: 'Decline', primary: false },
+              { status: 'accepted', label: 'Accept', primary: true, onClick: () => handleAccept(r.id) },
+              { status: 'cancelled', label: 'Decline', primary: false, onClick: () => handleReject(r.id) },
             ]} />
           ))}
         </div>

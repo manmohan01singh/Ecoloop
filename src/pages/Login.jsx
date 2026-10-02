@@ -11,12 +11,27 @@ export default function Login() {
   const { login, loading } = useAuthStore();
   const navigate = useNavigate();
 
+  const getRoleDashboard = (role) => {
+    const dashboards = {
+      admin: '/admin',
+      moderator: '/moderator',
+      recycler: '/recycler',
+      repair_provider: '/repair-provider',
+      business: '/business-dashboard',
+      organization: '/organization',
+      user: '/dashboard'
+    };
+    return dashboards[role] || '/dashboard';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      const response = await login(email, password);
+      const userRole = response.data.user.role;
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      // Redirect to appropriate dashboard based on user's role
+      navigate(getRoleDashboard(userRole));
     } catch (err) {
       toast.error(err.response?.data?.error?.message || 'Login failed');
     }
@@ -137,9 +152,28 @@ export default function Login() {
             </Link>
           </p>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-            <p className="text-xs font-medium text-gray-700 mb-1">Demo Credentials</p>
-            <p className="text-xs text-gray-600">demo@ecoloop.com / demo123</p>
+          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <p className="text-xs font-medium text-blue-900 mb-2">💡 Automatic Dashboard Redirection</p>
+            <p className="text-xs text-blue-700">
+              You'll be automatically redirected to your role-specific dashboard after login. No need to select your role!
+            </p>
+          </div>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <p className="text-xs font-medium text-gray-700 mb-1">🧪 Demo Credentials (All Roles)</p>
+            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mt-2">
+              <div className="space-y-1">
+                <p><strong>Admin:</strong> admin@ecoloop.com</p>
+                <p><strong>Moderator:</strong> moderator@ecoloop.com</p>
+                <p><strong>Recycler:</strong> recycler@ecoloop.com</p>
+              </div>
+              <div className="space-y-1">
+                <p><strong>Repair:</strong> repair@ecoloop.com</p>
+                <p><strong>Business:</strong> business@ecoloop.com</p>
+                <p><strong>Organization:</strong> organization@ecoloop.com</p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Password pattern: [role]123 (e.g., admin123, organization123)</p>
           </div>
         </div>
       </div>

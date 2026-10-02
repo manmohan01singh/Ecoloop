@@ -74,7 +74,7 @@ export default function EWasteChatbot() {
         </div>
 
         {/* iframe — mounted once and kept in DOM so chat history persists */}
-        <div className="flex-1 relative bg-white">
+        <div className="flex-1 relative bg-white overflow-hidden">
           {/* Spinner shown until iframe loads */}
           {!isLoaded && hasOpened && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white z-10">
@@ -83,14 +83,19 @@ export default function EWasteChatbot() {
             </div>
           )}
           {hasOpened && (
-            <iframe
-              ref={iframeRef}
-              src={CHATBOT_URL}
-              title="E-Waste Management AI Assistant"
-              className="w-full h-full border-0"
-              allow="microphone; clipboard-write"
-              onLoad={() => setIsLoaded(true)}
-            />
+            <>
+              <iframe
+                ref={iframeRef}
+                src={CHATBOT_URL}
+                title="E-Waste Management AI Assistant"
+                className="w-full border-0"
+                style={{ height: 'calc(100% + 40px)', marginBottom: '-40px' }}
+                allow="microphone; clipboard-write"
+                onLoad={() => setIsLoaded(true)}
+              />
+              {/* White padding overlay to hide "Powered by MindPal" only */}
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-white pointer-events-none z-20" />
+            </>
           )}
         </div>
       </div>

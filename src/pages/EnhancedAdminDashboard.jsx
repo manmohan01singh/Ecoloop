@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Users, FileText, Package, AlertTriangle, CheckCircle, Loader2, Shield, MapPin, Wrench, Building2, TrendingUp, Award, Search, Eye } from 'lucide-react';
+import { Users, FileText, Package, AlertTriangle, CheckCircle, Loader2, Shield, MapPin, Wrench, Building2, TrendingUp, Award, Search, Eye, BarChart3, Briefcase, Calendar, Recycle, Flag, Activity } from 'lucide-react';
 import { getAdminDashboard, getAdminUsers, updateAdminUser, getPendingLocations, verifyLocationAdmin, getPendingProviders, verifyProvider, getPendingReports, updateReportStatus, getUserContributions } from '../services/communityService';
+import { getComprehensiveDashboard, getAllMaterials, getAllChallenges, getAllEvents, getAllRepairs, getAllDeposits, getAllReports as getAllReportsComprehensive, getPlatformAnalytics } from '../services/adminComprehensiveService';
 import useAuthStore from '../context/authStore';
 import { Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -13,14 +14,22 @@ export default function EnhancedAdminDashboard() {
   const { user } = useAuthStore();
   const [tab, setTab] = useState('overview');
   const [data, setData] = useState(null);
+  const [comprehensiveData, setComprehensiveData] = useState(null);
   const [users, setUsers] = useState([]);
   const [locations, setLocations] = useState([]);
   const [providers, setProviders] = useState([]);
   const [reports, setReports] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [challenges, setChallenges] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [repairs, setRepairs] = useState([]);
+  const [deposits, setDeposits] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userContributions, setUserContributions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
 
@@ -29,8 +38,12 @@ export default function EnhancedAdminDashboard() {
       setLoading(true);
       try {
         if (tab === 'overview') {
-          const r = await getAdminDashboard();
-          setData(r.data.data);
+          const [oldDash, compDash] = await Promise.all([
+            getAdminDashboard(),
+            getComprehensiveDashboard()
+          ]);
+          setData(oldDash.data.data);
+          setComprehensiveData(compDash.data.data);
         } else if (tab === 'users') {
           const r = await getAdminUsers({ limit: 50 });
           setUsers(r.data.data.items);
@@ -46,6 +59,24 @@ export default function EnhancedAdminDashboard() {
         } else if (tab === 'reports') {
           const r = await getPendingReports();
           setReports(r.data.data);
+        } else if (tab === 'materials') {
+          const r = await getAllMaterials({ page: currentPage, limit: 20 });
+          setMaterials(r.data.data.materials);
+        } else if (tab === 'challenges') {
+          const r = await getAllChallenges({ page: currentPage, limit: 20 });
+          setChallenges(r.data.data.challenges);
+        } else if (tab === 'events') {
+          const r = await getAllEvents({ page: currentPage, limit: 20 });
+          setEvents(r.data.data.events);
+        } else if (tab === 'repairs') {
+          const r = await getAllRepairs({ page: currentPage, limit: 20 });
+          setRepairs(r.data.data.requests);
+        } else if (tab === 'deposits') {
+          const r = await getAllDeposits({ page: currentPage, limit: 20 });
+          setDeposits(r.data.data.deposits);
+        } else if (tab === 'analytics') {
+          const r = await getPlatformAnalytics({ period: '30d' });
+          setAnalytics(r.data.data);
         }
       } catch (err) {
         toast.error('Failed to load data');
@@ -55,7 +86,7 @@ export default function EnhancedAdminDashboard() {
       }
     };
     load();
-  }, [tab]);
+  }, [tab, currentPage]);
 
   const handleVerifyLocation = async (id, status) => {
     try {
@@ -98,9 +129,15 @@ export default function EnhancedAdminDashboard() {
     ['overview', 'Overview'],
     ['users', 'Users'],
     ['contributions', 'Contributions'],
+    ['materials', 'Materials'],
+    ['challenges', 'Challenges'],
+    ['events', 'Events'],
+    ['repairs', 'Repairs'],
+    ['deposits', 'Deposits'],
     ['locations', 'Locations'],
     ['providers', 'Providers'],
-    ['reports', 'Reports']
+    ['reports', 'Reports'],
+    ['analytics', 'Analytics']
   ];
 
   // Filter users and organizations
@@ -138,33 +175,172 @@ export default function EnhancedAdminDashboard() {
 
       {loading && !userContributions ? (
         <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-red-600" /></div>
-      ) : tab === 'overview' && data ? (
+      ) : tab === 'overview' && comprehensiveData ? (
         <div className="space-y-6">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { icon: Users, label: 'Total Users', value: data.stats.users, color: 'blue' },
-              { icon: FileText, label: 'Total Posts', value: data.stats.posts, color: 'purple' },
-              { icon: Package, label: 'Total Listings', value: data.stats.listings, color: 'emerald' },
-              { icon: AlertTriangle, label: 'Pending Reports', value: data.stats.pendingReports, color: 'red' },
-              { icon: Wrench, label: 'Pending Providers', value: data.stats.pendingProviders, color: 'orange' },
-              { icon: MapPin, label: 'Pending Locations', value: data.stats.pendingLocations, color: 'teal' },
-            ].map(s => (
-              <div key={s.label} className="bg-white border border-red-100 rounded-xl p-5">
-                <div className={`w-10 h-10 bg-${s.color}-100 rounded-lg flex items-center justify-center mb-3`}>
-                  <s.icon className={`w-5 h-5 text-${s.color}-600`} />
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-                <p className="text-sm text-gray-500">{s.label}</p>
+          {/* Comprehensive Stats Grid - ALL DASHBOARDS */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* User Stats */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5">
+              <Users className="w-8 h-8 text-blue-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalUsers}</p>
+              <p className="text-sm text-gray-600 font-medium">Total Users</p>
+              <div className="mt-3 pt-3 border-t border-blue-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Admin:</span><span className="font-semibold">{comprehensiveData.stats.adminUsers}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Moderator:</span><span className="font-semibold">{comprehensiveData.stats.moderatorUsers}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Business:</span><span className="font-semibold">{comprehensiveData.stats.businessUsers}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Organization:</span><span className="font-semibold">{comprehensiveData.stats.organizationUsers}</span></div>
               </div>
-            ))}
+            </div>
+
+            {/* Content Stats */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5">
+              <FileText className="w-8 h-8 text-purple-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalPosts}</p>
+              <p className="text-sm text-gray-600 font-medium">Total Posts</p>
+              <div className="mt-3 pt-3 border-t border-purple-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Comments:</span><span className="font-semibold">{comprehensiveData.stats.totalComments}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Devices:</span><span className="font-semibold">{comprehensiveData.stats.totalDevices}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Listings:</span><span className="font-semibold">{comprehensiveData.stats.totalListings}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Locations:</span><span className="font-semibold">{comprehensiveData.stats.totalLocations}</span></div>
+              </div>
+            </div>
+
+            {/* Business Stats */}
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-5">
+              <Briefcase className="w-8 h-8 text-emerald-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalMaterials}</p>
+              <p className="text-sm text-gray-600 font-medium">Business Materials</p>
+              <div className="mt-3 pt-3 border-t border-emerald-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Active:</span><span className="font-semibold">{comprehensiveData.stats.activeMaterialListings}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Requests:</span><span className="font-semibold">{comprehensiveData.stats.totalMaterialRequests}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Completed:</span><span className="font-semibold text-emerald-700">{comprehensiveData.stats.completedDeals}</span></div>
+              </div>
+            </div>
+
+            {/* Organization Stats */}
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-xl p-5">
+              <Calendar className="w-8 h-8 text-indigo-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalChallenges}</p>
+              <p className="text-sm text-gray-600 font-medium">Challenges</p>
+              <div className="mt-3 pt-3 border-t border-indigo-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Active:</span><span className="font-semibold">{comprehensiveData.stats.activeChallenges}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Total Events:</span><span className="font-semibold">{comprehensiveData.stats.totalEvents}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Upcoming:</span><span className="font-semibold">{comprehensiveData.stats.upcomingEvents}</span></div>
+              </div>
+            </div>
+
+            {/* Repair Stats */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-5">
+              <Wrench className="w-8 h-8 text-orange-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalRepairRequests}</p>
+              <p className="text-sm text-gray-600 font-medium">Repair Requests</p>
+              <div className="mt-3 pt-3 border-t border-orange-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Active:</span><span className="font-semibold">{comprehensiveData.stats.activeRepairs}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Completed:</span><span className="font-semibold text-emerald-700">{comprehensiveData.stats.completedRepairs}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Providers:</span><span className="font-semibold">{comprehensiveData.stats.repairProviderUsers}</span></div>
+              </div>
+            </div>
+
+            {/* Recycler Stats */}
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 rounded-xl p-5">
+              <Recycle className="w-8 h-8 text-teal-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalWasteDeposits}</p>
+              <p className="text-sm text-gray-600 font-medium">Waste Deposits</p>
+              <div className="mt-3 pt-3 border-t border-teal-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Verified:</span><span className="font-semibold text-emerald-700">{comprehensiveData.stats.verifiedDeposits}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Total Weight:</span><span className="font-semibold">{comprehensiveData.stats.totalWasteKg} kg</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Recyclers:</span><span className="font-semibold">{comprehensiveData.stats.recyclerUsers}</span></div>
+              </div>
+            </div>
+
+            {/* Moderation Stats */}
+            <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-5">
+              <Flag className="w-8 h-8 text-red-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalReports}</p>
+              <p className="text-sm text-gray-600 font-medium">Total Reports</p>
+              <div className="mt-3 pt-3 border-t border-red-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Pending:</span><span className="font-semibold text-red-700">{comprehensiveData.stats.pendingReports}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Resolved:</span><span className="font-semibold text-emerald-700">{comprehensiveData.stats.resolvedReports}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Reviews:</span><span className="font-semibold">{comprehensiveData.stats.totalReviews}</span></div>
+              </div>
+            </div>
+
+            {/* Engagement Stats */}
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 rounded-xl p-5">
+              <Activity className="w-8 h-8 text-pink-600 mb-2" />
+              <p className="text-3xl font-bold text-gray-900">{comprehensiveData.stats.totalKarmaActivities}</p>
+              <p className="text-sm text-gray-600 font-medium">Karma Activities</p>
+              <div className="mt-3 pt-3 border-t border-pink-200 text-xs space-y-1">
+                <div className="flex justify-between"><span className="text-gray-600">Notifications:</span><span className="font-semibold">{comprehensiveData.stats.totalNotifications}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Reviews:</span><span className="font-semibold">{comprehensiveData.stats.totalReviews}</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Pending Verif:</span><span className="font-semibold">{comprehensiveData.stats.pendingProviders + comprehensiveData.stats.pendingLocations}</span></div>
+              </div>
+            </div>
           </div>
+
+          {/* Growth Metrics */}
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
+              Growth Metrics (Last 30 Days)
+            </h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <p className="text-2xl font-bold text-blue-700">+{comprehensiveData.stats.newUsersLastMonth}</p>
+                <p className="text-sm text-gray-600">New Users</p>
+              </div>
+              <div className="p-4 bg-purple-50 rounded-lg">
+                <p className="text-2xl font-bold text-purple-700">+{comprehensiveData.stats.newPostsLastMonth}</p>
+                <p className="text-sm text-gray-600">New Posts</p>
+              </div>
+              <div className="p-4 bg-emerald-50 rounded-lg">
+                <p className="text-2xl font-bold text-emerald-700">+{comprehensiveData.stats.newDealsLastMonth}</p>
+                <p className="text-sm text-gray-600">Completed Deals</p>
+              </div>
+              <div className="p-4 bg-indigo-50 rounded-lg">
+                <p className="text-2xl font-bold text-indigo-700">+{comprehensiveData.stats.newEventsLastMonth}</p>
+                <p className="text-sm text-gray-600">New Events</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Contributors */}
+          {comprehensiveData.topContributors && comprehensiveData.topContributors.length > 0 && (
+            <div className="bg-white border border-red-100 rounded-xl p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-yellow-600" />
+                Top Contributors
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {comprehensiveData.topContributors.map((user, idx) => (
+                  <div key={user.id} className="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-100">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                      idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                      idx === 1 ? 'bg-gray-300 text-gray-700' :
+                      idx === 2 ? 'bg-orange-400 text-orange-900' :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      #{idx + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-sm">{user.name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-emerald-700">{user.ecoKarmaTotal}</p>
+                      <p className="text-xs text-gray-500">EcoKarma</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Recent Users */}
           <div className="bg-white border border-red-100 rounded-xl p-5">
             <h3 className="font-bold text-gray-900 mb-4">Recent Users</h3>
             <div className="space-y-3">
-              {data.recentUsers.map(u => (
+              {comprehensiveData.recentActivity.users.map(u => (
                 <div key={u.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                   <div>
                     <p className="font-medium text-sm text-gray-900">{u.name}</p>
@@ -174,6 +350,7 @@ export default function EnhancedAdminDashboard() {
                     <p className={`text-xs px-2 py-0.5 rounded-full capitalize ${
                       u.role === 'admin' ? 'bg-red-100 text-red-700' :
                       u.role === 'organization' ? 'bg-indigo-100 text-indigo-700' :
+                      u.role === 'business' ? 'bg-emerald-100 text-emerald-700' :
                       'bg-gray-100 text-gray-600'
                     }`}>
                       {u.role}
@@ -461,6 +638,291 @@ export default function EnhancedAdminDashboard() {
             </div>
           ))}
           {reports.length === 0 && <p className="text-center py-8 text-gray-400">No pending reports</p>}
+        </div>
+      ) : tab === 'materials' ? (
+        <div className="space-y-4">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-emerald-600" />
+              All Business Materials
+            </h3>
+            {materials.length === 0 ? (
+              <p className="text-center py-8 text-gray-400">No materials found</p>
+            ) : (
+              <div className="space-y-3">
+                {materials.map(m => (
+                  <div key={m.id} className="p-4 bg-emerald-50 border border-emerald-100 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{m.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{m.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">Company: {m.companyName}</p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        m.status === 'listed' ? 'bg-blue-100 text-blue-700' :
+                        m.status === 'requested' ? 'bg-yellow-100 text-yellow-700' :
+                        m.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {m.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-600">
+                      <span>Type: {m.materialType}</span>
+                      <span>Qty: {m.quantity} {m.unit}</span>
+                      {m.pricePerUnit && <span>Price: ${m.pricePerUnit}/{m.unit}</span>}
+                      <span>Requests: {m.requests?.length || 0}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">By: {m.user?.name} ({m.user?.email})</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : tab === 'challenges' ? (
+        <div className="space-y-4">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Award className="w-5 h-5 text-purple-600" />
+              All Challenges
+            </h3>
+            {challenges.length === 0 ? (
+              <p className="text-center py-8 text-gray-400">No challenges found</p>
+            ) : (
+              <div className="space-y-3">
+                {challenges.map(c => (
+                  <div key={c.id} className="p-4 bg-purple-50 border border-purple-100 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{c.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{c.description}</p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        c.status === 'active' ? 'bg-green-100 text-green-700' :
+                        c.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
+                        c.status === 'completed' ? 'bg-gray-100 text-gray-600' :
+                        'bg-red-100 text-red-600'
+                      }`}>
+                        {c.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-2">
+                      <span>Goal: {c.goalType} - {c.goalValue}</span>
+                      <span>Progress: {c.currentValue || 0}</span>
+                      <span>Participants: {c.participants?.length || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">By: {c.creator?.name}</span>
+                      <span className="text-gray-400">{new Date(c.startDate).toLocaleDateString()} - {new Date(c.endDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : tab === 'events' ? (
+        <div className="space-y-4">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-indigo-600" />
+              All Events
+            </h3>
+            {events.length === 0 ? (
+              <p className="text-center py-8 text-gray-400">No events found</p>
+            ) : (
+              <div className="space-y-3">
+                {events.map(e => (
+                  <div key={e.id} className="p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{e.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{e.description}</p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        e.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
+                        e.status === 'ongoing' ? 'bg-green-100 text-green-700' :
+                        e.status === 'completed' ? 'bg-gray-100 text-gray-600' :
+                        'bg-red-100 text-red-600'
+                      }`}>
+                        {e.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-2">
+                      <span>Type: {e.eventType}</span>
+                      <span>Participants: {e.participants?.length || 0} / {e.maxParticipants || '∞'}</span>
+                      {e.location && <span>Location: {e.location}</span>}
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">By: {e.creator?.name}</span>
+                      <span className="text-gray-400">{new Date(e.startDate).toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : tab === 'repairs' ? (
+        <div className="space-y-4">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Wrench className="w-5 h-5 text-orange-600" />
+              All Repair Requests
+            </h3>
+            {repairs.length === 0 ? (
+              <p className="text-center py-8 text-gray-400">No repair requests found</p>
+            ) : (
+              <div className="space-y-3">
+                {repairs.map(r => (
+                  <div key={r.id} className="p-4 bg-orange-50 border border-orange-100 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{r.itemName}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{r.description}</p>
+                        {r.diagnosis && <p className="text-xs text-gray-500 mt-1">Diagnosis: {r.diagnosis}</p>}
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        r.status === 'requested' ? 'bg-yellow-100 text-yellow-700' :
+                        r.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+                        r.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                        r.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {r.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-2">
+                      <span>Customer: {r.user?.name}</span>
+                      {r.provider && <span>Provider: {r.provider.businessName}</span>}
+                      {r.estimatedCost && <span>Est. Cost: ${r.estimatedCost}</span>}
+                    </div>
+                    <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : tab === 'deposits' ? (
+        <div className="space-y-4">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Recycle className="w-5 h-5 text-teal-600" />
+              All Waste Deposits
+            </h3>
+            {deposits.length === 0 ? (
+              <p className="text-center py-8 text-gray-400">No waste deposits found</p>
+            ) : (
+              <div className="space-y-3">
+                {deposits.map(d => (
+                  <div key={d.id} className="p-4 bg-teal-50 border border-teal-100 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{d.deviceType}</h4>
+                        <p className="text-sm text-gray-600 mt-1">Condition: {d.condition}</p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        d.verificationStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                        d.verificationStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {d.verificationStatus}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-2">
+                      <span>Weight: {d.weight} kg</span>
+                      <span>Quantity: {d.quantity}</span>
+                      <span>EcoKarma: +{d.ecoKarmaEarned || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">User: {d.user?.name}</span>
+                      {d.provider && <span className="text-gray-500">Provider: {d.provider.businessName}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : tab === 'analytics' ? (
+        <div className="space-y-6">
+          <div className="bg-white border border-red-100 rounded-xl p-6">
+            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-600" />
+              Platform Analytics - Growth Trends
+            </h3>
+            {analytics ? (
+              <div className="space-y-6">
+                <p className="text-sm text-gray-600">Showing data for: <span className="font-semibold">{analytics.period}</span></p>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* User Growth */}
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Users className="w-4 h-4" /> User Growth
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.growth.users.slice(-7).map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{new Date(item.date).toLocaleDateString()}</span>
+                          <span className="font-semibold text-blue-700">+{item.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Post Growth */}
+                  <div className="p-4 bg-purple-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <FileText className="w-4 h-4" /> Post Growth
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.growth.posts.slice(-7).map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{new Date(item.date).toLocaleDateString()}</span>
+                          <span className="font-semibold text-purple-700">+{item.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Material Growth */}
+                  <div className="p-4 bg-emerald-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4" /> Material Growth
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.growth.materials.slice(-7).map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{new Date(item.date).toLocaleDateString()}</span>
+                          <span className="font-semibold text-emerald-700">+{item.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Event Growth */}
+                  <div className="p-4 bg-indigo-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Calendar className="w-4 h-4" /> Event Growth
+                    </h4>
+                    <div className="space-y-2">
+                      {analytics.growth.events.slice(-7).map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">{new Date(item.date).toLocaleDateString()}</span>
+                          <span className="font-semibold text-indigo-700">+{item.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center py-8 text-gray-400">Loading analytics...</p>
+            )}
+          </div>
         </div>
       ) : null}
     </div>

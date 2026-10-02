@@ -1,7 +1,213 @@
 import { BusinessMaterial, MaterialRequest, User, Notification } from '../models/index.js';
 import { Op } from 'sequelize';
 import { awardKarma } from '../services/karma.service.js';
+import sequelize from '../models/index.js';
 
+// ===== BUSINESS DASHBOARD =====
+export const getBusinessDashboard = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // Get statistics
+    const [myMaterials, incomingRequests, outgoingRequests] = await Promise.all([
+      BusinessMaterial.findAll({ where: { userId }, attributes: ['status', 'price', 'quantity'] }),
+      MaterialRequest.findAll({
+        include: [{ model: BusinessMaterial, as: 'material', where: { userId }, attributes: ['id'] }],
+        attributes: ['status']
+      }),
+      MaterialRequest.findAll({
+        where: { requesterId: userId },
+        attributes: ['status']
+      })
+    ]);
+
+    const stats = {
+      activeListings: myMaterials.filter(m => m.status === 'listed').length,
+      incomingRequests: incomingRequests.filter(r => r.status === 'pending').length,
+      outgoingRequests: outgoingRequests.filter(r => r.status === 'pending').length,
+      completedDeals: myMaterials.filter(m => m.status === 'completed').length,
+      totalListedValue: myMaterials
+        .filter(m => m.status === 'listed')
+        .reduce((sum, m) => sum + (parseFloat(m.price) * parseFloat(m.quantity)), 0),
+      totalRevenue: myMaterials
+        .filter(m => m.status === 'completed')
+        .reduce((sum, m) => sum + (parseFloat(m.price) * parseFloat(m.quantity)), 0),
+    };
+
+    // Get recent activity
+    const recentListings = await BusinessMaterial.findAll({
+      where: { userId },
+      order: [['createdAt', 'DESC']],
+      limit: 5,
+      include: [{ model: MaterialRequest, as: 'requests', limit: 3 }]
+    });
+
+    // Get pending requests (both incoming and outgoing)
+    const pendingIncoming = await MaterialRequest.findAll({
+      where: { status: 'pending' },
+      include: [
+        { model: BusinessMaterial, as: 'material', where: { userId } },
+        { model: User, as: 'requester', attributes: ['id', 'name', 'email', 'avatar'] }
+      ],
+      order: [['createdAt', 'DESC']],
+      limit: 5
+    });
+
+    const pendingOutgoing = await MaterialRequest.findAll({
+      where: { requesterId: userId, status: 'pending' },
+      include: [
+        { model: BusinessMaterial, as: 'material', include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email'] }] }
+      ],
+      order: [['createdAt', 'DESC']],
+      limit: 5
+    });
+
+    res.json({
+      success: true,
+      data: {
+        stats,
+        recentListings,
+        pendingIncoming,
+        pendingOutgoing
+      }
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Get analytics data
+export const getBusinessAnalytics = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { period = '30d' } = req.query;
+
+    // Calculate date range
+    const endDate = new Date();
+    const startDate = new Date();
+    if (period === '7d') startDate.setDate(startDate.getDate() - 7);
+    else if (period === '30d') startDate.setDate(startDate.getDate() - 30);
+    else if (period === '90d') startDate.setDate(startDate.getDate() - 90);
+
+    // Get materials grouped by type
+    const materialsByType = await BusinessMaterial.findAll({
+      where: { userId, createdAt: { [Op.gte]: startDate } },
+      attributes: [
+        'materialType',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
+        [sequelize.fn('SUM', sequelize.col('quantity')), 'totalQuantity']
+      ],
+      group: ['materialType'],
+      raw: true
+    });
+
+    // Get revenue over time
+    const revenueByMonth = await BusinessMaterial.findAll({
+      where: {
+        userId,
+        status: 'completed',
+        createdAt: { [Op.gte]: startDate }
+      },
+      attributes: [
+        [sequelize.fn('DATE_TRUNC', 'month', sequelize.col('createdAt')), 'month'],
+        [sequelize.fn('SUM', sequelize.literal('price * quantity')), 'revenue'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'deals']
+      ],
+      group: [sequelize.fn('DATE_TRUNC', 'month', sequelize.col('createdAt'))],
+      order: [[sequelize.fn('DATE_TRUNC', 'month', sequelize.col('createdAt')), 'ASC']],
+      raw: true
+    });
+
+    // Top partners (businesses I've traded with most)
+    const topPartners = await MaterialRequest.findAll({
+      where: { requesterId: userId, status: 'completed' },
+      include: [{
+        model: BusinessMaterial,
+        as: 'material',
+        attributes: ['companyName'],
+        include: [{ model: User, as: 'user', attributes: ['id', 'name', 'avatar'] }]
+      }],
+      attributes: [
+        [sequelize.fn('COUNT', sequelize.col('MaterialRequest.id')), 'tradeCount']
+      ],
+      group: ['material.id', 'material.companyName', 'material->user.id', 'material->user.name', 'material->user.avatar'],
+      order: [[sequelize.fn('COUNT', sequelize.col('MaterialRequest.id')), 'DESC']],
+      limit: 5,
+      raw: true
+    });
+
+    res.json({
+      success: true,
+      data: {
+        materialsByType,
+        revenueByMonth,
+        topPartners,
+        period
+      }
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Get all my requests (materials I want to acquire)
+export const getMyRequests = async (req, res, next) => {
+  try {
+    const requests = await MaterialRequest.findAll({
+      where: { requesterId: req.user.id },
+      include: [
+        {
+          model: BusinessMaterial,
+          as: 'material',
+          include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email', 'phone', 'avatar'] }]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json({ success: true, data: requests });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Update my own material listing
+export const updateMaterial = async (req, res, next) => {
+  try {
+    const material = await BusinessMaterial.findOne({
+      where: { id: req.params.id, userId: req.user.id }
+    });
+
+    if (!material) {
+      return res.status(404).json({ success: false, error: { message: 'Material not found or unauthorized' } });
+    }
+
+    await material.update(req.body);
+    res.json({ success: true, data: material });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Delete material listing
+export const deleteMaterial = async (req, res, next) => {
+  try {
+    const material = await BusinessMaterial.findOne({
+      where: { id: req.params.id, userId: req.user.id }
+    });
+
+    if (!material) {
+      return res.status(404).json({ success: false, error: { message: 'Material not found or unauthorized' } });
+    }
+
+    await material.destroy();
+    res.json({ success: true, message: 'Material deleted successfully' });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// ===== EXISTING FUNCTIONS =====
 export const getMaterials = async (req, res, next) => {
   try {
     const { materialType, city, isFree, status = 'listed', search, page = 1, limit = 20 } = req.query;
@@ -86,6 +292,15 @@ export const updateMaterialRequestStatus = async (req, res, next) => {
     } else if (status === 'accepted') {
       await request.material.update({ status: 'requested' });
     }
+
+    // Notify requester
+    await Notification.create({
+      userId: request.requesterId,
+      type: 'request_status',
+      title: `Request ${status}`,
+      body: `Your request for "${request.material.title}" has been ${status}`,
+      link: `/business-exchange/${request.material.id}`,
+    });
 
     res.json({ success: true, data: request });
   } catch (e) { next(e); }

@@ -12,7 +12,8 @@ const startServer = async () => {
     await connectRedis();
 
     // Sync database models (creates tables if not exist)
-    await sequelize.sync({ alter: true });
+    // Using force: false to avoid dropping tables, and alter: false to avoid constraint issues
+    await sequelize.sync({ force: false, alter: false });
     logger.info('Database synced');
 
     // Start server

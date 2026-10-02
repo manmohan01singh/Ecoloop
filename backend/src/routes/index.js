@@ -16,6 +16,10 @@ import karmaRoutes from './karma.routes.js';
 import notificationRoutes from './notification.routes.js';
 import adminRoutes from './admin.routes.js';
 import reviewRoutes from './review.routes.js';
+import moderatorRoutes from './moderator.routes.js';
+import recyclerRoutes from './recycler.routes.js';
+import repairProviderRoutes from './repairProvider.routes.js';
+import organizationRoutes from './organization.routes.js';
 
 const router = Router();
 
@@ -36,6 +40,10 @@ router.use('/karma', karmaRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/moderator', moderatorRoutes);
+router.use('/recycler', recyclerRoutes);
+router.use('/repair-provider', repairProviderRoutes);
+router.use('/organization', organizationRoutes);
 
 router.get('/health', (req, res) => {
   res.json({ success: true, message: 'EcoLoop API is running', timestamp: new Date().toISOString(), version: '2.0.0' });
