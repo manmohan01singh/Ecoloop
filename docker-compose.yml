@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # ─── PostgreSQL ────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecoloop-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-ecoloop}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ecoloop_prod}
+      POSTGRES_DB: ${DB_NAME:-ecoloop}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ecoloop-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ecoloop} -d ${DB_NAME:-ecoloop}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ─────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: ecoloop-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks:
+      - ecoloop-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Backend (Node.js API) ─────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecoloop-backend
+    env_file:
+      - ./backend/.env.production
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ecoloop-net
+      - traefik-net
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=root_default"
+      # HTTP → HTTPS redirect handled by Traefik globally
+      # HTTPS router for /api/*
+      - "traefik.http.routers.ecoloop-api.rule=Host(`ecoloop.social`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.ecoloop-api.entrypoints=websecure"
+      - "traefik.http.routers.ecoloop-api.tls=true"
+      - "traefik.http.routers.ecoloop-api.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.ecoloop-api.loadbalancer.server.port=5001"
+      # www subdomain also
+      - "traefik.http.routers.ecoloop-api-www.rule=Host(`www.ecoloop.social`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.ecoloop-api-www.entrypoints=websecure"
+      - "traefik.http.routers.ecoloop-api-www.tls=true"
+      - "traefik.http.routers.ecoloop-api-www.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.ecoloop-api-www.service=ecoloop-api"
+
+  # ─── Frontend (React built into Nginx) ────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: https://ecoloop.social/api
+    container_name: ecoloop-frontend
+    depends_on:
+      - backend
+    networks:
+      - ecoloop-net
+      - traefik-net
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=root_default"
+      # HTTPS router — main domain
+      - "traefik.http.routers.ecoloop-frontend.rule=Host(`ecoloop.social`)"
+      - "traefik.http.routers.ecoloop-frontend.entrypoints=websecure"
+      - "traefik.http.routers.ecoloop-frontend.tls=true"
+      - "traefik.http.routers.ecoloop-frontend.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.ecoloop-frontend.loadbalancer.server.port=80"
+      # www → redirect to apex
+      - "traefik.http.routers.ecoloop-www.rule=Host(`www.ecoloop.social`)"
+      - "traefik.http.routers.ecoloop-www.entrypoints=websecure"
+      - "traefik.http.routers.ecoloop-www.tls=true"
+      - "traefik.http.routers.ecoloop-www.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.ecoloop-www.middlewares=www-redirect"
+      - "traefik.http.routers.ecoloop-www.service=ecoloop-frontend"
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.ecoloop\\.social/(.*)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://ecoloop.social/$${1}"
+      - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
+
+networks:
+  ecoloop-net:
+    driver: bridge
+  # Shared Traefik network so it can reach our containers
+  traefik-net:
+    external: true
+    name: root_default
+
+volumes:
+  pgdata:
+  redisdata:
