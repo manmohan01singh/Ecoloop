@@ -31,8 +31,6 @@ export default function EnhancedAdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
-
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -87,6 +85,8 @@ export default function EnhancedAdminDashboard() {
     };
     load();
   }, [tab, currentPage]);
+
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
 
   const handleVerifyLocation = async (id, status) => {
     try {

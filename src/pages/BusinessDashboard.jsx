@@ -29,10 +29,6 @@ export default function BusinessDashboard() {
   const [allMaterials, setAllMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (!['business', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -48,6 +44,10 @@ export default function BusinessDashboard() {
     };
     load();
   }, []);
+
+  if (!['business', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const activeMaterials = myMaterials.filter(m => m.status === 'listed');
   const requestedMaterials = myMaterials.filter(m => m.status === 'requested');

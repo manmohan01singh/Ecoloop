@@ -11,11 +11,6 @@ export default function OrganizationDashboard() {
   const [karma, setKarma] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if not organization
-  if (user?.role !== 'organization') {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -35,6 +30,11 @@ export default function OrganizationDashboard() {
     };
     loadData();
   }, []);
+
+  // Redirect if not organization
+  if (user?.role !== 'organization') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   if (loading) {
     return (

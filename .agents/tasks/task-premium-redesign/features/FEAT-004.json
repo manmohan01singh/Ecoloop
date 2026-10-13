@@ -1,0 +1,46 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Redesign feature pages to ultra-premium quality: Impact, MapPage, ChallengesPage, EventsPage, RepairPage, ReportsPage, ReviewsPage, BusinessExchange, EcoImpact. Apply consistent design system, add data visualizations, sophisticated interactions, perfect mobile responsiveness.",
+  "status": "pending",
+  "steps": [
+    "1. Impact.jsx: create dashboard layout with glass stat cards showing CO2 saved, energy saved, materials recovered, devices tracked; add animated area chart for impact over time using recharts with gradient fills; add achievement showcase with unlock animations; implement impact comparison (you vs average user) with animated bar chart; add sharing card with social media buttons and custom image generation; optimize mobile with vertical card stack",
+    "2. MapPage.jsx: integrate Leaflet map with custom pin styling (emerald markers with bounce animation), add glassmorphism info cards that slide in when pin clicked, implement location search with debounce, add filter toggles for resource types (waste banks, repair shops, recycling centers) with animated checkboxes, add clustering for dense areas, show user location with pulsing marker, add directions button that opens Google Maps, optimize mobile with full-screen map and slide-up detail panel",
+    "3. ChallengesPage.jsx: redesign as card grid with glass effect and gradient accents, add challenge status badges (active, completed, upcoming) with animated states, implement progress bars with gradient fills and percentage animations, add leaderboard card with animated ranking changes, implement join/complete animations with confetti effect, add filter chips for challenge types with smooth transitions, optimize mobile with stacked cards and bottom action bar",
+    "4. EventsPage.jsx: redesign as timeline layout with glassmorphism event cards, add calendar view toggle with Framer Motion layout animation, implement date picker with smooth transitions, add event registration modal with form validation and success animation, show participant avatars with overlap effect, add location preview with mini map embed, implement reminder toggle with animated bell icon, optimize mobile with vertical timeline and swipeable cards",
+    "5. RepairPage.jsx: create two-column layout (repair requests + repair providers), add glassmorphism cards for each repair listing, implement before/after image slider with draggable divider, add rating stars with fill animation on hover, implement request form modal with file upload and drag-drop, show repair status timeline with animated checkpoints, add verified provider badges with animated checkmarks, optimize mobile with tabbed interface (Requests | Providers)",
+    "6. ReportsPage.jsx: redesign as map + list view toggle, add glassmorphism report cards with status badges (pending, in_progress, resolved), implement photo gallery with lightbox for evidence images, add upvote/downvote with animated counters, show resolution timeline with animated progress steps, implement report form modal with location picker and image upload, add filter sidebar for report types and status, optimize mobile with bottom sheet filters and swipeable report cards",
+    "7. ReviewsPage.jsx: create feed layout with glassmorphism review cards, add star rating visualization with animated fills, implement helpful/not helpful buttons with animated counters, add verified purchase badges with checkmarks, show reviewer avatars with hover cards, implement filter chips (rating, verified, recent) with smooth transitions, add write review modal with rating selector and image upload, optimize mobile with infinite scroll and bottom FAB for new review",
+    "8. BusinessExchange.jsx: redesign with professional B2B aesthetic (darker glass cards, corporate gradients), add material listing grid with category icons and hover zoom, implement quantity/volume visualizations with animated bar charts, add contact modal with form validation and scheduling picker, show material certifications with animated badges, add saved items with heart animation, optimize mobile with filterable list view and bottom action bar",
+    "9. EcoImpact.jsx: create comprehensive impact dashboard with glass cards, add multiple chart types (line, bar, donut, area) using recharts with gradients, implement time range selector (week, month, year, all) with smooth data transitions, add milestone cards with unlock animations when reached, show community comparison with animated leaderboard, add export report button that generates PDF, implement gamification elements (levels, badges) with progression animations, optimize mobile with scrollable dashboard and collapsible sections",
+    "10. For ALL pages: add page transition animations, implement skeleton loaders, add empty states with illustrations, ensure error handling with retry buttons, verify WCAG AA compliance, test mobile responsiveness (320px-1920px), add micro-interactions to all buttons/cards"
+  ],
+  "acceptance_criteria": [
+    "Impact page has glass stat cards, animated charts, achievement showcase, comparison view, mobile optimized",
+    "MapPage has Leaflet integration, custom markers, glassmorphism info cards, clustering, mobile slide-up panel",
+    "ChallengesPage has card grid, status badges, progress animations, leaderboard, confetti effect, mobile stacked",
+    "EventsPage has timeline/calendar toggle, glassmorphism cards, registration modal, participant avatars, mobile vertical timeline",
+    "RepairPage has two-column layout, before/after slider, rating animations, request form, status timeline, mobile tabs",
+    "ReportsPage has map/list toggle, glass cards, photo gallery, upvote animations, report form, mobile bottom sheet",
+    "ReviewsPage has feed layout, star animations, helpful counters, verified badges, review modal, mobile infinite scroll",
+    "BusinessExchange has B2B aesthetic, material grid, quantity charts, contact modal, certification badges, mobile list",
+    "EcoImpact has comprehensive dashboard, multiple chart types, time selector, milestones, leaderboard, PDF export, mobile scrollable",
+    "All pages have transitions, loaders, empty/error states, accessibility, full responsiveness"
+  ],
+  "verification": [
+    "Run 'npm run dev' and navigate through all 9 feature pages",
+    "Test Impact: verify stat cards animate, charts render with gradients, achievements unlock with animation, mobile vertical layout works",
+    "Test MapPage: verify Leaflet map loads, markers are styled and clickable, info cards slide in, filters work, mobile slide-up panel works",
+    "Test ChallengesPage: verify card grid with glass effect, badges animate state changes, progress bars fill with gradient, leaderboard updates, mobile stacked cards",
+    "Test EventsPage: verify timeline/calendar toggle animates, cards have glass effect, registration modal works, mobile vertical timeline",
+    "Test RepairPage: verify two-column layout, before/after slider drags smoothly, stars animate on hover, modal form works, mobile tabs switch",
+    "Test ReportsPage: verify map/list toggle works, photo gallery opens lightbox, upvote animates counter, mobile bottom sheet slides up",
+    "Test ReviewsPage: verify review cards have glass effect, stars fill on hover, helpful counter animates, review modal opens, mobile infinite scroll loads more",
+    "Test BusinessExchange: verify B2B aesthetic (darker theme), material grid with zoom hover, contact modal opens, mobile list view",
+    "Test EcoImpact: verify dashboard charts render, time selector transitions data smoothly, milestones unlock with animation, mobile scrollable sections collapse",
+    "Open browser responsive mode: test each page at 320px, 768px, 1024px, 1920px - verify perfect adaptation with no layout breaks",
+    "Check console for errors - should be zero React errors or warnings"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

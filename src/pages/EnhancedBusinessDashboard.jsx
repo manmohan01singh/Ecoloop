@@ -45,29 +45,6 @@ export default function EnhancedBusinessDashboard() {
   const [filterType, setFilterType] = useState('');
   const [period, setPeriod] = useState('30d');
 
-  if (!['business', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'dashboard') {
-      loadDashboard();
-      loadAnalytics();
-    } else if (activeTab === 'my_listings') {
-      loadMyMaterials();
-    } else if (activeTab === 'my_requests') {
-      loadMyRequests();
-    } else if (activeTab === 'marketplace') {
-      loadMarketplace();
-    } else if (activeTab === 'analytics') {
-      loadAnalytics();
-    }
-  }, [activeTab, period]);
-
   const loadDashboard = async () => {
     setLoading(true);
     try {
@@ -95,7 +72,6 @@ export default function EnhancedBusinessDashboard() {
       const res = await businessService.getMyMaterials();
       setMyMaterials(res.data.data || []);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Materials data not available yet');
       setMyMaterials([]);
     } finally {
@@ -109,7 +85,6 @@ export default function EnhancedBusinessDashboard() {
       const res = await businessService.getMyRequests();
       setMyRequests(res.data.data || []);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Requests data not available yet');
       setMyRequests([]);
     } finally {
@@ -126,13 +101,35 @@ export default function EnhancedBusinessDashboard() {
       const res = await businessService.getMaterials(params);
       setAllMaterials(res.data.data.items || []);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Marketplace data not available yet');
       setAllMaterials([]);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      loadDashboard();
+      loadAnalytics();
+    } else if (activeTab === 'my_listings') {
+      loadMyMaterials();
+    } else if (activeTab === 'my_requests') {
+      loadMyRequests();
+    } else if (activeTab === 'marketplace') {
+      loadMarketplace();
+    } else if (activeTab === 'analytics') {
+      loadAnalytics();
+    }
+  }, [activeTab, period]);
+
+  if (!['business', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleDeleteMaterial = async (id) => {
     if (!confirm('Are you sure you want to delete this listing?')) return;
@@ -428,7 +425,7 @@ function DashboardTab({ stats, dashboardData, onAcceptRequest, onRejectRequest, 
             className="px-4 py-2 bg-white text-indigo-700 rounded-lg font-semibold hover:bg-indigo-50 transition-colors flex items-center gap-2">
             List Material <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link to="/business-exchange"
+          <Link to="/business"
             className="px-4 py-2 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-400 transition-colors">
             Browse Exchange
           </Link>
@@ -552,7 +549,7 @@ function MyRequestsTab({ requests, loading }) {
         <Inbox className="w-16 h-16 mx-auto mb-4 text-gray-300" />
         <p className="text-gray-500 text-lg mb-2">No requests sent yet</p>
         <p className="text-gray-400 text-sm mb-4">Browse marketplace to find materials</p>
-        <Link to="/business-exchange"
+        <Link to="/business"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
           Browse Marketplace
         </Link>

@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   ECOLOOP MODERN CLEAN LIGHT DESIGN SYSTEM THEME
+   ═══════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Font Families */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Brand Colors - Emerald primary for sustainability */
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+  
+  /* Semantic Colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* Typography Scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-5xl: 3.25rem;
+  --font-size-6xl: 4.25rem;
+  --font-size-7xl: 5.5rem;
+  
+  /* Component Sizing - WCAG AAA touch targets */
+  --height-touch-min: 2.75rem; /* 44px */
+  --height-input: 2.75rem;
+  --height-button-sm: 2rem;
+  --height-button-md: 2.75rem;
+  --height-button-lg: 3rem;
+}
+
+/* Custom Utilities & Polish */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Touch optimization for mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Focus rings for keyboard accessibility */
+:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar for carousel / horizontal tabs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Crisp modern light scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

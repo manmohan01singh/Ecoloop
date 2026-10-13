@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Fix critical Button crash and establish asChild pattern support. The Button component currently uses motion.button from Framer Motion but is called with asChild prop in Home.jsx (lines 58, 63, 220, 223) and Dashboard.jsx (line 119), causing 'Objects are not valid as a React child' error. Card component has same issue (Home.jsx lines 190, 197). Install @radix-ui/react-slot and implement proper asChild support in both Button and Card components using Slot from @radix-ui/react-slot.",
+  "status": "pending",
+  "steps": [
+    "1. Install @radix-ui/react-slot: run 'npm install @radix-ui/react-slot' in workspace root",
+    "2. Update src/components/ui/Button.jsx: import { Slot } from '@radix-ui/react-slot'; add asChild prop to component signature (default false); when asChild is true, render <Slot> wrapper instead of motion.button, passing all props/className/ref to Slot and rendering children inside; when asChild is false, use existing motion.button pattern; preserve all existing variants, sizes, loading states, and animations",
+    "3. Update src/components/ui/Card.jsx: import { Slot } from '@radix-ui/react-slot'; add asChild prop (default false); when asChild is true and interactive is true, render <Slot> with motion props via whileHover/whileTap passed as data attributes that parent can consume; when asChild is false, use existing motion.div or div pattern; preserve all variants and sub-components (Header, Body, Footer)",
+    "4. Verify all existing Button usages in Home.jsx with asChild prop now work correctly (no React child error)",
+    "5. Verify Card with asChild in Home.jsx (line 190, 197) works correctly",
+    "6. Test that Button WITHOUT asChild (e.g., Login.jsx line 127, Marketplace.jsx) still works exactly as before"
+  ],
+  "acceptance_criteria": [
+    "npm install @radix-ui/react-slot completes successfully",
+    "Button component supports asChild prop and renders Slot when asChild=true",
+    "Card component supports asChild prop and renders Slot when asChild=true",
+    "Home page loads without 'Objects are not valid as a React child' error",
+    "All Button instances with asChild (4 in Home.jsx, 1 in Dashboard.jsx) render correctly as Link elements",
+    "All Button instances without asChild still work with existing behavior",
+    "Card with asChild renders correctly as Link"
+  ],
+  "verification": [
+    "Run 'npm run dev' and open http://localhost:5173",
+    "Navigate to Home page - verify no console errors and all 4 CTA buttons (lines 58, 63, 220, 223) are clickable Links",
+    "Click each Link-styled Button - verify navigation works",
+    "Navigate to Dashboard - verify 'View All' Card link and quick action Cards work",
+    "Navigate to Login page - verify regular Button (submit button) still works",
+    "Open browser console - verify zero React errors"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

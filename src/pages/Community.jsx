@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Plus, TrendingUp, Flame, Clock, ArrowUp, ArrowDown, MessageSquare, Share2, Bookmark, Loader2 } from 'lucide-react';
-import { getPosts, getCommunities } from '../services/communityService';
+import { Users, Plus, TrendingUp, Flame, Clock, ArrowUp, ArrowDown, MessageSquare, Share2, Bookmark } from 'lucide-react';
+import { getPosts, getCommunities, votePost } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
+import { Button, LoadingState, EmptyState } from '../components/ui';
 
 const SORT_OPTIONS = [
   { value: 'hot', label: 'Hot', icon: Flame },
@@ -46,15 +47,21 @@ function PostCard({ post, onVote }) {
     <div className="bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all">
       <div className="flex">
         <div className="flex flex-col items-center gap-1 px-3 py-4 bg-gray-50 rounded-l-xl">
-          <button onClick={() => handleVote(1)}
-            className={`p-1 rounded hover:bg-emerald-100 transition-colors ${post.userVote === 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
+          <button 
+            onClick={() => handleVote(1)}
+            aria-label={`Upvote post: ${post.title}`}
+            className={`p-1 rounded hover:bg-emerald-100 transition-colors ${post.userVote === 1 ? 'text-emerald-600' : 'text-gray-400'}`}
+          >
             <ArrowUp className="w-4 h-4" />
           </button>
           <span className={`text-sm font-bold ${post.userVote === 1 ? 'text-emerald-600' : post.userVote === -1 ? 'text-red-500' : 'text-gray-700'}`}>
             {post.upvotes - post.downvotes}
           </span>
-          <button onClick={() => handleVote(-1)}
-            className={`p-1 rounded hover:bg-red-100 transition-colors ${post.userVote === -1 ? 'text-red-500' : 'text-gray-400'}`}>
+          <button 
+            onClick={() => handleVote(-1)}
+            aria-label={`Downvote post: ${post.title}`}
+            className={`p-1 rounded hover:bg-red-100 transition-colors ${post.userVote === -1 ? 'text-red-500' : 'text-gray-400'}`}
+          >
             <ArrowDown className="w-4 h-4" />
           </button>
         </div>
@@ -68,8 +75,8 @@ function PostCard({ post, onVote }) {
               </Link>
             )}
             <span className="text-xs text-gray-400">•</span>
-            <span className="text-xs text-gray-500">by {post.author?.name}</span>
-            <span className="text-xs text-gray-400">{timeAgo(post.createdAt)}</span>
+            <span className="text-xs text-gray-700">by {post.author?.name}</span>
+            <span className="text-xs text-gray-500">{timeAgo(post.createdAt)}</span>
             {post.category && (
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[post.category] || CATEGORY_COLORS.general}`}>
                 {post.category.replace('_', ' ')}
@@ -84,7 +91,7 @@ function PostCard({ post, onVote }) {
           </Link>
 
           {post.body && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">{post.body}</p>
+            <p className="text-sm text-gray-700 mb-3 line-clamp-2 leading-relaxed">{post.body}</p>
           )}
 
           {/* Image strip */}
@@ -103,15 +110,15 @@ function PostCard({ post, onVote }) {
             </Link>
           )}
 
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <Link to={`/community/post/${post.id}`} className="flex items-center gap-1 hover:text-gray-700">
+          <div className="flex items-center gap-4 text-xs text-gray-700">
+            <Link to={`/community/post/${post.id}`} className="flex items-center gap-1 hover:text-gray-900">
               <MessageSquare className="w-3.5 h-3.5" />
               {post.commentCount} comments
             </Link>
-            <button className="flex items-center gap-1 hover:text-gray-700">
+            <button className="flex items-center gap-1 hover:text-gray-900" aria-label="Share post">
               <Share2 className="w-3.5 h-3.5" /> Share
             </button>
-            <button className="flex items-center gap-1 hover:text-gray-700">
+            <button className="flex items-center gap-1 hover:text-gray-900" aria-label="Save post">
               <Bookmark className="w-3.5 h-3.5" /> Save
             </button>
           </div>
@@ -144,14 +151,17 @@ export default function Community() {
   const handleSort = (s) => { setSort(s); fetchPosts(s); };
 
   const handleVote = async (postId, value) => {
-    const { votePost: vote } = await import('../services/communityService');
-    await vote(postId, value);
-    setPosts(ps => ps.map(p => p.id === postId ? {
-      ...p,
-      upvotes: value === 1 ? p.upvotes + (p.userVote === 1 ? -1 : 1) : p.upvotes + (p.userVote === 1 ? -1 : 0),
-      downvotes: value === -1 ? p.downvotes + (p.userVote === -1 ? -1 : 1) : p.downvotes + (p.userVote === -1 ? -1 : 0),
-      userVote: p.userVote === value ? 0 : value,
-    } : p));
+    try {
+      await votePost(postId, value);
+      setPosts(ps => ps.map(p => p.id === postId ? {
+        ...p,
+        upvotes: value === 1 ? p.upvotes + (p.userVote === 1 ? -1 : 1) : p.upvotes + (p.userVote === 1 ? -1 : 0),
+        downvotes: value === -1 ? p.downvotes + (p.userVote === -1 ? -1 : 1) : p.downvotes + (p.userVote === -1 ? -1 : 0),
+        userVote: p.userVote === value ? 0 : value,
+      } : p));
+    } catch {
+      toast.error('Failed to register vote');
+    }
   };
 
   return (
@@ -159,11 +169,11 @@ export default function Community() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Community</h1>
-          <p className="text-gray-500 text-sm mt-1">Discussions, tips, and circular actions</p>
+          <p className="text-gray-700 text-sm mt-1">Discussions, tips, and circular actions</p>
         </div>
-        <Link to="/community/create-post" className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors text-sm">
-          <Plus className="w-4 h-4" /> Create Post
-        </Link>
+        <Button icon={Plus} asChild>
+          <Link to="/community/create-post">Create Post</Link>
+        </Button>
       </div>
 
       <div className="flex gap-6">
@@ -178,16 +188,21 @@ export default function Community() {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-emerald-600" /></div>
+            <LoadingState size="lg" />
+          ) : posts.length === 0 ? (
+            <EmptyState
+              icon={MessageSquare}
+              title="No posts yet"
+              description="Be the first to start a discussion in the community"
+              action={{
+                label: 'Create Post',
+                href: '/community/create-post',
+                icon: Plus
+              }}
+            />
           ) : (
             <div className="space-y-3">
               {posts.map(p => <PostCard key={p.id} post={p} onVote={handleVote} />)}
-              {posts.length === 0 && (
-                <div className="text-center py-16 text-gray-400">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No posts yet. Be the first!</p>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -195,7 +210,7 @@ export default function Community() {
         <div className="hidden lg:block w-72 flex-shrink-0 space-y-4">
           <div className="bg-gray-900 rounded-xl p-5 text-white">
             <h3 className="font-semibold mb-2">About EcoLoop Community</h3>
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">A discussion space for the circular economy movement. Share tips, find solutions, and take action together.</p>
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">A discussion space for the circular economy movement. Share tips, find solutions, and take action together.</p>
             <Link to="/community/create-post" className="block w-full text-center py-2 bg-emerald-500 rounded-lg text-sm font-medium hover:bg-emerald-400 transition-colors">
               Create Post
             </Link>
@@ -211,7 +226,7 @@ export default function Community() {
                 <Link key={c.id} to={`/community/${c.slug}`}
                   className="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-1 transition-colors">
                   <span className="text-sm font-medium text-gray-800">c/{c.name}</span>
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-gray-700 flex items-center gap-1">
                     <Users className="w-3 h-3" />{c.memberCount}
                   </span>
                 </Link>

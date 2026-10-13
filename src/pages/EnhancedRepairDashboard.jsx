@@ -5,7 +5,7 @@ import {
   DollarSign, Star, Settings, Package, Recycle,
   MapPin, Phone, Mail, Loader2, Search, Eye, X, Check, XCircle, 
   TrendingUp, Award, RefreshCw, FileText, Camera, Save, Edit,
-  Plus, Trash2, Image as ImageIcon
+  Plus, Trash2, Image as ImageIcon, Hammer
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
 import * as repairService from '../services/repairProviderService';
@@ -36,10 +36,6 @@ export default function EnhancedRepairDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('');
-
-  if (!['repair_provider', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
 
   // Load dashboard overview
   const loadDashboard = async () => {
@@ -113,6 +109,10 @@ export default function EnhancedRepairDashboard() {
     if (activeTab === 'services') loadServices();
     if (activeTab === 'reviews') loadReviews();
   }, [activeTab, statusFilter, categoryFilter]);
+
+  if (!['repair_provider', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Accept request
   const handleAcceptRequest = async (id) => {
@@ -195,7 +195,7 @@ export default function EnhancedRepairDashboard() {
               { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
               { id: 'requests', label: 'Requests', icon: Wrench },
               { id: 'customers', label: 'Customers', icon: Users },
-              { id: 'services', label: 'Services', icon: Tool },
+              { id: 'services', label: 'Services', icon: Hammer },
               { id: 'reviews', label: 'Reviews', icon: Star },
               { id: 'profile', label: 'Profile', icon: Settings },
             ].map(tab => (
@@ -644,7 +644,7 @@ function ServicesTab({ services, onUpdate }) {
         {/* Specializations */}
         <div>
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Tool className="w-5 h-5 text-gray-400" />
+            <Wrench className="w-5 h-5 text-gray-400" />
             Repair Specializations
           </h3>
           {editing && (

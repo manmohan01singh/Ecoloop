@@ -5,7 +5,7 @@ import {
   DollarSign, Star, Settings, Package, Recycle, Image, 
   MessageSquare, MapPin, Phone, Mail, Loader2, Search,
   Eye, X, Check, XCircle, TrendingUp, Award, RefreshCw,
-  FileText, Camera, Tool, Save, Edit
+  FileText, Camera, Hammer, Save, Edit
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
 import * as repairService from '../services/repairProviderService';
@@ -39,10 +39,6 @@ export default function NewRepairProviderDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('');
-
-  if (!['repair_provider', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
 
   // Load dashboard data
   const loadDashboard = async () => {
@@ -114,6 +110,10 @@ export default function NewRepairProviderDashboard() {
     if (tab === 'services') loadServices();
     if (tab === 'reviews') loadReviews();
   }, [tab]);
+
+  if (!['repair_provider', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Accept request
   const handleAccept = async (id) => {
@@ -211,7 +211,7 @@ export default function NewRepairProviderDashboard() {
           ['dashboard', 'Dashboard', TrendingUp],
           ['requests', 'Repair Requests', Wrench],
           ['customers', 'Customers', Users],
-          ['services', 'My Services', Tool],
+          ['services', 'My Services', Hammer],
           ['reviews', 'Reviews', Star],
           ['profile', 'Profile', Settings],
         ].map(([key, label, Icon]) => (

@@ -1,141 +1,180 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import {
   Leaf, LayoutDashboard, Smartphone, BarChart3, Menu, X, LogOut,
   Users, Package, MapPin, Wrench, Trophy, Calendar, AlertTriangle,
-  Building2, TrendingUp, Shield, Crown, Recycle, Settings, Star
+  Building2, TrendingUp, Shield, Crown, Recycle, Settings, Star,
+  Search, ChevronRight, HelpCircle
 } from 'lucide-react';
 import useAuthStore from '../../context/authStore';
+import { LoadingState, Badge } from '../ui';
 
-// Nav visible to ALL authenticated users
-const BASE_NAV = [
-  { path: '/dashboard',   label: 'Dashboard',    icon: LayoutDashboard },
-  { path: '/devices',     label: 'My Devices',   icon: Smartphone },
-  { path: '/impact',      label: 'Impact',       icon: BarChart3 },
-  { path: '/community',   label: 'Community',    icon: Users },
-  { path: '/marketplace', label: 'Marketplace',  icon: Package },
-  { path: '/map',         label: 'Resource Map', icon: MapPin },
-  { path: '/repair',      label: 'Repair',       icon: Wrench },
-  { path: '/challenges',  label: 'Challenges',   icon: Trophy },
-  { path: '/events',      label: 'Events',       icon: Calendar },
-  { path: '/reports',     label: 'Reports',      icon: AlertTriangle },
-  { path: '/business',    label: 'B2B Exchange', icon: Building2 },
-  { path: '/eco-impact',  label: 'EcoKarma',     icon: TrendingUp },
-  { path: '/reviews',    label: 'Reviews',      icon: Star },
+// Grouped navigation for clear information architecture
+const NAV_GROUPS = [
+  {
+    title: 'Core Activity',
+    items: [
+      { path: '/dashboard',   label: 'Overview',      icon: LayoutDashboard },
+      { path: '/devices',     label: 'My Devices',    icon: Smartphone },
+      { path: '/impact',      label: 'Carbon Impact', icon: BarChart3 },
+      { path: '/eco-impact',  label: 'EcoKarma Ranks',icon: TrendingUp },
+    ]
+  },
+  {
+    title: 'Circular Solutions',
+    items: [
+      { path: '/marketplace', label: 'Marketplace',   icon: Package },
+      { path: '/repair',      label: 'Repair Network',icon: Wrench },
+      { path: '/map',         label: 'Waste Map',     icon: MapPin },
+      { path: '/business',    label: 'B2B Exchange',  icon: Building2 },
+    ]
+  },
+  {
+    title: 'Civic & Community',
+    items: [
+      { path: '/community',   label: 'Discussions',   icon: Users },
+      { path: '/challenges',  label: 'Challenges',    icon: Trophy },
+      { path: '/events',      label: 'Events & Drives',icon: Calendar },
+      { path: '/reports',     label: 'Waste Reports', icon: AlertTriangle },
+      { path: '/reviews',     label: 'Reviews',       icon: Star },
+    ]
+  }
 ];
 
-// Role-specific hub links shown at the TOP of the sidebar
+// Role-specific primary console links shown prominently at the top
 const ROLE_NAV = {
-  admin:           [{ path: '/admin',              label: 'Admin Panel',    icon: Shield }],
-  organization:    [{ path: '/organization',        label: 'Org Dashboard',  icon: Building2 }],
-  moderator:       [{ path: '/moderator',           label: 'Mod Dashboard',  icon: Shield }],
-  recycler:        [{ path: '/recycler',            label: 'Recycler Hub',   icon: Recycle }],
-  repair_provider: [{ path: '/repair-provider',     label: 'Provider Hub',   icon: Wrench }],
-  business:        [{ path: '/business-dashboard',  label: 'Business Hub',   icon: Building2 }],
+  admin:           { path: '/admin',              label: 'Admin Control Center',   icon: Shield,   badge: 'Superuser' },
+  organization:    { path: '/organization',        label: 'Organization Console',  icon: Building2,badge: 'Partner' },
+  moderator:       { path: '/moderator',           label: 'Moderator Desk',        icon: Shield,   badge: 'Security' },
+  recycler:        { path: '/recycler',            label: 'Facility Intake Hub',   icon: Recycle,  badge: 'Licensed' },
+  repair_provider: { path: '/repair-provider',     label: 'Provider Workshop',     icon: Wrench,   badge: 'Technician' },
+  business:        { path: '/business-dashboard',  label: 'Enterprise ESG Hub',    icon: Building2,badge: 'Commercial' },
 };
 
-// Per-role colour theme
-const ROLE_THEME = {
-  admin:           { border: 'border-red-200',    bg: 'bg-red-50',    text: 'text-red-600',    activeBg: 'bg-red-50',    activeText: 'text-red-700',    icon: Crown,     iconBg: 'bg-red-600' },
-  organization:    { border: 'border-indigo-200', bg: 'bg-indigo-50', text: 'text-indigo-600', activeBg: 'bg-indigo-50', activeText: 'text-indigo-700', icon: Building2, iconBg: 'bg-indigo-600' },
-  moderator:       { border: 'border-blue-200',   bg: 'bg-blue-50',   text: 'text-blue-600',   activeBg: 'bg-blue-50',   activeText: 'text-blue-700',   icon: Shield,    iconBg: 'bg-blue-600' },
-  recycler:        { border: 'border-green-200',  bg: 'bg-green-50',  text: 'text-green-600',  activeBg: 'bg-green-50',  activeText: 'text-green-700',  icon: Recycle,   iconBg: 'bg-green-600' },
-  repair_provider: { border: 'border-orange-200', bg: 'bg-orange-50', text: 'text-orange-600', activeBg: 'bg-orange-50', activeText: 'text-orange-700', icon: Wrench,    iconBg: 'bg-orange-600' },
-  business:        { border: 'border-indigo-200', bg: 'bg-indigo-50', text: 'text-indigo-600', activeBg: 'bg-indigo-50', activeText: 'text-indigo-700', icon: Building2, iconBg: 'bg-indigo-600' },
-  user:            { border: 'border-gray-200',   bg: 'bg-gray-50',   text: 'text-emerald-600',activeBg: 'bg-emerald-50',activeText: 'text-emerald-700',icon: Leaf,      iconBg: 'bg-emerald-600' },
-};
-
-function NavLink({ item, active, theme, onClick }) {
+function NavItem({ item, active, onClick }) {
+  const Icon = item.icon;
   return (
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-        ${active
-          ? `${theme.activeBg} ${theme.activeText} font-semibold`
-          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-        }`}
+      className={`group flex items-center justify-between px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+        active
+          ? 'bg-emerald-50 text-emerald-800 font-bold'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70'
+      }`}
     >
-      <item.icon className="w-4 h-4 flex-shrink-0" />
-      {item.label}
+      <div className="flex items-center gap-2.5 min-w-0">
+        <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${active ? 'text-emerald-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+        <span className="truncate">{item.label}</span>
+      </div>
+      {active && <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 flex-shrink-0" />}
     </Link>
   );
 }
 
-function SidebarContent({ user, theme, roleNav, location, onNav, onLogout }) {
-  const ThemeIcon = theme.icon;
+function SidebarContent({ user, roleNav, location, onNav, onLogout }) {
   const roleLabel = user?.role
     ? user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-    : 'User';
+    : 'Contributor';
 
   return (
-    <>
-      {/* Logo */}
-      <div className={`flex items-center gap-2 px-5 h-16 border-b ${theme.border} ${theme.bg} flex-shrink-0`}>
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme.iconBg}`}>
-          <ThemeIcon className="w-4 h-4 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <span className="text-lg font-bold text-gray-900">EcoLoop</span>
-          <span className={`block text-xs font-medium truncate ${theme.text}`}>{roleLabel}</span>
-        </div>
+    <div className="flex flex-col h-full bg-white select-none">
+      {/* Brand Header */}
+      <div className="h-16 px-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-xs">
+            <Leaf className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <span className="text-base font-extrabold text-gray-900 font-display leading-tight block">EcoLoop</span>
+            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">Circular Workspace</span>
+          </div>
+        </Link>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-        {/* Role hub links at top */}
-        {roleNav.length > 0 && (
-          <>
-            {roleNav.map(item => (
-              <NavLink key={item.path} item={item}
-                active={location.pathname === item.path}
-                theme={theme} onClick={onNav} />
-            ))}
-            <div className="my-2 border-t border-gray-100" />
-          </>
-        )}
-
-        {/* Common nav */}
-        {BASE_NAV.map(item => (
-          <NavLink key={item.path} item={item}
-            active={item.path === '/dashboard'
-              ? location.pathname === '/dashboard'
-              : location.pathname.startsWith(item.path)}
-            theme={theme} onClick={onNav} />
-        ))}
-
-        {/* Profile */}
-        <div className="mt-2 pt-2 border-t border-gray-100">
-          <NavLink
-            item={{ path: '/profile', label: 'My Profile', icon: Settings }}
-            active={location.pathname === '/profile'}
-            theme={theme} onClick={onNav} />
-        </div>
-      </nav>
-
-      {/* User footer */}
-      <div className="px-3 py-3 border-t border-gray-200 flex-shrink-0">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 mb-1">
-          {user?.avatar ? (
-            <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-          ) : (
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${theme.bg}`}>
-              <span className={`text-sm font-bold ${theme.text}`}>
-                {user?.name?.[0]?.toUpperCase() || '?'}
+      {/* Role Hub Card (if role has specialized console) */}
+      {roleNav && (
+        <div className="p-3 pb-1 flex-shrink-0">
+          <Link
+            to={roleNav.path}
+            onClick={onNav}
+            className={`block p-3 rounded-2xl border transition-all ${
+              location.pathname.startsWith(roleNav.path)
+                ? 'bg-emerald-900 border-emerald-800 text-white shadow-md'
+                : 'bg-emerald-50/70 border-emerald-200/80 text-emerald-950 hover:bg-emerald-100/60'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider opacity-80">Active Role Portal</span>
+              <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                location.pathname.startsWith(roleNav.path) ? 'bg-emerald-700 text-white' : 'bg-emerald-200 text-emerald-900'
+              }`}>
+                {roleNav.badge}
               </span>
             </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-            <p className="text-xs text-gray-400 truncate">{user?.email}</p>
-          </div>
+            <div className="flex items-center gap-2 font-bold text-xs">
+              <roleNav.icon className="w-4 h-4" />
+              <span className="truncate">{roleNav.label}</span>
+            </div>
+          </Link>
         </div>
-        <button onClick={onLogout}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors w-full">
-          <LogOut className="w-4 h-4" /> Logout
+      )}
+
+      {/* Navigation Group Sections */}
+      <nav className="flex-1 px-3 py-2 space-y-5 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title} className="space-y-1">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              {group.title}
+            </p>
+            {group.items.map((item) => {
+              const active = item.path === '/dashboard'
+                ? location.pathname === '/dashboard'
+                : location.pathname.startsWith(item.path);
+
+              return (
+                <NavItem
+                  key={item.path}
+                  item={item}
+                  active={active}
+                  onClick={onNav}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+
+      {/* User Footer Panel */}
+      <div className="p-3 border-t border-gray-100 flex-shrink-0 space-y-2 bg-gray-50/50">
+        <Link
+          to="/profile"
+          onClick={onNav}
+          className="flex items-center gap-3 p-2 rounded-xl hover:bg-white border border-transparent hover:border-gray-200 transition-all group"
+        >
+          <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs flex-shrink-0">
+            {user?.name?.[0]?.toUpperCase() || 'U'}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-gray-900 truncate leading-tight group-hover:text-emerald-700 transition-colors">
+              {user?.name || 'Anonymous User'}
+            </p>
+            <p className="text-[10px] text-gray-500 truncate leading-tight capitalize mt-0.5">
+              {roleLabel}
+            </p>
+          </div>
+          <Settings className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+        </Link>
+
+        <button
+          onClick={onLogout}
+          className="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-xs font-semibold text-gray-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span>Sign Out</span>
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -145,76 +184,114 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const role = user?.role || 'user';
-  const theme = ROLE_THEME[role] || ROLE_THEME.user;
-  const roleNav = ROLE_NAV[role] || [];
-  const ThemeIcon = theme.icon;
+  const roleNav = ROLE_NAV[role] || null;
 
-  const handleLogout = () => { logout(); window.location.href = '/'; };
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/';
+  };
+
+  // Compute breadcrumb title based on pathname
+  const getPageTitle = (pathname) => {
+    if (pathname.startsWith('/devices')) return 'Device Life-Cycle & Diagnostics';
+    if (pathname.startsWith('/marketplace')) return 'Circular E-Waste Marketplace';
+    if (pathname.startsWith('/repair')) return 'Verified Repair Network';
+    if (pathname.startsWith('/map')) return 'Waste Banks & Drop-off Map';
+    if (pathname.startsWith('/community')) return 'Circular Community Discussions';
+    if (pathname.startsWith('/challenges')) return 'Eco Challenges & Contests';
+    if (pathname.startsWith('/events')) return 'Community Cleanup Drives';
+    if (pathname.startsWith('/impact')) return 'Environmental Carbon Offsets';
+    if (pathname.startsWith('/eco-impact')) return 'EcoKarma Civic Leaderboard';
+    if (pathname.startsWith('/business')) return 'B2B Circular Surplus Exchange';
+    if (pathname.startsWith('/reports')) return 'Waste Hazard Reporting';
+    if (pathname.startsWith('/reviews')) return 'Verified Partner Ratings';
+    if (pathname.startsWith('/admin')) return 'Master Admin Control Panel';
+    if (pathname.startsWith('/organization')) return 'Organization Management Console';
+    if (pathname.startsWith('/moderator')) return 'Content & Safety Desk';
+    if (pathname.startsWith('/recycler')) return 'Recycling Facility Intake';
+    if (pathname.startsWith('/repair-provider')) return 'Repair Provider Hub';
+    if (pathname.startsWith('/profile')) return 'Account Profile & Security';
+    return 'Citizen Workspace Dashboard';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Desktop sidebar */}
-      <aside className={`hidden lg:flex flex-col w-64 bg-white border-r fixed inset-y-0 ${theme.border}`}>
-        <SidebarContent user={user} theme={theme} roleNav={roleNav} location={location}
-          onNav={() => {}} onLogout={handleLogout} />
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 fixed inset-y-0 z-30">
+        <SidebarContent
+          user={user}
+          roleNav={roleNav}
+          location={location}
+          onNav={() => {}}
+          onLogout={handleLogout}
+        />
       </aside>
 
-      {/* Mobile overlay */}
+      {/* Mobile Drawer Overlay */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <aside className={`relative z-10 w-64 bg-white border-r flex flex-col ${theme.border}`}>
-            <SidebarContent user={user} theme={theme} roleNav={roleNav} location={location}
-              onNav={() => setSidebarOpen(false)} onLogout={handleLogout} />
+          <div
+            className="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <aside className="relative z-10 w-72 bg-white flex flex-col shadow-2xl h-full">
+            <SidebarContent
+              user={user}
+              roleNav={roleNav}
+              location={location}
+              onNav={() => setSidebarOpen(false)}
+              onLogout={handleLogout}
+            />
           </aside>
         </div>
       )}
 
-      {/* Main content */}
-      <div className="flex-1 lg:ml-64 min-w-0">
-        {/* Top bar */}
-        <header className={`sticky top-0 z-40 bg-white border-b h-16 flex items-center justify-between px-4 lg:px-6 ${theme.border}`}>
-          {/* Left: hamburger + logo (mobile) */}
+      {/* Main Workspace Frame */}
+      <div className="flex-1 lg:ml-64 min-w-0 flex flex-col">
+        {/* Workspace Topbar */}
+        <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-gray-200 h-16 flex items-center justify-between px-4 sm:px-6">
+          {/* Left: Mobile hamburger + Active Screen Context */}
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 -ml-1 text-gray-600 hover:text-gray-900">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
+              aria-label="Open sidebar"
+            >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="lg:hidden flex items-center gap-2">
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${theme.iconBg}`}>
-                <ThemeIcon className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="font-bold text-gray-900 text-sm">EcoLoop</span>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-block text-xs font-semibold text-gray-400">EcoLoop</span>
+              <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-gray-300" />
+              <h1 className="text-sm font-bold text-gray-900 font-display">
+                {getPageTitle(location.pathname)}
+              </h1>
             </div>
           </div>
 
-          {/* Right: profile chip + logout */}
-          <div className="flex items-center gap-2">
-            <Link to="/profile"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors">
-              {user?.avatar ? (
-                <img src={user.avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
-              ) : (
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${theme.bg}`}>
-                  <span className={`text-xs font-bold ${theme.text}`}>
-                    {user?.name?.[0]?.toUpperCase() || '?'}
-                  </span>
-                </div>
-              )}
-              <div className="hidden sm:block">
-                <p className="text-xs font-medium text-gray-900 leading-tight">{user?.name}</p>
-                <p className="text-xs text-gray-400 capitalize leading-tight">{role.replace('_', ' ')}</p>
+          {/* Right: User Profile Indicator */}
+          <div className="flex items-center gap-3">
+            <Link
+              to="/profile"
+              className="flex items-center gap-2.5 p-1.5 pl-3 rounded-2xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors"
+            >
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-bold text-gray-900 leading-tight">{user?.name?.split(' ')[0]}</p>
+                <p className="text-[10px] text-emerald-700 font-semibold capitalize leading-none">{role.replace('_', ' ')}</p>
+              </div>
+              <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">
+                {user?.name?.[0]?.toUpperCase() || 'U'}
               </div>
             </Link>
-            <button onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors border border-red-200 text-sm font-medium">
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
           </div>
         </header>
 
-        <main><Outlet /></main>
+        {/* Content Outlet */}
+        <main className="flex-1 pb-16">
+          <Suspense fallback={<LoadingState size="lg" fullPage />}>
+            <Outlet />
+          </Suspense>
+        </main>
       </div>
     </div>
   );

@@ -53,11 +53,6 @@ export default function ModeratorDashboard() {
   const [showUserModal, setShowUserModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
-  // Check permissions
-  if (!['moderator', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -67,6 +62,11 @@ export default function ModeratorDashboard() {
       loadTabData();
     }
   }, [tab, searchTerm, statusFilter, categoryFilter]);
+
+  // Check permissions
+  if (!['moderator', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const loadDashboardData = async () => {
     setLoading(true);

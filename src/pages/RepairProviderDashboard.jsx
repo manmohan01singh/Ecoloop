@@ -30,10 +30,6 @@ export default function RepairProviderDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (!['repair_provider', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   const loadRequests = async () => {
     setLoading(true);
     try {
@@ -44,6 +40,10 @@ export default function RepairProviderDashboard() {
   };
 
   useEffect(() => { loadRequests(); }, []);
+
+  if (!['repair_provider', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleStatus = async (id, status) => {
     try {

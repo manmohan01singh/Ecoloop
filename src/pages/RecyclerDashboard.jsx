@@ -39,11 +39,6 @@ export default function RecyclerDashboard() {
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [recordForm, setRecordForm] = useState({ material: '', weightKg: '', pricePerKg: '', userId: '' });
 
-  // Check permissions
-  if (!['recycler', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -53,6 +48,11 @@ export default function RecyclerDashboard() {
       loadTabData();
     }
   }, [tab]);
+
+  // Check permissions
+  if (!['recycler', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const loadDashboardData = async () => {
     setLoading(true);

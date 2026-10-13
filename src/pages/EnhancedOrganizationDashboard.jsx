@@ -27,28 +27,6 @@ export default function EnhancedOrganizationDashboard() {
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [period, setPeriod] = useState('30d');
 
-  if (!['organization', 'admin'].includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'dashboard') {
-      loadDashboard();
-    } else if (activeTab === 'challenges') {
-      loadChallenges();
-    } else if (activeTab === 'events') {
-      loadEvents();
-    } else if (activeTab === 'analytics') {
-      loadAnalytics();
-    } else if (activeTab === 'impact') {
-      loadImpactSummary();
-    }
-  }, [activeTab, period]);
-
   const loadDashboard = async () => {
     setLoading(true);
     try {
@@ -76,7 +54,6 @@ export default function EnhancedOrganizationDashboard() {
       const res = await organizationService.getMyChallenges();
       setChallenges(res.data.data || []);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Challenges data not available yet');
       setChallenges([]);
     } finally {
@@ -90,7 +67,6 @@ export default function EnhancedOrganizationDashboard() {
       const res = await organizationService.getMyEvents();
       setEvents(res.data.data || []);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Events data not available yet');
       setEvents([]);
     } finally {
@@ -104,13 +80,34 @@ export default function EnhancedOrganizationDashboard() {
       const res = await organizationService.getImpactSummary();
       setImpactSummary(res.data.data);
     } catch (error) {
-      // Silently handle error - no toast
       console.log('Impact summary not available yet');
       setImpactSummary({});
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      loadDashboard();
+    } else if (activeTab === 'challenges') {
+      loadChallenges();
+    } else if (activeTab === 'events') {
+      loadEvents();
+    } else if (activeTab === 'analytics') {
+      loadAnalytics();
+    } else if (activeTab === 'impact') {
+      loadImpactSummary();
+    }
+  }, [activeTab, period]);
+
+  if (!['organization', 'admin'].includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleUpdateEventResults = async (eventId, results) => {
     try {
@@ -177,6 +174,8 @@ export default function EnhancedOrganizationDashboard() {
           <DashboardTab 
             stats={stats}
             dashboardData={dashboardData}
+            user={user}
+            setActiveTab={setActiveTab}
             onViewChallenge={(c) => { setSelectedItem(c); setShowModal(true); }}
             onViewEvent={(e) => { setSelectedItem(e); setShowModal(true); }}
           />
@@ -241,7 +240,7 @@ export default function EnhancedOrganizationDashboard() {
 }
 
 // Dashboard Tab Component
-function DashboardTab({ stats, dashboardData, onViewChallenge, onViewEvent }) {
+function DashboardTab({ stats, dashboardData, user, setActiveTab, onViewChallenge, onViewEvent }) {
   const challenges = dashboardData?.challenges || [];
   const events = dashboardData?.events || [];
   const upcomingEvents = dashboardData?.upcomingEvents || [];
@@ -296,7 +295,7 @@ function DashboardTab({ stats, dashboardData, onViewChallenge, onViewEvent }) {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-gray-500 mb-1">EcoKarma Impact</p>
-              <p className="text-3xl font-bold text-gray-900">{user.ecoKarmaTotal || 0}</p>
+              <p className="text-3xl font-bold text-gray-900">{user?.ecoKarmaTotal || 0}</p>
               <p className="text-xs text-gray-400 mt-1">Organization score</p>
             </div>
             <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">

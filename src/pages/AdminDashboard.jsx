@@ -17,8 +17,6 @@ export default function AdminDashboard() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
-
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -44,6 +42,8 @@ export default function AdminDashboard() {
     };
     load();
   }, [tab]);
+
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" />;
 
   const handleVerifyLocation = async (id, status) => {
     try {

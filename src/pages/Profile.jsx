@@ -1,27 +1,27 @@
 import { useState, useRef } from 'react';
 import {
   User, Camera, Mail, Phone, MapPin, FileText, Bell,
-  Save, Loader2, CheckCircle, Shield, Star, Edit3
+  Save, CheckCircle, Shield, Star, Edit3, KeyRound, Sparkles
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-
+import { Button, Input, Card, Badge } from '../components/ui';
 
 const ROLE_BADGE = {
-  user:           { label: 'Contributor',      color: 'bg-emerald-100 text-emerald-700' },
-  moderator:      { label: 'Moderator',        color: 'bg-blue-100 text-blue-700' },
-  recycler:       { label: 'Recycler',         color: 'bg-green-100 text-green-700' },
-  repair_provider:{ label: 'Repair Provider',  color: 'bg-orange-100 text-orange-700' },
-  business:       { label: 'Business',         color: 'bg-indigo-100 text-indigo-700' },
-  organization:   { label: 'Organization',     color: 'bg-purple-100 text-purple-700' },
-  admin:          { label: 'Admin',            color: 'bg-red-100 text-red-700' },
+  user:           { label: 'Citizen Contributor', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  moderator:      { label: 'Content Moderator',   color: 'bg-blue-50 text-blue-800 border-blue-200' },
+  recycler:       { label: 'Licensed Recycler',    color: 'bg-green-50 text-green-800 border-green-200' },
+  repair_provider:{ label: 'Repair Technician',    color: 'bg-orange-50 text-orange-800 border-orange-200' },
+  business:       { label: 'Enterprise B2B',       color: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
+  organization:   { label: 'Waste Bank Partner',   color: 'bg-purple-50 text-purple-800 border-purple-200' },
+  admin:          { label: 'System Admin',         color: 'bg-red-50 text-red-800 border-red-200' },
 };
 
 const VERIFICATION_BADGE = {
-  unverified:         { label: 'Unverified',          color: 'bg-gray-100 text-gray-600' },
-  community_verified: { label: 'Community Verified',  color: 'bg-blue-100 text-blue-700' },
-  admin_verified:     { label: 'Admin Verified',      color: 'bg-emerald-100 text-emerald-700' },
+  unverified:         { label: 'Pending Verification', color: 'bg-gray-100 text-gray-700 border-gray-200' },
+  community_verified: { label: 'Community Verified',   color: 'bg-blue-50 text-blue-800 border-blue-200' },
+  admin_verified:     { label: 'Official Gov/KLHK Verified', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
 };
 
 export default function Profile() {
@@ -51,9 +51,9 @@ export default function Profile() {
       const res = await api.put('/auth/profile', form);
       const updated = { ...user, ...res.data.data };
       updateUser(updated);
-      toast.success('Profile updated!');
+      toast.success('Account profile updated successfully!');
     } catch (err) {
-      toast.error(err.response?.data?.error?.message || 'Failed to save');
+      toast.error(err.response?.data?.error?.message || 'Failed to save changes');
     } finally {
       setSaving(false);
     }
@@ -75,7 +75,7 @@ export default function Profile() {
       const url = res.data.data.url;
       setAvatarUrl(url);
       updateUser({ ...user, avatar: url });
-      toast.success('Profile picture updated!');
+      toast.success('Profile avatar updated!');
     } catch {
       toast.error('Upload failed');
     } finally {
@@ -87,202 +87,252 @@ export default function Profile() {
   const roleBadge = ROLE_BADGE[user?.role] || ROLE_BADGE.user;
   const verBadge  = VERIFICATION_BADGE[user?.verificationStatus] || VERIFICATION_BADGE.unverified;
 
-  const TABS = [['profile', 'Profile'], ['location', 'Location'], ['notifications', 'Notifications']];
-
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+      
+      {/* ── HEADER ────────────────────────────────────────── */}
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 font-display">
+          Account Profile & Security
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Manage your verified circular identity, regional pickup coordinates, and security preferences.
+        </p>
+      </div>
 
-      {/* ── Avatar + identity card ─────────────────────────── */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
-        <div className="flex items-center gap-5">
-          {/* Avatar */}
+      {/* ── IDENTITY CARD ─────────────────────────────────── */}
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          {/* Avatar with Upload Badge */}
           <div className="relative flex-shrink-0">
-            <div className="w-20 h-20 rounded-full bg-emerald-100 overflow-hidden border-2 border-emerald-200 flex items-center justify-center">
+            <div className="w-24 h-24 rounded-2xl bg-emerald-50 border-2 border-emerald-200 overflow-hidden flex items-center justify-center shadow-inner">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-3xl font-bold text-emerald-600">
-                  {user?.name?.[0]?.toUpperCase() || '?'}
+                <span className="text-4xl font-black text-emerald-700 font-display">
+                  {user?.name?.[0]?.toUpperCase() || 'U'}
                 </span>
               )}
             </div>
             <button
               onClick={() => fileRef.current?.click()}
               disabled={avatarUploading}
-              className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-colors border-2 border-white"
-              title="Change photo"
+              aria-label="Upload profile photo"
+              className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-700 transition-colors border-2 border-white shadow-md text-white"
             >
-              {avatarUploading
-                ? <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-                : <Camera className="w-3.5 h-3.5 text-white" />}
+              <Camera className="w-4 h-4" />
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
           </div>
 
-          {/* Name + badges */}
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 truncate">{user?.name}</h2>
-            <p className="text-sm text-gray-500 mb-2">{user?.email}</p>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${roleBadge.color}`}>
+          {/* User Details & Badges */}
+          <div className="flex-1 text-center sm:text-left space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-display truncate">
+                {user?.name || 'EcoLoop Contributor'}
+              </h2>
+              <span className="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 flex items-center justify-center gap-1.5 w-fit mx-auto sm:mx-0">
+                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                {user?.ecoKarmaTotal || 0} EcoKarma
+              </span>
+            </div>
+            <p className="text-sm text-gray-500">{user?.email}</p>
+
+            <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap pt-1">
+              <span className={`text-[11px] font-bold px-3 py-0.5 rounded-full border ${roleBadge.color}`}>
                 {roleBadge.label}
               </span>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1 ${verBadge.color}`}>
-                <Shield className="w-3 h-3" /> {verBadge.label}
-              </span>
-              <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-100 text-amber-700 flex items-center gap-1">
-                <Star className="w-3 h-3" /> {user?.ecoKarmaTotal || 0} karma
+              <span className={`text-[11px] font-bold px-3 py-0.5 rounded-full border flex items-center gap-1 ${verBadge.color}`}>
+                <Shield className="w-3.5 h-3.5" /> {verBadge.label}
               </span>
             </div>
           </div>
-
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0"
-          >
-            <Edit3 className="w-3.5 h-3.5" /> Change Photo
-          </button>
         </div>
-      </div>
+      </Card>
 
-      {/* ── Tabs ──────────────────────────────────────────── */}
-      <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
-        {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === k ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            {l}
+      {/* ── TABS ──────────────────────────────────────────── */}
+      <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
+        {[
+          { id: 'profile', label: 'Personal Information' },
+          { id: 'location', label: 'Regional Coordinates' },
+          { id: 'notifications', label: 'Preferences' }
+        ].map(t => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              tab === t.id ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            {t.label}
           </button>
         ))}
       </div>
 
+      {/* ── TAB CONTENT ────────────────────────────────────── */}
       {tab === 'profile' && (
-        <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
-          <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <User className="w-4 h-4 text-emerald-600" /> Personal Information
-          </h3>
+        <Card className="p-6">
+          <form onSubmit={handleSave} className="space-y-4">
+            <h3 className="font-bold text-gray-900 text-base font-display flex items-center gap-2 mb-2">
+              <User className="w-4 h-4 text-emerald-600" /> Civic Identity Details
+            </h3>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-              <input value={form.name} onChange={e => set('name', e.target.value)} required
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Input
+                label="Full Display Name *"
+                value={form.name}
+                onChange={(e) => set('name', e.target.value)}
+                placeholder="Your full name"
+                required
+              />
+              <Input
+                label="WhatsApp / Phone Number"
+                value={form.phone}
+                onChange={(e) => set('phone', e.target.value)}
+                placeholder="+62 812-3456-7890"
+                icon={Phone}
+              />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5" /> Phone
+              <Input
+                label="Registered Email (Account Key)"
+                value={user?.email || ''}
+                disabled
+                icon={Mail}
+                helperText="Primary email is locked for account safety and verification integrity."
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                <FileText className="w-3.5 h-3.5" /> Civic Bio & Sustainability Mission
               </label>
-              <input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+62 812..."
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <textarea
+                value={form.bio}
+                onChange={(e) => set('bio', e.target.value)}
+                rows={3}
+                placeholder="Share your e-waste circular goals, repair expertise, or waste bank involvement..."
+                maxLength={500}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+              />
+              <p className="text-[11px] text-gray-400 mt-1">{form.bio.length} / 500 characters</p>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-              <Mail className="w-3.5 h-3.5" /> Email
-            </label>
-            <input value={user?.email || ''} disabled
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
-            <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-              <FileText className="w-3.5 h-3.5" /> Bio
-            </label>
-            <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={3}
-              placeholder="Tell the community about yourself and your e-waste journey..."
-              maxLength={500}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" />
-            <p className="text-xs text-gray-400 mt-1">{form.bio.length}/500</p>
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors">
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
+            <div className="pt-2 flex justify-end">
+              <Button
+                type="submit"
+                disabled={saving}
+                loading={saving}
+                icon={Save}
+                size="md"
+                className="font-bold shadow-md shadow-emerald-600/20"
+              >
+                {saving ? 'Updating Profile...' : 'Save Profile Changes'}
+              </Button>
+            </div>
+          </form>
+        </Card>
       )}
 
       {tab === 'location' && (
-        <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
-          <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-emerald-600" /> Location & Address
-          </h3>
-          <p className="text-xs text-gray-500">Used to find nearby recycling centers, repair shops, and collection points.</p>
+        <Card className="p-6">
+          <form onSubmit={handleSave} className="space-y-4">
+            <h3 className="font-bold text-gray-900 text-base font-display flex items-center gap-2 mb-1">
+              <MapPin className="w-4 h-4 text-emerald-600" /> Doorstep Collection & Regional Location
+            </h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Enables certified waste banks and repair technicians to calculate doorstep transport estimates.
+            </p>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
-            <textarea value={form.address} onChange={e => set('address', e.target.value)} rows={2}
-              placeholder="Jl. Example No. 123"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" />
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+                Street Address / Building
+              </label>
+              <textarea
+                value={form.address}
+                onChange={(e) => set('address', e.target.value)}
+                rows={2}
+                placeholder="Jl. Gatot Subroto No. 42, RT 02 / RW 05"
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+              />
+            </div>
 
-          <div className="grid sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-              <input value={form.city} onChange={e => set('city', e.target.value)} placeholder="Jakarta"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <div className="grid sm:grid-cols-3 gap-3">
+              <Input
+                label="City / Regency"
+                value={form.city}
+                onChange={(e) => set('city', e.target.value)}
+                placeholder="Jakarta Selatan"
+              />
+              <Input
+                label="Province"
+                value={form.state}
+                onChange={(e) => set('state', e.target.value)}
+                placeholder="DKI Jakarta"
+              />
+              <Input
+                label="Postal Code"
+                value={form.pincode}
+                onChange={(e) => set('pincode', e.target.value)}
+                placeholder="12950"
+              />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
-              <input value={form.state} onChange={e => set('state', e.target.value)} placeholder="DKI Jakarta"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-              <input value={form.pincode} onChange={e => set('pincode', e.target.value)} placeholder="10110"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            </div>
-          </div>
 
-          <div className="flex justify-end pt-2">
-            <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors">
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {saving ? 'Saving...' : 'Save Location'}
-            </button>
-          </div>
-        </form>
+            <div className="pt-2 flex justify-end">
+              <Button
+                type="submit"
+                disabled={saving}
+                loading={saving}
+                icon={Save}
+                size="md"
+                className="font-bold shadow-md shadow-emerald-600/20"
+              >
+                {saving ? 'Updating Address...' : 'Save Location'}
+              </Button>
+            </div>
+          </form>
+        </Card>
       )}
 
       {tab === 'notifications' && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
-          <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <Bell className="w-4 h-4 text-emerald-600" /> Notification Preferences
+        <Card className="p-6 space-y-4">
+          <h3 className="font-bold text-gray-900 text-base font-display flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-emerald-600" /> Alert & Communication Settings
           </h3>
-          <p className="text-sm text-gray-500 mb-4">Choose which notifications you want to receive.</p>
+          <p className="text-xs text-gray-500 mb-4">Control notifications delivered via app toast and verified email.</p>
 
-          {[
-            { key: 'repair', label: 'Repair Request Updates', desc: 'Get notified when your repair status changes' },
-            { key: 'community', label: 'Community Activity', desc: 'Replies and mentions in communities' },
-            { key: 'listings', label: 'Marketplace Activity', desc: 'Requests on your listings' },
-            { key: 'karma', label: 'EcoKarma Earned', desc: 'When you earn karma for actions' },
-            { key: 'challenges', label: 'Challenges & Events', desc: 'New challenges and upcoming events' },
-            { key: 'reports', label: 'Report Updates', desc: 'Updates on your waste reports' },
-          ].map(n => (
-            <div key={n.key} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
-              <div>
-                <p className="text-sm font-medium text-gray-900">{n.label}</p>
-                <p className="text-xs text-gray-500">{n.desc}</p>
+          <div className="space-y-2.5">
+            {[
+              { key: 'repair', label: 'Hardware Repair Ticket Status', desc: 'Alerts when technician updates diagnostics or pickup' },
+              { key: 'listings', label: 'Circular Marketplace Inquiries', desc: 'Real-time buyer offers and pickup requests' },
+              { key: 'community', label: 'Civic Discussion Mentions', desc: 'Replies on your threads and community challenges' },
+              { key: 'karma', label: 'EcoKarma Accrual Alerts', desc: 'Instant confirmations after verified waste bank weigh-ins' },
+              { key: 'reports', label: 'Waste Incident Hazard Status', desc: 'Updates when municipal crews clear reported hazards' },
+            ].map(n => (
+              <div key={n.key} className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 border border-gray-100">
+                <div>
+                  <p className="text-xs font-bold text-gray-900">{n.label}</p>
+                  <p className="text-[11px] text-gray-500 mt-0.5">{n.desc}</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-10 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-emerald-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                </label>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" defaultChecked className="sr-only peer" />
-                <div className="w-10 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
-              </label>
-            </div>
-          ))}
-
-          <div className="pt-2">
-            <button onClick={() => toast.success('Notification preferences saved!')}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors">
-              <CheckCircle className="w-4 h-4" /> Save Preferences
-            </button>
+            ))}
           </div>
-        </div>
+
+          <div className="pt-2 flex justify-end">
+            <Button
+              onClick={() => toast.success('Notification preferences updated!')}
+              icon={CheckCircle}
+              size="md"
+            >
+              Save Preferences
+            </Button>
+          </div>
+        </Card>
       )}
     </div>
   );
