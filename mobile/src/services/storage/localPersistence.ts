@@ -180,7 +180,7 @@ export interface RecyclingRequest {
   collectionType: 'dropoff' | 'pickup';
   address: string;
   city: string;
-  status: 'requested' | 'eligibility_checked' | 'accepted' | 'scheduled' | 'collected' | 'received' | 'processing' | 'closed';
+  status: 'requested' | 'eligibility_checked' | 'accepted' | 'scheduled' | 'collected' | 'received' | 'processing' | 'closed' | 'cancelled';
   assignedRecyclerId?: string;
   assignedRecyclerName?: string;
   certificateNumber?: string;
@@ -313,8 +313,32 @@ const STORAGE_KEYS = {
   AUDIT_LOGS: 'ecoloop_audit_logs_v1',
 };
 
-// In-memory fallback
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// In-memory cache + persistent native driver backing
 let memoryStore: Record<string, string> = {};
+
+// Hydrate from native AsyncStorage on startup
+export async function hydrateFromNativeStorage(): Promise<void> {
+  try {
+    const keys = Object.values(STORAGE_KEYS);
+    if (typeof AsyncStorage !== 'undefined' && typeof AsyncStorage.getMany === 'function') {
+      const records = await AsyncStorage.getMany(keys);
+      Object.entries(records).forEach(([k, v]) => {
+        if (v !== null && v !== undefined) {
+          memoryStore[k] = v;
+        }
+      });
+    }
+  } catch {
+    // Fall back to memoryStore
+  }
+}
+
+// Trigger initial hydration in background
+if (typeof AsyncStorage !== 'undefined' && typeof AsyncStorage?.getMany === 'function') {
+  hydrateFromNativeStorage().catch(() => {});
+}
 
 function safeGetItem(key: string): string | null {
   try {
@@ -337,6 +361,13 @@ function safeSetItem(key: string, val: string): void {
     // Ignore
   }
   memoryStore[key] = val;
+  try {
+    if (typeof AsyncStorage !== 'undefined' && AsyncStorage?.setItem) {
+      AsyncStorage.setItem(key, val).catch(() => {});
+    }
+  } catch {
+    // Ignore
+  }
 }
 
 // Global pub-sub listeners
@@ -434,6 +465,39 @@ export function getProfileById(id: string): UserProfile | null {
   return profiles[id] || null;
 }
 
+export function getCategoryFallbackImage(category?: string): string {
+  const normalized = (category || '').toLowerCase().trim();
+  switch (normalized) {
+    case 'smartphone':
+    case 'smartphones':
+    case 'phone':
+    case 'phones':
+      return 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&auto=format&fit=crop&q=80';
+    case 'laptop':
+    case 'laptops':
+    case 'computer':
+      return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80';
+    case 'audio':
+    case 'headphones':
+      return 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80';
+    case 'tablet':
+    case 'tablets':
+    case 'ipad':
+      return 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&auto=format&fit=crop&q=80';
+    case 'gaming':
+    case 'console':
+      return 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80';
+    case 'wearable':
+    case 'wearables':
+    case 'smartwatch':
+      return 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=600&auto=format&fit=crop&q=80';
+    case 'parts':
+      return 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&auto=format&fit=crop&q=80';
+    default:
+      return 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=600&auto=format&fit=crop&q=80';
+  }
+}
+
 // -----------------------------------------------------------------------------
 // DEVICE LISTINGS PERSISTENCE
 // -----------------------------------------------------------------------------
@@ -442,20 +506,48 @@ export function getStoredListings(): DeviceListingRecord[] {
   const raw = safeGetItem(STORAGE_KEYS.LISTINGS);
   if (!raw) return [];
   try {
-    return JSON.parse(raw);
+    const list: DeviceListingRecord[] = JSON.parse(raw);
+    let mutated = false;
+    const sanitized = list.map((item) => {
+      const hasBlob = item.photos && item.photos.some((p) => typeof p === 'string' && p.startsWith('blob:'));
+      if (hasBlob) {
+        mutated = true;
+        return {
+          ...item,
+          photos: item.photos.map((p) =>
+            typeof p === 'string' && p.startsWith('blob:')
+              ? getCategoryFallbackImage(item.deviceCategory)
+              : p
+          ),
+        };
+      }
+      return item;
+    });
+
+    if (mutated) {
+      safeSetItem(STORAGE_KEYS.LISTINGS, JSON.stringify(sanitized));
+    }
+    return sanitized;
   } catch {
     return [];
   }
 }
 
 export function saveListing(listing: DeviceListingRecord): void {
+  const sanitizedPhotos = (listing.photos || []).map((p) =>
+    typeof p === 'string' && p.startsWith('blob:')
+      ? getCategoryFallbackImage(listing.deviceCategory)
+      : p
+  );
+  const cleanListing = { ...listing, photos: sanitizedPhotos };
+
   const current = getStoredListings();
-  const existingIdx = current.findIndex((item) => item.id === listing.id);
+  const existingIdx = current.findIndex((item) => item.id === cleanListing.id);
 
   if (existingIdx >= 0) {
-    current[existingIdx] = { ...listing, updatedAt: new Date().toISOString() };
+    current[existingIdx] = { ...cleanListing, updatedAt: new Date().toISOString() };
   } else {
-    current.unshift(listing);
+    current.unshift(cleanListing);
   }
 
   safeSetItem(STORAGE_KEYS.LISTINGS, JSON.stringify(current));

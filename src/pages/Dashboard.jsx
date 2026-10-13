@@ -126,6 +126,30 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ── SIGNATURE RESCUE ENGINE CALLOUT ───────────────────────── */}
+      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 rounded-2xl p-5 sm:p-6 text-white border border-emerald-500/30 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black shadow-md flex-shrink-0">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-400">Signature Feature</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">Best Future Engine</span>
+            </div>
+            <h3 className="text-lg font-black font-display text-white mt-0.5">Find Your Device's Best Future</h3>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl">
+              Don't guess whether to repair, sell as-is, resell, or recycle. EcoLoop evaluates 5 competing real options with certified quotes and follows through.
+            </p>
+          </div>
+        </div>
+        <Link to="/rescue" className="flex-shrink-0">
+          <Button variant="primary" size="md" className="font-extrabold bg-emerald-400 hover:bg-emerald-300 text-slate-950 shadow-md">
+            Launch Rescue Engine <ArrowRight className="w-4 h-4 ml-1.5" />
+          </Button>
+        </Link>
+      </div>
+
       {/* ── 4 CORE STAT CARDS ───────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard

@@ -310,10 +310,16 @@ export function acceptRepairQuote(customerId: string, repairRequestId: string, q
   const request = requests.find((r) => r.id === repairRequestId);
   if (!request) return { success: false, error: 'Request not found.' };
   if (request.customerId !== customerId) return { success: false, error: 'Unauthorized.' };
+  if (request.status !== 'submitted' && request.status !== 'quoted') {
+    return { success: false, error: `Cannot accept quote: Request status is already "${request.status}".` };
+  }
 
   const quotes = getStoredRepairQuotes();
   const quote = quotes.find((q) => q.id === quoteId);
   if (!quote) return { success: false, error: 'Quote not found.' };
+  if (quote.status !== 'pending') {
+    return { success: false, error: `Quote is not pending (status: "${quote.status}").` };
+  }
 
   quote.status = 'accepted';
   saveRepairQuote(quote);
@@ -374,6 +380,27 @@ export function updateRepairStatus(
     return {
       success: false,
       error: `Invalid repair status transition from "${request.status}" to "${newStatus}". Allowed: ${allowed.join(', ') || 'none'}.`,
+    };
+  }
+
+  // Authorization check: Verify caller is the assigned provider (or customer cancelling/disputing)
+  if (request.acceptedQuoteId) {
+    const quotes = getStoredRepairQuotes();
+    const acceptedQuote = quotes.find((q) => q.id === request.acceptedQuoteId);
+    if (acceptedQuote && acceptedQuote.providerId !== providerId) {
+      if (request.customerId === providerId && (newStatus === 'cancelled' || newStatus === 'disputed')) {
+        // Customer cancelling or disputing is permitted
+      } else {
+        return {
+          success: false,
+          error: 'Unauthorized: Only the assigned repair specialist can update progress on this job.',
+        };
+      }
+    }
+  } else if (newStatus !== 'cancelled') {
+    return {
+      success: false,
+      error: 'Unauthorized: Repair request has not accepted a provider quote yet.',
     };
   }
 
@@ -530,6 +557,15 @@ export function recordCollectionReceipt(params: RecordReceiptParams): {
   if (!req) return { success: false, error: 'Recycling request not found.' };
   if (req.status === 'closed') {
     return { success: false, error: 'Recycling request has already been processed and closed.' };
+  }
+  if (req.status === 'cancelled') {
+    return { success: false, error: 'Cannot process a cancelled recycling request.' };
+  }
+  if (req.status !== 'accepted' || !req.assignedRecyclerId) {
+    return { success: false, error: 'Unauthorized: Request must be accepted by an assigned certified recycler before processing collection receipt.' };
+  }
+  if (req.assignedRecyclerId !== params.recyclerId) {
+    return { success: false, error: 'Unauthorized: Request is assigned to another certified recycler.' };
   }
   if (params.verifiedWeightKg <= 0) return { success: false, error: 'Verified weight must be greater than 0 kg.' };
 

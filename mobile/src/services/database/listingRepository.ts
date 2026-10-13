@@ -166,7 +166,10 @@ export async function persistDeviceListing(
         if (insertError) {
           // Compensating action: clean up uploaded photos
           await deleteUploadedPhotos(uploadedStoragePaths);
-          throw new Error(insertError.message);
+          return {
+            success: false,
+            error: `Remote database error: ${insertError.message}`,
+          };
         }
 
         // Insert photos into listing_photos
@@ -177,7 +180,14 @@ export async function persistDeviceListing(
             display_order: idx,
             is_cover: idx === 0,
           }));
-          await supabase.from('listing_photos').insert(photoInserts);
+          const { error: photoError } = await supabase.from('listing_photos').insert(photoInserts);
+          if (photoError) {
+            await deleteUploadedPhotos(uploadedStoragePaths);
+            return {
+              success: false,
+              error: `Failed to register listing photos: ${photoError.message}`,
+            };
+          }
         }
 
         // Insert activity event
@@ -196,8 +206,11 @@ export async function persistDeviceListing(
           },
         });
       } catch (err: any) {
-        // Fall back to local storage if remote fails
-        console.warn('Supabase remote insert fallback to local storage:', err?.message);
+        await deleteUploadedPhotos(uploadedStoragePaths);
+        return {
+          success: false,
+          error: `Remote database operation failed: ${err?.message || 'Unknown error'}`,
+        };
       }
     }
 

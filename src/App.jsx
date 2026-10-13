@@ -41,6 +41,7 @@ const EnhancedBusinessDashboard = lazy(() => import('./pages/EnhancedBusinessDas
 const ReviewsPage = lazy(() => import('./pages/ReviewsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
+const RescueEngine = lazy(() => import('./pages/RescueEngine'));
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
@@ -81,6 +82,7 @@ export default function App() {
             <Routes>
               {/* Public pages */}
               <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+              <Route path="/rescue" element={<AppLayout><RescueEngine /></AppLayout>} />
               <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
               <Route path="/privacy" element={<AppLayout><LegalPage initialTab="privacy" /></AppLayout>} />
               <Route path="/terms" element={<AppLayout><LegalPage initialTab="terms" /></AppLayout>} />
@@ -93,6 +95,7 @@ export default function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/devices" element={<Devices />} />
                 <Route path="/devices/:id" element={<DeviceDetail />} />
+                <Route path="/workspace/rescue" element={<RescueEngine />} />
                 <Route path="/impact" element={<Impact />} />
                 
                 {/* Community & Circular Exchange */}

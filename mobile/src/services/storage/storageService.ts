@@ -18,6 +18,38 @@ export function validateStorageOwnershipPath(userId: string, targetPath: string)
 }
 
 /**
+ * Converts an ephemeral web blob: URL into a durable base64 data URL
+ * so offline web listings do not lose images when document memory clears on refresh.
+ */
+async function blobToDataUrl(blobUri: string): Promise<string> {
+  if (typeof fetch === 'undefined' || !blobUri.startsWith('blob:')) {
+    return blobUri;
+  }
+  try {
+    const res = await fetch(blobUri);
+    const blob = await res.blob();
+    return await new Promise<string>((resolve) => {
+      if (typeof FileReader !== 'undefined') {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            resolve(blobUri);
+          }
+        };
+        reader.onerror = () => resolve(blobUri);
+        reader.readAsDataURL(blob);
+      } else {
+        resolve(blobUri);
+      }
+    });
+  } catch {
+    return blobUri;
+  }
+}
+
+/**
  * Upload an individual listing photo to Supabase Storage bucket.
  * Conforms to RLS policy: uploaded under `auth.uid() / listing_id / filename`.
  */
@@ -30,11 +62,15 @@ export async function uploadListingPhoto(
   const filename = `photo_${index}_${Date.now()}.jpg`;
   const storagePath = `${userId}/${listingId}/${filename}`;
 
-  // If Supabase is not configured, preserve local URI
+  // If Supabase is not configured, preserve local URI (converting ephemeral web blob: URIs to durable data: URLs)
   if (!isSupabaseConfigured()) {
+    let durableUri = photoUri;
+    if (photoUri.startsWith('blob:')) {
+      durableUri = await blobToDataUrl(photoUri);
+    }
     return {
       storagePath,
-      publicUrl: photoUri,
+      publicUrl: durableUri,
     };
   }
 
@@ -63,6 +99,9 @@ export async function uploadListingPhoto(
       publicUrl: publicData?.publicUrl || photoUri,
     };
   } catch (error: any) {
+    if (isSupabaseConfigured()) {
+      throw error;
+    }
     // Fall back to local reference if upload fails in non-cloud dev environment
     console.warn(`Storage upload fallback for ${storagePath}:`, error?.message);
     return {

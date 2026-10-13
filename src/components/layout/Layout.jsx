@@ -4,7 +4,7 @@ import {
   Leaf, LayoutDashboard, Smartphone, BarChart3, Menu, X, LogOut,
   Users, Package, MapPin, Wrench, Trophy, Calendar, AlertTriangle,
   Building2, TrendingUp, Shield, Crown, Recycle, Settings, Star,
-  Search, ChevronRight, HelpCircle
+  Search, ChevronRight, HelpCircle, Sparkles
 } from 'lucide-react';
 import useAuthStore from '../../context/authStore';
 import { LoadingState, Badge } from '../ui';
@@ -23,6 +23,7 @@ const NAV_GROUPS = [
   {
     title: 'Circular Solutions',
     items: [
+      { path: '/rescue',      label: 'Rescue Engine', icon: Sparkles },
       { path: '/marketplace', label: 'Marketplace',   icon: Package },
       { path: '/repair',      label: 'Repair Network',icon: Wrench },
       { path: '/map',         label: 'Waste Map',     icon: MapPin },

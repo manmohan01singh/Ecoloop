@@ -7,6 +7,7 @@ import {
   getProfileById,
   getStoredListings,
   saveListing,
+  saveRecyclingRequest,
 } from './storage/localPersistence';
 import {
   getUserRoles,
@@ -741,6 +742,146 @@ describe('Circular Decision Engine Input Hardening', () => {
     const hazardDecision = evaluateCircularRoutes(swollenInput);
     assert.strictEqual(hazardDecision.isHazardous, true);
     assert.strictEqual(hazardDecision.primaryRecommendation.route, 'certified_recycle');
+  });
+});
+
+describe('Operational Workflow Authorization & Integrity Hardening', () => {
+  beforeEach(() => {
+    resetTestStorage();
+  });
+
+  test('Double quote acceptance and non-pending quote acceptance are blocked', () => {
+    const reqRes = createRepairRequest({
+      customerId: 'cust-secure-01',
+      customerName: 'Diana Prince',
+      deviceCategory: 'tablet',
+      brand: 'Apple',
+      model: 'iPad Pro 11',
+      issueType: 'Screen',
+      symptoms: 'Flickering display',
+    });
+    const reqId = reqRes.request!.id;
+
+    const quoteA = submitRepairQuote({
+      repairRequestId: reqId,
+      providerId: 'pro-alpha',
+      providerName: 'Alpha Repairs',
+      partsCost: 150,
+      laborCost: 80,
+      estimatedTurnaroundDays: 2,
+      notes: 'OEM screen replacement',
+    });
+
+    const quoteB = submitRepairQuote({
+      repairRequestId: reqId,
+      providerId: 'pro-beta',
+      providerName: 'Beta Fixers',
+      partsCost: 130,
+      laborCost: 90,
+      estimatedTurnaroundDays: 3,
+      notes: 'Aftermarket screen',
+    });
+
+    // 1. First acceptance succeeds
+    const firstAccept = acceptRepairQuote('cust-secure-01', reqId, quoteA.quote!.id);
+    assert.strictEqual(firstAccept.success, true);
+
+    // 2. Second acceptance attempt on already accepted request MUST fail
+    const secondAccept = acceptRepairQuote('cust-secure-01', reqId, quoteB.quote!.id);
+    assert.strictEqual(secondAccept.success, false);
+    assert.match(secondAccept.error || '', /already "accepted"/);
+
+    // 3. Attempting to accept an already rejected quote MUST fail
+    const rejectedAccept = acceptRepairQuote('cust-secure-01', reqId, quoteB.quote!.id);
+    assert.strictEqual(rejectedAccept.success, false);
+  });
+
+  test('Unauthorized repair specialist cannot update job status belonging to another provider', () => {
+    const reqRes = createRepairRequest({
+      customerId: 'cust-auth-02',
+      customerName: 'Barry Allen',
+      deviceCategory: 'smartphone',
+      brand: 'Google',
+      model: 'Pixel 7',
+      issueType: 'Battery',
+      symptoms: 'Battery drains fast',
+    });
+    const reqId = reqRes.request!.id;
+
+    const quote = submitRepairQuote({
+      repairRequestId: reqId,
+      providerId: 'pro-legit',
+      providerName: 'Legit Repairs',
+      partsCost: 70,
+      laborCost: 50,
+      estimatedTurnaroundDays: 1,
+      notes: 'New battery',
+    });
+
+    acceptRepairQuote('cust-auth-02', reqId, quote.quote!.id);
+
+    // Malicious or mismatched provider 'pro-impostor' tries to mark job in_progress
+    const hijackAttempt = updateRepairStatus('pro-impostor', reqId, 'in_progress');
+    assert.strictEqual(hijackAttempt.success, false);
+    assert.match(hijackAttempt.error || '', /Only the assigned repair specialist/);
+
+    // Authorized provider succeeds
+    const legitUpdate = updateRepairStatus('pro-legit', reqId, 'in_progress');
+    assert.strictEqual(legitUpdate.success, true);
+  });
+
+  test('Cancelled recycling requests and unassigned recyclers cannot record collection receipts', () => {
+    const recRes = createRecyclingRequest({
+      userId: 'user-rec-99',
+      userName: 'Arthur Curry',
+      deviceCategory: 'audio',
+      brand: 'Sony',
+      model: 'WH-1000XM4',
+      quantity: 1,
+      estimatedWeightKg: 0.3,
+    });
+    const recId = recRes.request!.id;
+
+    acceptRecyclingRequest('recycler-primary', 'Primary E-Waste', recId);
+
+    // Unassigned recycler attempts to issue receipt
+    const rogueReceipt = recordCollectionReceipt({
+      requestId: recId,
+      recyclerId: 'recycler-unassigned',
+      recyclerName: 'Rogue Recycler',
+      verifiedWeightKg: 0.3,
+      processingStage: 'materials_recovered',
+      dispositionSummary: 'Component recycling',
+    });
+    assert.strictEqual(rogueReceipt.success, false);
+    assert.match(rogueReceipt.error || '', /assigned to another certified recycler/);
+
+    // Cancelled request cannot be processed
+    const recCancelRes = createRecyclingRequest({
+      userId: 'user-rec-100',
+      userName: 'Victor Stone',
+      deviceCategory: 'wearable',
+      brand: 'Apple',
+      model: 'Watch Series 6',
+      quantity: 1,
+      estimatedWeightKg: 0.1,
+    });
+    const cancelRecId = recCancelRes.request!.id;
+    // Simulate cancellation
+    const cancelReq = getRecyclingRequests().find((r) => r.id === cancelRecId)!;
+    cancelReq.status = 'cancelled';
+    saveRecyclingRequest(cancelReq);
+
+    const cancelReceipt = recordCollectionReceipt({
+      requestId: cancelRecId,
+      recyclerId: 'recycler-primary',
+      recyclerName: 'Primary E-Waste',
+      verifiedWeightKg: 0.1,
+      processingStage: 'dismantled',
+      dispositionSummary: 'Scrap',
+    });
+    assert.strictEqual(cancelReceipt.success, false);
+    assert.match(cancelReceipt.error || '', /cancelled recycling request/);
   });
 });
 

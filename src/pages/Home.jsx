@@ -5,7 +5,7 @@ import {
   Package, Sparkles, Shield, Star, ChevronDown, CheckCircle2,
   Cpu, Smartphone, Laptop, Tv, Building2, Battery, RefreshCw,
   Globe, ArrowUpRight, ShieldCheck, Flame, Compass, Activity,
-  Sliders, Layers, Terminal, Gift, Check, HelpCircle, Leaf
+  Sliders, Layers, Terminal, Gift, Check, HelpCircle, Leaf, Award
 } from 'lucide-react';
 import { getPlatformImpact } from '../services/communityService';
 import { Button, Badge } from '../components/ui';
@@ -308,19 +308,19 @@ export default function Home() {
                 Connect with certified repair technicians, licensed waste banks, and circular buyers across Indonesia. Predict device failure dates, prevent toxic landfill dumping, and trade surplus hardware.
               </p>
 
-              {/* Dual Action Buttons */}
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
-                <Link to="/register" className="w-full sm:w-auto">
-                  <button className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 font-display">
-                    <span>Start Circular Journey Free</span>
+                <Link to="/rescue" className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm shadow-md shadow-emerald-600/30 active:scale-95 transition-all flex items-center justify-center gap-2 font-display">
+                    <Sparkles className="w-4 h-4 text-emerald-200" />
+                    <span>Find My Device's Best Future</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
 
-                <Link to="/marketplace" className="w-full sm:w-auto">
+                <Link to="/register" className="w-full sm:w-auto">
                   <button className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm transition-all flex items-center justify-center gap-2 font-display">
-                    <Compass className="w-4 h-4 text-emerald-600" />
-                    <span>Explore Marketplace</span>
+                    <span>Create Free Account</span>
                   </button>
                 </Link>
               </div>
@@ -515,6 +515,117 @@ export default function Home() {
             </p>
             <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-wider">Precious Metals</p>
             <p className="text-[11px] text-slate-400 mt-0.5">Copper, gold & rare earths</p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── FOUR GAME-CHANGING FEATURES FOR ECOLOOP ─────────── */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+          
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 inline-flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              Four Game-Changing Pillars
+            </span>
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-display text-white tracking-tight">
+              One device. Every possible future.
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Not merely an app where people buy, sell, repair, and recycle. EcoLoop finds the best possible future for every electronic device—and actually helps the owner achieve it.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Pillar 1 */}
+            <div className="bg-slate-800/80 rounded-3xl p-6 border border-slate-700/80 hover:border-emerald-500/60 transition-all flex flex-col justify-between group shadow-lg">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform">
+                  <Sparkles className="w-6 h-6 text-emerald-400" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Pillar 1</span>
+                  <h3 className="text-xl font-extrabold text-white font-display mt-0.5">EcoLoop Rescue Engine</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Evaluates repair-and-keep, sell as-is, repair-and-resell, parts salvage, and certified recycling without sponsor bias. One informed decision.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-700/60 text-xs font-bold text-emerald-400 flex items-center gap-1">
+                <span>Assess in 60s →</span>
+              </div>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="bg-slate-800/80 rounded-3xl p-6 border border-slate-700/80 hover:border-blue-500/60 transition-all flex flex-col justify-between group shadow-lg">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Pillar 2</span>
+                  <h3 className="text-xl font-extrabold text-white font-display mt-0.5">Device Truth Report</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Turn uncertainty into evidence. Guided checks, photo proofs, and auto-diagnostics distinguish user claims from verified inspection with a transferable passport.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-700/60 text-xs font-bold text-blue-400 flex items-center gap-1">
+                <span>Tamper-evident passport →</span>
+              </div>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="bg-slate-800/80 rounded-3xl p-6 border border-slate-700/80 hover:border-amber-500/60 transition-all flex flex-col justify-between group shadow-lg">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform">
+                  <TrendingUp className="w-6 h-6 text-amber-400" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Pillar 3</span>
+                  <h3 className="text-xl font-extrabold text-white font-display mt-0.5">Device Futures Exchange</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Let the market compete for the device. Vetted technicians, used-device buyers, and authorized recyclers submit real competing quotes on one profile.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-700/60 text-xs font-bold text-amber-400 flex items-center gap-1">
+                <span>5 real competing quotes →</span>
+              </div>
+            </div>
+
+            {/* Pillar 4 */}
+            <div className="bg-slate-800/80 rounded-3xl p-6 border border-slate-700/80 hover:border-pink-500/60 transition-all flex flex-col justify-between group shadow-lg">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-pink-500/20 text-pink-300 border border-pink-500/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform">
+                  <Award className="w-6 h-6 text-pink-400" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-pink-400">Pillar 4</span>
+                  <h3 className="text-xl font-extrabold text-white font-display mt-0.5">Proof of Rescue</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Real outcomes worth sharing. Generates certified reports with verified repair costs, money saved, documented work, and qualified carbon emissions prevented.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-700/60 text-xs font-bold text-pink-400 flex items-center gap-1">
+                <span>Shareable certificates →</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Central Callout Banner */}
+          <div className="text-center pt-4">
+            <Link to="/rescue">
+              <button className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-green-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm sm:text-base shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 inline-flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                <span>Launch Signature Rescue Engine Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
           </div>
 
         </div>

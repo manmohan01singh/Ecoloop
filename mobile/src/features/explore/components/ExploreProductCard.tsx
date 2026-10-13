@@ -8,6 +8,7 @@ import {
 import { useAppTheme } from '../../../design-system/theme/theme';
 import { AppText } from '../../../components/ui/AppText';
 import { AppIcon, IconName } from '../../../components/ui/AppIcon';
+import { getCategoryFallbackImage } from '../../../services/storage/localPersistence';
 import { ExploreItem } from '../types/explore.types';
 
 export interface ExploreProductCardProps {
@@ -20,6 +21,23 @@ export const ExploreProductCard: React.FC<ExploreProductCardProps> = ({
   onPress,
 }) => {
   const theme = useAppTheme();
+
+  const [imageSrc, setImageSrc] = React.useState<string>(() => {
+    if (item.imageUrl?.startsWith('blob:')) {
+      return getCategoryFallbackImage(item.category);
+    }
+    return item.imageUrl;
+  });
+  const [imageFailed, setImageFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    if (item.imageUrl?.startsWith('blob:')) {
+      setImageSrc(getCategoryFallbackImage(item.category));
+    } else {
+      setImageSrc(item.imageUrl);
+      setImageFailed(false);
+    }
+  }, [item.imageUrl, item.category]);
 
   // Resolve action pathway tint and label
   const getActionConfig = () => {
@@ -92,9 +110,15 @@ export const ExploreProductCard: React.FC<ExploreProductCardProps> = ({
       {/* Top Media Container */}
       <View style={[styles.imageContainer, { backgroundColor: theme.colors.fill }]}>
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{ uri: imageSrc }}
           style={styles.image}
           resizeMode="cover"
+          onError={() => {
+            if (!imageFailed) {
+              setImageFailed(true);
+              setImageSrc(getCategoryFallbackImage(item.category));
+            }
+          }}
         />
 
         {/* Condition Badge Overlay */}

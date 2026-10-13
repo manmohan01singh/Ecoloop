@@ -13,6 +13,7 @@ import {
   getStoredListings,
   subscribeToDataChanges,
   DeviceListingRecord,
+  getCategoryFallbackImage,
 } from '../../../services/storage/localPersistence';
 
 export const INITIAL_FILTERS: ExploreFilters = {
@@ -25,6 +26,17 @@ export const INITIAL_FILTERS: ExploreFilters = {
 };
 
 export function listingRecordToExploreItem(record: DeviceListingRecord): ExploreItem {
+  const fallbackImg = getCategoryFallbackImage(record.deviceCategory);
+  const primaryCandidate = record.photos?.[0];
+  const resolvedPrimary =
+    primaryCandidate && !primaryCandidate.startsWith('blob:')
+      ? primaryCandidate
+      : fallbackImg;
+
+  const validAdditional = (record.photos || [])
+    .slice(1)
+    .filter((p) => typeof p === 'string' && !p.startsWith('blob:'));
+
   return {
     id: record.id,
     title: record.title,
@@ -51,10 +63,8 @@ export function listingRecordToExploreItem(record: DeviceListingRecord): Explore
     originalPrice: record.originalPrice,
     city: record.city,
     distanceKm: 0.5,
-    imageUrl:
-      record.photos[0] ||
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&auto=format&fit=crop&q=80',
-    additionalImages: record.photos.slice(1),
+    imageUrl: resolvedPrimary,
+    additionalImages: validAdditional,
     co2SavedKg: record.co2SavedKg,
     warrantyDays: record.warrantyDays,
     description: record.description,

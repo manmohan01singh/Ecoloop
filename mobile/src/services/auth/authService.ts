@@ -5,6 +5,7 @@ import {
   setStoredSessionUser,
   saveProfile,
   getProfileById,
+  getAllProfiles,
   saveActivityEvent,
 } from '../storage/localPersistence';
 
@@ -265,13 +266,28 @@ export async function signInUser(params: SignInParams): Promise<AuthResult> {
   }
 
   // Local/Offline Fallback
-  // Check if we have an existing profile for this email
+  // 1. Check if we have an active session for this email
   const existingSession = getStoredSessionUser();
-  if (existingSession && existingSession.user.email === email) {
+  if (existingSession && existingSession.user.email.toLowerCase() === email.toLowerCase()) {
     return { session: existingSession, error: null };
   }
 
-  // If not previously saved, create session with verified credentials
+  // 2. Check if a profile already exists in persistent storage for this email (preserves admin role, karma, etc.)
+  const allProfiles = getAllProfiles();
+  const existingProfile = (Object.values(allProfiles) as UserProfile[]).find(
+    (p) => p.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (existingProfile) {
+    const session: AuthSession = {
+      user: { id: existingProfile.id, email: existingProfile.email },
+      profile: existingProfile,
+    };
+    setStoredSessionUser(session);
+    return { session, error: null };
+  }
+
+  // 3. If not previously registered, create session with new member profile
   const userId = generateUUID();
   const user: AuthUser = { id: userId, email };
   const profile: UserProfile = {
@@ -432,7 +448,8 @@ export async function restoreSession(): Promise<AuthSession | null> {
           return local;
         }
 
-        const profile: UserProfile = {
+        const existingProfile = getProfileById(u.id);
+        const profile: UserProfile = existingProfile || {
           id: u.id,
           email: u.email || '',
           displayName: u.user_metadata?.display_name || (u.email ? u.email.split('@')[0] : 'Member'),

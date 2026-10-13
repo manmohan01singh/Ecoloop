@@ -14,6 +14,7 @@ import { AppText } from '../../../components/ui/AppText';
 import { AppIcon, IconName } from '../../../components/ui/AppIcon';
 import { AppButton } from '../../../components/ui/AppButton';
 import { AppSeparator } from '../../../components/ui/AppSeparator';
+import { getCategoryFallbackImage } from '../../../services/storage/localPersistence';
 import { ExploreItem } from '../types/explore.types';
 
 export interface DeviceDetailModalProps {
@@ -29,6 +30,25 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
 }) => {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
+
+  const [modalImageSrc, setModalImageSrc] = React.useState<string>(() => {
+    if (item?.imageUrl?.startsWith('blob:')) {
+      return getCategoryFallbackImage(item.category);
+    }
+    return item?.imageUrl || '';
+  });
+  const [modalImageFailed, setModalImageFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    if (item) {
+      if (item.imageUrl?.startsWith('blob:')) {
+        setModalImageSrc(getCategoryFallbackImage(item.category));
+      } else {
+        setModalImageSrc(item.imageUrl);
+        setModalImageFailed(false);
+      }
+    }
+  }, [item]);
 
   if (!item) return null;
 
@@ -185,9 +205,15 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
             {/* Main Image */}
             <View style={styles.mediaWrapper}>
               <Image
-                source={{ uri: item.imageUrl }}
+                source={{ uri: modalImageSrc || getCategoryFallbackImage(item.category) }}
                 style={styles.mediaImage}
                 resizeMode="cover"
+                onError={() => {
+                  if (!modalImageFailed) {
+                    setModalImageFailed(true);
+                    setModalImageSrc(getCategoryFallbackImage(item.category));
+                  }
+                }}
               />
             </View>
 

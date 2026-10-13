@@ -10,6 +10,7 @@ import { Badge } from '../ui';
 
 const NAV_LINKS = [
   { path: '/', label: 'Home' },
+  { path: '/rescue', label: 'Rescue Engine', highlight: true },
   { path: '/marketplace', label: 'Marketplace' },
   { path: '/repair', label: 'Repair' },
   { path: '/map', label: 'Waste Map' },
@@ -77,13 +78,16 @@ export default function Header() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 ${
                     active
                       ? 'text-emerald-800 bg-emerald-50 font-bold border border-emerald-200/80 shadow-xs'
+                      : link.highlight
+                      ? 'text-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/70 border border-emerald-200/60 font-bold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                   }`}
                 >
-                  {link.label}
+                  {link.highlight && <Sparkles className="w-3.5 h-3.5 text-emerald-600" />}
+                  <span>{link.label}</span>
                 </Link>
               );
             })}

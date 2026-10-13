@@ -15,6 +15,8 @@ Module._resolveFilename = function (request, parent, isMain, options) {
     return path.join(__dirname, 'test-mock-image-picker.cjs');
   } else if (request === 'react-native-safe-area-context' || request.startsWith('react-native-safe-area-context')) {
     return path.join(__dirname, 'test-mock-safe-area.cjs');
+  } else if (request === '@react-native-async-storage/async-storage' || request.startsWith('@react-native-async-storage/async-storage')) {
+    return path.join(__dirname, 'test-mock-async-storage.cjs');
   }
   return origResolve.call(this, request, parent, isMain, options);
 };

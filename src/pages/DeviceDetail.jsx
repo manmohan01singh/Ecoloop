@@ -345,7 +345,14 @@ export default function DeviceDetail() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                <Link
+                  to={`/rescue?deviceId=${device.id}`}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-sm transition-all"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Find Best Future</span>
+                </Link>
                 <Button
                   onClick={startEdit}
                   variant="outline"
