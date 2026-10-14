@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import {
   Plus, Search, MapPin, Package, X, Heart, Shield, CheckCircle2,
   Tag, Clock, Phone, Mail, MessageSquare, ArrowRight, Filter
@@ -107,6 +107,33 @@ function ListingDetailModal({ listing, isOpen, onClose, onRequestSuccess }) {
             <span>Quantity: {listing.quantity || 1} {listing.unit || 'pcs'}</span>
           </div>
         </div>
+
+        {/* Seller Info */}
+        {listing.user && (
+          <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs border border-emerald-200 overflow-hidden">
+                {listing.user.avatar ? (
+                  <img src={listing.user.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  (listing.user.name?.[0] || 'U').toUpperCase()
+                )}
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900">{listing.user.name}</p>
+                <p className="text-[11px] text-emerald-700 font-semibold">@{listing.user.username || 'user'}</p>
+              </div>
+            </div>
+            {listing.user.username && (
+              <Link
+                to={`/u/${listing.user.username}`}
+                className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline px-2.5 py-1 bg-white border border-slate-200 rounded-lg shadow-2xs"
+              >
+                View Profile
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Description */}
         <div className="space-y-2">

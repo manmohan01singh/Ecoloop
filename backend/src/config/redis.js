@@ -6,6 +6,12 @@ const redisClient = createClient({
   socket: {
     host: config.redis.host,
     port: config.redis.port,
+    reconnectStrategy: (retries) => {
+      if (retries > 2) {
+        return false; // Stop retrying if Redis is not available locally
+      }
+      return 1000;
+    },
   },
   password: config.redis.password,
 });

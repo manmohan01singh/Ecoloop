@@ -30,7 +30,7 @@ export const authenticate = async (req, res, next) => {
 
 export const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
         error: { code: 'FORBIDDEN', message: 'Insufficient permissions' },
@@ -38,4 +38,32 @@ export const authorize = (...roles) => {
     }
     next();
   };
+};
+
+export const optionalAuthenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      req.user = null;
+      return next();
+    }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    if (!token || token === 'null' || token === 'undefined') {
+      req.user = null;
+      return next();
+    }
+
+    try {
+      const decoded = jwt.verify(token, config.jwt.secret);
+      const user = await User.findByPk(decoded.id);
+      req.user = user || null;
+    } catch {
+      req.user = null;
+    }
+    next();
+  } catch (error) {
+    req.user = null;
+    next();
+  }
 };

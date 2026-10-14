@@ -20,6 +20,8 @@ import moderatorRoutes from './moderator.routes.js';
 import recyclerRoutes from './recycler.routes.js';
 import repairProviderRoutes from './repairProvider.routes.js';
 import organizationRoutes from './organization.routes.js';
+import userRoutes from './user.routes.js';
+import applicationRoutes from './application.routes.js';
 
 const router = Router();
 
@@ -44,9 +46,11 @@ router.use('/moderator', moderatorRoutes);
 router.use('/recycler', recyclerRoutes);
 router.use('/repair-provider', repairProviderRoutes);
 router.use('/organization', organizationRoutes);
+router.use('/users', userRoutes);
+router.use('/applications', applicationRoutes);
 
 router.get('/health', (req, res) => {
-  res.json({ success: true, message: 'EcoLoop API is running', timestamp: new Date().toISOString(), version: '2.0.0' });
+  res.json({ success: true, message: 'Circuvio API is running', timestamp: new Date().toISOString(), version: '2.0.0' });
 });
 
 export default router;

@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Circuvio",
+    "slug": "circuvio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ecoloop.mobile"
+      "bundleIdentifier": "com.circuvio.mobile"
     },
     "android": {
-      "package": "com.ecoloop.mobile",
+      "package": "com.circuvio.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -27,8 +27,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow EcoLoop to access your photos to select device images for circular evaluation.",
-          "cameraPermission": "Allow EcoLoop to access your camera to photograph devices for circular evaluation."
+          "photosPermission": "Allow Circuvio to access your photos to select device images for circular evaluation.",
+          "cameraPermission": "Allow Circuvio to access your camera to photograph devices for circular evaluation."
         }
       ]
     ]

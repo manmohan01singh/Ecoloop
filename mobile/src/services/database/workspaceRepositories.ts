@@ -146,7 +146,7 @@ export function reviewProviderApplication(
     title: `Provider Application ${decision === 'approved' ? 'Approved! 🎉' : 'Update'}`,
     description:
       decision === 'approved'
-        ? `Congratulations! Your business "${app.businessName}" is now verified on EcoLoop. Workspace access granted.`
+        ? `Congratulations! Your business "${app.businessName}" is now verified on Circuvio. Workspace access granted.`
         : `Your application for "${app.businessName}" was not approved. Feedback: ${notes || 'Criteria not met.'}`,
     metadata: { applicationId: app.id, status: decision },
     readAt: null,

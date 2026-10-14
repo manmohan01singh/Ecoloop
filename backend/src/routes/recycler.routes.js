@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 import {
   getRecyclerDashboard,
   getRecyclingRequests,
@@ -17,7 +17,7 @@ import {
 const router = express.Router();
 
 // All routes require authentication and recycler/admin role
-router.use(authenticate);
+router.use(authenticate, authorize('recycler', 'admin'));
 
 // Dashboard
 router.get('/dashboard', getRecyclerDashboard);

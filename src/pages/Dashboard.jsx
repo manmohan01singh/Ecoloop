@@ -139,7 +139,7 @@ export default function Dashboard() {
             </div>
             <h3 className="text-lg font-black font-display text-white mt-0.5">Find Your Device's Best Future</h3>
             <p className="text-xs text-slate-300 mt-1 max-w-xl">
-              Don't guess whether to repair, sell as-is, resell, or recycle. EcoLoop evaluates 5 competing real options with certified quotes and follows through.
+              Don't guess whether to repair, sell as-is, resell, or recycle. Circuvio evaluates 5 competing real options with certified quotes and follows through.
             </p>
           </div>
         </div>

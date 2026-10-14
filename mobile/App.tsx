@@ -8,6 +8,7 @@ import { HomeScreen } from './src/features/home/screens/HomeScreen';
 import { ExploreScreen } from './src/features/explore/screens/ExploreScreen';
 import { PostDeviceModal } from './src/features/post/screens/PostDeviceModal';
 import { ActivityScreen } from './src/features/activity/screens/ActivityScreen';
+import { CommunityScreen } from './src/features/community';
 import { ProfileScreen } from './src/features/profile';
 import { DeferredTabPlaceholder } from './src/components/navigation/DeferredTabPlaceholder';
 import { DeviceActionType } from './src/features/post/types/post.types';
@@ -179,6 +180,13 @@ function MainAppShell() {
           <ExploreScreen
             onReturnHome={() => setActiveTab('home')}
             onOpenPostSheet={() => handlePostPress('sell')}
+          />
+        );
+      case 'community':
+        return (
+          <CommunityScreen
+            onReturnHome={() => setActiveTab('home')}
+            onNavigateToTab={(tab) => setActiveTab(tab as TabKey)}
           />
         );
       case 'activity':

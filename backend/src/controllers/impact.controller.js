@@ -93,7 +93,7 @@ export const getGlobalImpact = async (req, res, next) => {
         estimatedCo2Saved: totalDevices * 65,
         estimatedEnergySaved: totalDevices * 130,
         estimatedMaterialsRecovered: totalDevices * 1.5,
-        message: 'Join EcoLoop and contribute to a sustainable future!',
+        message: 'Join Circuvio and contribute to a sustainable future!',
       },
     });
   } catch (error) {

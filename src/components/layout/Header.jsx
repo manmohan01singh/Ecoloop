@@ -15,7 +15,7 @@ const NAV_LINKS = [
   { path: '/repair', label: 'Repair' },
   { path: '/map', label: 'Waste Map' },
   { path: '/community', label: 'Community' },
-  { path: '/challenges', label: 'Challenges' },
+  { path: '/apply', label: 'Pro Apply' },
 ];
 
 export default function Header() {
@@ -59,7 +59,7 @@ export default function Header() {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-slate-900 font-display leading-tight">
-                EcoLoop
+                Circuvio
               </span>
               <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider leading-none">
                 Circular Tech

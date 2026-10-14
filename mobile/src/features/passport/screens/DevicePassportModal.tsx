@@ -85,7 +85,7 @@ export const DevicePassportModal: React.FC<DevicePassportModalProps> = ({
       eventType,
       actorId: user?.id || 'anon',
       actorRole: profile?.activeWorkspace || (user ? 'consumer' : 'guest'),
-      actorName: profile?.displayName || 'EcoLoop User',
+      actorName: profile?.displayName || 'Circuvio User',
       verificationTier,
       summary: summary.trim(),
       evidenceUrl: evidenceUrl.trim() || undefined,

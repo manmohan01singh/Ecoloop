@@ -12,10 +12,15 @@
   },
   "overrides": [
     {
-      "files": ["backend/**/*.js", "*.js", "*.cjs"],
+      "files": ["backend/**/*.js", "backend/**/*.mjs", "tests/**/*.js", "tests/**/*.mjs", "*.js", "*.cjs", "*.mjs"],
       "env": {
         "node": true
       }
     }
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "mobile/**",
+    "node_modules/**"
   ]
 }

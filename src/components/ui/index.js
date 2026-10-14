@@ -1,5 +1,5 @@
 /**
- * EcoLoop UI Component Library
+ * Circuvio UI Component Library
  * 
  * Centralized exports for all reusable UI components.
  * Follows Google & Apple design engineering guidelines:

@@ -79,7 +79,7 @@ export default function AdminDashboard() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-500 text-sm">Manage the EcoLoop platform</p>
+          <p className="text-gray-500 text-sm">Manage the Circuvio platform</p>
         </div>
       </div>
 

@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   User, Camera, Mail, Phone, MapPin, FileText, Bell,
-  Save, CheckCircle, Shield, Star, Edit3, KeyRound, Sparkles
+  Save, CheckCircle, Shield, Star, Edit3, KeyRound, Sparkles, ChevronRight
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
 import api from '../services/api';
@@ -129,7 +130,7 @@ export default function Profile() {
           <div className="flex-1 text-center sm:text-left space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-display truncate">
-                {user?.name || 'EcoLoop Contributor'}
+                {user?.name || 'Circuvio Member'}
               </h2>
               <span className="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 flex items-center justify-center gap-1.5 w-fit mx-auto sm:mx-0">
                 <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
@@ -145,6 +146,25 @@ export default function Profile() {
               <span className={`text-[11px] font-bold px-3 py-0.5 rounded-full border flex items-center gap-1 ${verBadge.color}`}>
                 <Shield className="w-3.5 h-3.5" /> {verBadge.label}
               </span>
+            </div>
+
+            <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap pt-2">
+              <Link
+                to={`/u/${user?.username || user?.id}`}
+                className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-xl transition-colors inline-flex items-center gap-1"
+              >
+                <span>View Public Profile</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+              {user?.role === 'user' && (
+                <Link
+                  to="/apply"
+                  className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1 rounded-xl transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Apply for Pro Role</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
           </div>
         </div>

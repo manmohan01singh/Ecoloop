@@ -6,6 +6,7 @@ import useAuthStore from '../context/authStore';
 import { Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useTranslation } from '../hooks/useTranslation';
+import ApplicationQueueTab from '../components/admin/ApplicationQueueTab';
 
 const STATUS_STYLE = { reported: 'bg-yellow-100 text-yellow-700', under_review: 'bg-blue-100 text-blue-700', verified: 'bg-purple-100 text-purple-700', resolved: 'bg-green-100 text-green-700', rejected: 'bg-gray-100 text-gray-600' };
 
@@ -136,6 +137,7 @@ export default function EnhancedAdminDashboard() {
     ['deposits', 'Deposits'],
     ['locations', 'Locations'],
     ['providers', 'Providers'],
+    ['applications', 'Role Applications'],
     ['reports', 'Reports'],
     ['analytics', 'Analytics']
   ];
@@ -159,7 +161,7 @@ export default function EnhancedAdminDashboard() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-500 text-sm">Manage EcoLoop Platform</p>
+          <p className="text-gray-500 text-sm">Manage Circuvio Platform</p>
         </div>
       </div>
 
@@ -612,6 +614,8 @@ export default function EnhancedAdminDashboard() {
             </div>
           ))}
         </div>
+      ) : tab === 'applications' ? (
+        <ApplicationQueueTab />
       ) : tab === 'reports' ? (
         <div className="space-y-3">
           {reports.map(r => (
@@ -924,6 +928,8 @@ export default function EnhancedAdminDashboard() {
             )}
           </div>
         </div>
+      ) : tab === 'applications' ? (
+        <ApplicationQueueTab />
       ) : null}
     </div>
   );

@@ -19,7 +19,7 @@ import {
 export const INITIAL_FILTERS: ExploreFilters = {
   query: '',
   category: 'all',
-  action: 'all',
+  action: 'sell',
   condition: 'all',
   sort: 'nearest',
   onlyFree: false,

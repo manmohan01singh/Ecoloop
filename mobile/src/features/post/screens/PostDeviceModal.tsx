@@ -182,7 +182,7 @@ export const PostDeviceModal: React.FC<PostDeviceModalProps> = ({
     if (!user) {
       Alert.alert(
         'Sign In Required',
-        'You must have an active EcoLoop account to list a device. Your entered photos and specifications will be preserved.',
+        'You must have an active Circuvio account to list a device. Your entered photos and specifications will be preserved.',
         [
           { text: 'Cancel', style: 'cancel' },
           {

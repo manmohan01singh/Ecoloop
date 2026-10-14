@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Wrench, MapPin, CheckCircle, AlertCircle, Plus, Clock, Phone,
   Shield, Star, Sparkles, CheckCircle2, ChevronRight, MessageSquare
@@ -7,6 +8,8 @@ import { getProviders, getRepairRequests, createRepairRequest, updateRepairStatu
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 import { Button, Input, Modal, Tabs, Badge, Card, LoadingState, EmptyState } from '../components/ui';
+import RepairQuotesModal from '../components/repair/RepairQuotesModal';
+import RepairChatModal from '../components/repair/RepairChatModal';
 
 const STATUS_MAP = {
   requested:   { label: 'Requested',   variant: 'warning' },
@@ -103,6 +106,9 @@ export default function RepairPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [quotesRequest, setQuotesRequest] = useState(null);
+  const [chatRequest, setChatRequest] = useState(null);
+  const [chatProviderId, setChatProviderId] = useState(null);
   const { isAuthenticated, user } = useAuthStore();
 
   const fetchContent = async () => {
@@ -184,7 +190,7 @@ export default function RepairPage() {
           <EmptyState
             icon={Wrench}
             title="No repair workshops found"
-            description="Be the first certified repair technician to list your workshop on EcoLoop."
+            description="Be the first certified repair technician to list your workshop on Circuvio."
             action={{
               label: 'Submit Repair Ticket',
               onClick: () => setShowModal(true),
@@ -208,12 +214,29 @@ export default function RepairPage() {
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-gray-900 text-base font-display group-hover:text-emerald-700 transition-colors">
-                      {p.businessName}
-                    </h3>
+                    {p.user?.username ? (
+                      <Link to={`/u/${p.user.username}`} className="hover:underline">
+                        <h3 className="font-bold text-gray-900 text-base font-display group-hover:text-emerald-700 transition-colors">
+                          {p.businessName}
+                        </h3>
+                      </Link>
+                    ) : (
+                      <h3 className="font-bold text-gray-900 text-base font-display group-hover:text-emerald-700 transition-colors">
+                        {p.businessName}
+                      </h3>
+                    )}
                     <p className="text-xs text-gray-600 line-clamp-2 mt-1 leading-relaxed">
                       {p.description || 'Experienced hardware and circuit board diagnostic technician.'}
                     </p>
+                    {p.user?.username && (
+                      <Link
+                        to={`/u/${p.user.username}`}
+                        className="text-[11px] font-semibold text-emerald-700 hover:underline inline-flex items-center gap-1 mt-1.5"
+                      >
+                        <span>View Public Profile</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </Link>
+                    )}
                   </div>
 
                   <div className="space-y-2 text-xs text-gray-600 pt-2 border-t border-gray-100">
@@ -282,6 +305,14 @@ export default function RepairPage() {
                       <Badge variant={statusMeta.variant} size="sm">
                         {statusMeta.label}
                       </Badge>
+                      {r.user?.username && (
+                        <Link
+                          to={`/u/${r.user.username}`}
+                          className="text-xs text-emerald-700 hover:underline font-semibold"
+                        >
+                          by @{r.user.username}
+                        </Link>
+                      )}
                     </div>
                     <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
                       {r.description}
@@ -303,7 +334,28 @@ export default function RepairPage() {
                   </div>
 
                   {isAuthenticated() && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setQuotesRequest(r)}
+                        icon={<Wrench className="w-3.5 h-3.5" />}
+                      >
+                        Quotes & Pricing
+                      </Button>
+
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setChatRequest(r);
+                          setChatProviderId(null);
+                        }}
+                        icon={<MessageSquare className="w-3.5 h-3.5" />}
+                      >
+                        Chat
+                      </Button>
+
                       {r.status === 'in_progress' && (
                         <Button
                           variant="success"
@@ -322,11 +374,31 @@ export default function RepairPage() {
         )
       )}
 
-      {/* ── MODAL ─────────────────────────────────────────── */}
+      {/* ── MODALS ─────────────────────────────────────────── */}
       <RequestModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onCreated={() => { setTab('requests'); fetchContent(); }}
+      />
+
+      <RepairQuotesModal
+        isOpen={!!quotesRequest}
+        onClose={() => setQuotesRequest(null)}
+        request={quotesRequest}
+        onQuoteAccepted={() => {
+          fetchContent();
+        }}
+        onOpenChat={(pId) => {
+          setChatRequest(quotesRequest);
+          setChatProviderId(pId);
+        }}
+      />
+
+      <RepairChatModal
+        isOpen={!!chatRequest}
+        onClose={() => setChatRequest(null)}
+        request={chatRequest}
+        providerId={chatProviderId}
       />
     </div>
   );

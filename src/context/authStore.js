@@ -1,17 +1,45 @@
 import { create } from 'zustand';
 import api from '../services/api.js';
 
+const getStoredToken = () => localStorage.getItem('circuvio_token') || localStorage.getItem('ecoloop_token') || null;
+const getStoredUser = () => {
+  try {
+    const raw = localStorage.getItem('circuvio_user') || localStorage.getItem('ecoloop_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const persistSession = (token, user) => {
+  if (token) {
+    localStorage.setItem('circuvio_token', token);
+    localStorage.setItem('ecoloop_token', token);
+  }
+  if (user) {
+    const json = JSON.stringify(user);
+    localStorage.setItem('circuvio_user', json);
+    localStorage.setItem('ecoloop_user', json);
+  }
+};
+
+const clearSession = () => {
+  localStorage.removeItem('circuvio_token');
+  localStorage.removeItem('circuvio_user');
+  localStorage.removeItem('ecoloop_token');
+  localStorage.removeItem('ecoloop_user');
+};
+
 const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('ecoloop_user') || 'null'),
-  token: localStorage.getItem('ecoloop_token') || null,
+  user: getStoredUser(),
+  token: getStoredToken(),
   loading: false,
 
   login: async (email, password) => {
     set({ loading: true });
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('ecoloop_token', data.data.tokens.accessToken);
-      localStorage.setItem('ecoloop_user', JSON.stringify(data.data.user));
+      persistSession(data.data.tokens.accessToken, data.data.user);
       set({ user: data.data.user, token: data.data.tokens.accessToken, loading: false });
       return data;
     } catch (error) {
@@ -24,8 +52,7 @@ const useAuthStore = create((set) => ({
     set({ loading: true });
     try {
       const { data } = await api.post('/auth/register', userData);
-      localStorage.setItem('ecoloop_token', data.data.tokens.accessToken);
-      localStorage.setItem('ecoloop_user', JSON.stringify(data.data.user));
+      persistSession(data.data.tokens.accessToken, data.data.user);
       set({ user: data.data.user, token: data.data.tokens.accessToken, loading: false });
       return data;
     } catch (error) {
@@ -35,17 +62,20 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('ecoloop_token');
-    localStorage.removeItem('ecoloop_user');
+    clearSession();
     set({ user: null, token: null });
   },
 
   updateUser: (updated) => {
-    localStorage.setItem('ecoloop_user', JSON.stringify(updated));
+    if (updated) {
+      const json = JSON.stringify(updated);
+      localStorage.setItem('circuvio_user', json);
+      localStorage.setItem('ecoloop_user', json);
+    }
     set({ user: updated });
   },
 
-  isAuthenticated: () => !!localStorage.getItem('ecoloop_token'),
+  isAuthenticated: () => !!getStoredToken(),
 }));
 
 export default useAuthStore;

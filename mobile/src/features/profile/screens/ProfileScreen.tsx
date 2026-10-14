@@ -82,7 +82,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const handleSignOutConfirm = () => {
     Alert.alert(
       'Sign Out',
-      'Are you sure you want to sign out of EcoLoop?',
+      'Are you sure you want to sign out of Circuvio?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -628,7 +628,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               Product Version
             </AppText>
             <AppText variant="subheadline" weight="600">
-              EcoLoop Mobile 1.0.0
+              Circuvio Mobile 1.0.0
             </AppText>
           </View>
 

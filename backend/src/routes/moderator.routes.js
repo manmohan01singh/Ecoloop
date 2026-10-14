@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 import {
   getModeratorDashboard,
   getAllPostsForModeration,
@@ -20,7 +20,7 @@ import {
 const router = express.Router();
 
 // All routes require authentication and moderator/admin role
-router.use(authenticate);
+router.use(authenticate, authorize('moderator', 'admin'));
 
 // Dashboard
 router.get('/dashboard', getModeratorDashboard);

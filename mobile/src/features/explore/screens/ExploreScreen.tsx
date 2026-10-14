@@ -5,6 +5,7 @@ import {
   RefreshControl,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../../design-system/theme/theme';
@@ -21,7 +22,7 @@ import { ExploreItem } from '../types/explore.types';
 
 export interface ExploreScreenProps {
   onReturnHome?: () => void;
-  onOpenPostSheet?: () => void;
+  onOpenPostSheet?: (initialAction?: string) => void;
   initialCategory?: string;
 }
 
@@ -123,6 +124,61 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
         </View>
       </View>
 
+      {/* Dedicated Hubs for Repair Requests & Recycler Intake */}
+      <View style={styles.serviceHubsRow}>
+        <TouchableOpacity
+          onPress={() => onOpenPostSheet?.('repair')}
+          activeOpacity={0.8}
+          style={[
+            styles.serviceHubCard,
+            {
+              backgroundColor: theme.isDark ? 'rgba(0, 113, 227, 0.12)' : 'rgba(0, 113, 227, 0.06)',
+              borderColor: theme.isDark ? 'rgba(0, 113, 227, 0.28)' : 'rgba(0, 113, 227, 0.16)',
+              borderWidth: theme.hairlineWidth,
+            },
+          ]}
+        >
+          <View style={[styles.hubIconBox, { backgroundColor: 'rgba(0, 113, 227, 0.12)' }]}>
+            <AppIcon name="construct" size={15} color="#0071E3" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="caption1" weight="800" customColor="#0071E3">
+              Repair Hub
+            </AppText>
+            <AppText variant="caption2" color="secondary" numberOfLines={1}>
+              Quotes from 48+ shops
+            </AppText>
+          </View>
+          <AppIcon name="chevron-forward" size={13} color="#0071E3" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => onOpenPostSheet?.('recycle')}
+          activeOpacity={0.8}
+          style={[
+            styles.serviceHubCard,
+            {
+              backgroundColor: theme.isDark ? 'rgba(0, 122, 94, 0.12)' : 'rgba(0, 122, 94, 0.06)',
+              borderColor: theme.isDark ? 'rgba(0, 122, 94, 0.28)' : 'rgba(0, 122, 94, 0.16)',
+              borderWidth: theme.hairlineWidth,
+            },
+          ]}
+        >
+          <View style={[styles.hubIconBox, { backgroundColor: 'rgba(0, 122, 94, 0.12)' }]}>
+            <AppIcon name="leaf" size={15} color="#007A5E" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="caption1" weight="800" customColor="#007A5E">
+              Recycle Hub
+            </AppText>
+            <AppText variant="caption2" color="secondary" numberOfLines={1}>
+              Free zero-landfill depots
+            </AppText>
+          </View>
+          <AppIcon name="chevron-forward" size={13} color="#007A5E" />
+        </TouchableOpacity>
+      </View>
+
       {/* Main List / ScrollView */}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -200,7 +256,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
                   variant="filled"
                   size="medium"
                   icon="add"
-                  onPress={onOpenPostSheet}
+                  onPress={() => onOpenPostSheet()}
                 />
               ) : null}
             </View>
@@ -251,6 +307,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 7,
+  },
+  serviceHubsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    gap: 10,
+  },
+  serviceHubCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 14,
+  },
+  hubIconBox: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   co2Summary: {
     flexDirection: 'row',

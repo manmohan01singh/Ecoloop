@@ -72,7 +72,7 @@ export const ActionDetailSheet: React.FC<ActionDetailSheetProps> = ({
           highlights: [
             'All items include battery health ratings and cosmetic disclosures',
             'Save 40-70% compared to retail prices while supporting zero-waste',
-            '30-day function verification backed by the EcoLoop community',
+            '30-day function verification backed by the Circuvio community',
           ],
           categories: ['Inspected Smartphones', 'Productivity Laptops', 'Accessories', 'Displays'],
           ctaText: 'Browse Marketplace',

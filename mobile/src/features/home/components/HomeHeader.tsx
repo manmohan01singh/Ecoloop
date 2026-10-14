@@ -58,11 +58,11 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
             <AppIcon name="leaf" size={17} color={theme.colors.tint} />
           </View>
           <View>
-            <AppText variant="headline" weight="700">
-              EcoLoop
+            <AppText variant="headline" weight="800" style={{ letterSpacing: -0.4 }}>
+              Circuvio
             </AppText>
-            <AppText variant="caption2" color="secondary" weight="500">
-              Circular Electronics
+            <AppText variant="caption2" color="secondary" weight="600" style={{ letterSpacing: 0.2 }}>
+              Circular Tech
             </AppText>
           </View>
         </View>

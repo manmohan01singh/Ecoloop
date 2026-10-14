@@ -22,6 +22,11 @@ import WasteDeposit from './WasteDeposit.js';
 import BusinessMaterial from './BusinessMaterial.js';
 import MaterialRequest from './MaterialRequest.js';
 import Review from './Review.js';
+import ProfessionalApplication from './ProfessionalApplication.js';
+import Follow from './Follow.js';
+import Bookmark from './Bookmark.js';
+import RepairQuote from './RepairQuote.js';
+import RepairMessage from './RepairMessage.js';
 
 // ── User ↔ Device ──────────────────────────────────────────────
 User.hasMany(Device, { foreignKey: 'userId', as: 'devices' });
@@ -127,6 +132,35 @@ Review.belongsTo(User, { foreignKey: 'reviewerId', as: 'reviewer' });
 User.hasMany(Review, { foreignKey: 'revieweeId', as: 'receivedReviews' });
 Review.belongsTo(User, { foreignKey: 'revieweeId', as: 'reviewee' });
 
+// ── Applications ──────────────────────────────────────────────
+User.hasMany(ProfessionalApplication, { foreignKey: 'userId', as: 'applications' });
+ProfessionalApplication.belongsTo(User, { foreignKey: 'userId', as: 'applicant' });
+ProfessionalApplication.belongsTo(User, { foreignKey: 'reviewerId', as: 'reviewer' });
+
+// ── Follows ────────────────────────────────────────────────────
+User.hasMany(Follow, { foreignKey: 'followerId', as: 'following' });
+Follow.belongsTo(User, { foreignKey: 'followerId', as: 'follower' });
+User.hasMany(Follow, { foreignKey: 'followingId', as: 'followers' });
+Follow.belongsTo(User, { foreignKey: 'followingId', as: 'target' });
+
+// ── Bookmarks ──────────────────────────────────────────────────
+User.hasMany(Bookmark, { foreignKey: 'userId', as: 'bookmarks' });
+Bookmark.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Post.hasMany(Bookmark, { foreignKey: 'postId', as: 'bookmarks' });
+Bookmark.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
+
+// ── Repair Quotes & Messages ──────────────────────────────────
+RepairRequest.hasMany(RepairQuote, { foreignKey: 'repairRequestId', as: 'quotes' });
+RepairQuote.belongsTo(RepairRequest, { foreignKey: 'repairRequestId', as: 'repairRequest' });
+Provider.hasMany(RepairQuote, { foreignKey: 'providerId', as: 'quotes' });
+RepairQuote.belongsTo(Provider, { foreignKey: 'providerId', as: 'provider' });
+
+RepairRequest.hasMany(RepairMessage, { foreignKey: 'repairRequestId', as: 'messages' });
+RepairMessage.belongsTo(RepairRequest, { foreignKey: 'repairRequestId', as: 'repairRequest' });
+RepairMessage.belongsTo(Provider, { foreignKey: 'providerId', as: 'provider' });
+RepairMessage.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+RepairMessage.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
+
 export {
   User, Device,
   Community, CommunityMember,
@@ -138,5 +172,7 @@ export {
   Report, Notification, EcoKarma,
   WasteDeposit, BusinessMaterial, MaterialRequest,
   Review,
+  ProfessionalApplication, Follow, Bookmark,
+  RepairQuote, RepairMessage,
 };
 export default sequelize;

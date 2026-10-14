@@ -74,7 +74,7 @@ export const PostReviewStep: React.FC<PostReviewStepProps> = ({
             Review your posting
           </AppText>
           <AppText variant="subheadline" color="secondary" style={styles.subtitle}>
-            Verify specifications before publishing to the EcoLoop circular network.
+            Verify specifications before publishing to the Circuvio circular network.
           </AppText>
         </View>
 
@@ -362,7 +362,7 @@ export const PostReviewStep: React.FC<PostReviewStepProps> = ({
       {/* Footer Submit Button */}
       <View style={styles.footer}>
         <AppButton
-          label={submitting ? 'Submitting to EcoLoop...' : 'Confirm & Post Device'}
+          label={submitting ? 'Submitting to Circuvio...' : 'Confirm & Post Device'}
           variant="filled"
           size="large"
           fullWidth

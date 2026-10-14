@@ -14,6 +14,8 @@ export default function EmptyState({
   title,
   description,
   action,
+  actionLabel,
+  onAction,
   variant = 'default',
   className = '',
 }) {
@@ -36,21 +38,22 @@ export default function EmptyState({
   };
 
   const renderAction = () => {
-    if (!action) return null;
-    if (isValidElement(action)) return action;
-    if (typeof action === 'object') {
+    const effectiveAction = action || (actionLabel ? { label: actionLabel, onClick: onAction } : null);
+    if (!effectiveAction) return null;
+    if (isValidElement(effectiveAction)) return effectiveAction;
+    if (typeof effectiveAction === 'object') {
       const btn = (
         <Button
-          onClick={action.onClick}
-          icon={action.icon}
-          variant={action.variant || 'primary'}
-          size={action.size || 'md'}
+          onClick={effectiveAction.onClick}
+          icon={effectiveAction.icon}
+          variant={effectiveAction.variant || 'primary'}
+          size={effectiveAction.size || 'md'}
         >
-          {action.label}
+          {effectiveAction.label}
         </Button>
       );
-      if (action.href) {
-        return <Link to={action.href}>{btn}</Link>;
+      if (effectiveAction.href) {
+        return <Link to={effectiveAction.href}>{btn}</Link>;
       }
       return btn;
     }

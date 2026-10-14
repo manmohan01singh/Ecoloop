@@ -1,5 +1,5 @@
 /**
- * EcoLoop Rescue Engine & Device Futures Exchange Service
+ * Circuvio Rescue Engine & Device Futures Exchange Service
  * 
  * Signature Experience Engine:
  * 1. Device Truth Report & Diagnostic Assessment (Tiers A/B/C + Safety Matrix)
@@ -320,9 +320,9 @@ export function evaluateDeviceTruthReport(deviceInput = {}, diagnosticChecks = {
       hasSafetyHazard: isBatterySwollen
     },
     auditTrail: [
-      { step: 'Truth Report Created', timestamp: new Date().toISOString(), actor: 'EcoLoop Guided Diagnostic Engine' },
+      { step: 'Truth Report Created', timestamp: new Date().toISOString(), actor: 'Circuvio Guided Diagnostic Engine' },
       { step: 'Component Health Telemetry Signed', timestamp: new Date().toISOString(), actor: 'Device Diagnostics Subsystem' },
-      { step: 'Futures Exchange Market Solicitations', timestamp: new Date().toISOString(), actor: 'EcoLoop Circular Network' }
+      { step: 'Futures Exchange Market Solicitations', timestamp: new Date().toISOString(), actor: 'Circuvio Circular Network' }
     ]
   };
 
@@ -461,7 +461,7 @@ export function generateFuturesExchangeOffers(truthReport) {
       name: 'EcoFix Certified Master Lab',
       rating: 4.9,
       reviewsCount: 3840,
-      verificationBadge: 'EcoLoop Verified Service Partner',
+      verificationBadge: 'Circuvio Verified Service Partner',
       turnaround: 'Same-day (2-4 hours doorstep or in-shop)'
     },
     financial: {
@@ -595,7 +595,7 @@ export function generateFuturesExchangeOffers(truthReport) {
     includedServices: [
       'Professional Grade-A cosmetic buffing & micro-polishing',
       'Fresh OEM battery replacement included in consignment',
-      'EcoLoop Transferable Passport transferred to vetted buyer'
+      'Circuvio Transferable Passport transferred to vetted buyer'
     ],
     confidenceScore: isRefurbishViable ? 'Estimated Consignment Net Range (±7%)' : 'Not Recommended',
     confidenceVariance: '±7%',
@@ -827,7 +827,7 @@ export function calculateBestRecommendation(offers, preferencePriority = 'balanc
     runnerUp,
     preferencePriority,
     allScoredOffers: scoredOffers,
-    independentDisclosure: 'EcoLoop recommendation algorithm is strictly independent. Rankings are calculated purely from your selected preference parameters and verified partner metrics. No provider pays for priority placement.',
+    independentDisclosure: 'Circuvio recommendation algorithm is strictly independent. Rankings are calculated purely from your selected preference parameters and verified partner metrics. No provider pays for priority placement.',
     uncertaintyDisclosures: [
       'Quotes assume physical component validation during courier handover.',
       'Lifespan estimates are modeled based on standard daily usage cycles and OEM replacement parts.'
@@ -866,7 +866,7 @@ export function generateProofOfRescue(selectedOffer = {}, truthReport = {}, book
     chosenPathway: {
       key: safeOffer.key || 'repair_keep',
       title: safeOffer.title || 'Device Rescue',
-      partner: safeOffer.provider?.name || 'EcoLoop Certified Partner',
+      partner: safeOffer.provider?.name || 'Circuvio Certified Partner',
       financialOutcome: safeOffer.financial?.displayAmount || 'Verified',
       warranty: safeOffer.warranty || 'Certified Circular Warranty'
     },
@@ -896,15 +896,17 @@ export function generateProofOfRescue(selectedOffer = {}, truthReport = {}, book
       leaderboardContributionPoints: safeOffer.key === 'certified_recycle' ? 500 : 350,
       badgeUnlocked: 'Device Savior · Level 1'
     },
-    verificationHash: `SHA256-VTR-${Math.random().toString(16).substring(2, 10).toUpperCase()}-ECOLOOP`
+    verificationHash: `SHA256-VTR-${Math.random().toString(16).substring(2, 10).toUpperCase()}-CIRCUVIO`
   };
 
   // Save to local history if in browser
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const existing = JSON.parse(localStorage.getItem('ecoloop_rescues') || '[]');
+      const existing = JSON.parse(localStorage.getItem('circuvio_rescues') || localStorage.getItem('ecoloop_rescues') || '[]');
       existing.unshift(proof);
-      localStorage.setItem('ecoloop_rescues', JSON.stringify(existing.slice(0, 20)));
+      const json = JSON.stringify(existing.slice(0, 20));
+      localStorage.setItem('circuvio_rescues', json);
+      localStorage.setItem('ecoloop_rescues', json);
     }
   } catch (e) {
     console.warn('Could not save to localStorage', e);

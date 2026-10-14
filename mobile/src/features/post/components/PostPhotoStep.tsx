@@ -43,7 +43,7 @@ export const PostPhotoStep: React.FC<PostPhotoStepProps> = ({
         setPermissionDenied(true);
         Alert.alert(
           'Camera Access Required',
-          'EcoLoop needs camera access to photograph your device for condition assessment. Please grant permissions in your device settings or choose photos from your library.',
+          'Circuvio needs camera access to photograph your device for condition assessment. Please grant permissions in your device settings or choose photos from your library.',
           [{ text: 'OK' }]
         );
         return;
@@ -80,7 +80,7 @@ export const PostPhotoStep: React.FC<PostPhotoStepProps> = ({
         setPermissionDenied(true);
         Alert.alert(
           'Photo Library Access Required',
-          'EcoLoop needs access to your photos to upload hardware condition shots.',
+          'Circuvio needs access to your photos to upload hardware condition shots.',
           [{ text: 'OK' }]
         );
         return;

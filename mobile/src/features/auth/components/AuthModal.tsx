@@ -212,7 +212,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   ? 'Create Your Account'
                   : mode === 'forgot'
                   ? 'Reset Password'
-                  : 'Welcome to EcoLoop'}
+                  : 'Welcome to Circuvio'}
               </AppText>
 
               <AppText variant="subheadline" color="secondary" style={styles.subtitle}>
@@ -392,7 +392,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   submitting
                     ? 'Processing...'
                     : mode === 'signup'
-                    ? 'Create EcoLoop Account'
+                    ? 'Create Circuvio Account'
                     : mode === 'forgot'
                     ? 'Send Reset Link'
                     : 'Sign In'
@@ -405,12 +405,44 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               />
             </View>
 
+            {/* 1-Tap Quick Persona Testing */}
+            {mode === 'signin' && (
+              <View style={styles.demoPersonaContainer}>
+                <AppText variant="caption2" weight="700" color="tertiary" style={styles.demoPersonaTitle}>
+                  QUICK PERSONA TESTING
+                </AppText>
+                <View style={styles.demoPillsRow}>
+                  {[
+                    { label: 'Citizen', email: 'citizen@circuvio.com' },
+                    { label: 'Repair Pro', email: 'repair@circuvio.com' },
+                    { label: 'Recycler', email: 'recycler@circuvio.com' },
+                    { label: 'Business', email: 'business@circuvio.com' },
+                    { label: 'Admin', email: 'admin@circuvio.com' },
+                  ].map((p) => (
+                    <TouchableOpacity
+                      key={p.label}
+                      onPress={() => {
+                        setEmail(p.email);
+                        setPassword('Circuvio2026!');
+                      }}
+                      activeOpacity={0.7}
+                      style={[styles.demoPill, { backgroundColor: theme.colors.fillSecondary }]}
+                    >
+                      <AppText variant="caption2" weight="600" color="secondary">
+                        {p.label}
+                      </AppText>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
+
             {/* Mode Switching Footer */}
             <View style={styles.footerRow}>
               {mode === 'signin' ? (
                 <>
                   <AppText variant="footnote" color="secondary">
-                    New to EcoLoop?
+                    New to Circuvio?
                   </AppText>
                   <TouchableOpacity
                     accessibilityRole="button"
@@ -547,5 +579,23 @@ const styles = StyleSheet.create({
   switchButton: {
     marginLeft: 6,
     paddingVertical: 4,
+  },
+  demoPersonaContainer: {
+    marginBottom: 16,
+    paddingTop: 4,
+  },
+  demoPersonaTitle: {
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  demoPillsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  demoPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
 });

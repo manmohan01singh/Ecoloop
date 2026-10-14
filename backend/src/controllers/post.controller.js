@@ -1,4 +1,4 @@
-import { Post, PostVote, Comment, User, Community, CommunityMember, Notification } from '../models/index.js';
+import { Post, PostVote, Comment, User, Community, CommunityMember, Notification, Bookmark } from '../models/index.js';
 import { Op, literal } from 'sequelize';
 import { awardKarma } from '../services/karma.service.js';
 
@@ -12,13 +12,19 @@ const hotScore = (upvotes, downvotes, createdAt) => {
 
 export const getPosts = async (req, res, next) => {
   try {
-    const { sort = 'hot', category, communityId, communitySlug, page = 1, limit = 20 } = req.query;
+    const { sort = 'hot', category, communityId, communitySlug, page = 1, limit = 20, search } = req.query;
     const where = { isRemoved: false };
     if (category) where.category = category;
     if (communityId) where.communityId = communityId;
     if (communitySlug) {
       const c = await Community.findOne({ where: { slug: communitySlug } });
       if (c) where.communityId = c.id;
+    }
+    if (search) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${search}%` } },
+        { body: { [Op.like]: `%${search}%` } },
+      ];
     }
 
     const orderMap = {
@@ -31,23 +37,33 @@ export const getPosts = async (req, res, next) => {
     const { rows, count } = await Post.findAndCountAll({
       where,
       include: [
-        { model: User, as: 'author', attributes: ['id', 'name', 'avatar', 'ecoKarmaTotal'] },
+        { model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'ecoKarmaTotal', 'role'] },
         { model: Community, as: 'community', attributes: ['id', 'name', 'slug'] },
       ],
       order: orderMap[sort] || orderMap.hot,
-      limit: parseInt(limit),
-      offset: (parseInt(page) - 1) * parseInt(limit),
+      limit: parseInt(limit, 10),
+      offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
     });
 
-    // Attach user vote if logged in
+    // Attach user vote & bookmark if logged in
     let userVotes = {};
+    let userBookmarks = new Set();
     if (req.user) {
-      const votes = await PostVote.findAll({ where: { postId: rows.map(p => p.id), userId: req.user.id } });
+      const postIds = rows.map(p => p.id);
+      const [votes, bookmarks] = await Promise.all([
+        PostVote.findAll({ where: { postId: postIds, userId: req.user.id } }),
+        Bookmark.findAll({ where: { postId: postIds, userId: req.user.id } }),
+      ]);
       votes.forEach(v => { userVotes[v.postId] = v.value; });
+      bookmarks.forEach(b => { userBookmarks.add(b.postId); });
     }
 
-    const items = rows.map(p => ({ ...p.toJSON(), userVote: userVotes[p.id] || 0 }));
-    res.json({ success: true, data: { items, total: count, page: parseInt(page) } });
+    const items = rows.map(p => ({
+      ...p.toJSON(),
+      userVote: userVotes[p.id] || 0,
+      isBookmarked: userBookmarks.has(p.id),
+    }));
+    res.json({ success: true, data: { items, total: count, page: parseInt(page, 10), pages: Math.ceil(count / limit) } });
   } catch (e) { next(e); }
 };
 
@@ -55,16 +71,18 @@ export const getPost = async (req, res, next) => {
   try {
     const post = await Post.findByPk(req.params.id, {
       include: [
-        { model: User, as: 'author', attributes: ['id', 'name', 'avatar', 'ecoKarmaTotal', 'role'] },
+        { model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'ecoKarmaTotal', 'role'] },
         { model: Community, as: 'community', attributes: ['id', 'name', 'slug'] },
         {
           model: Comment, as: 'comments',
           where: { parentId: null, isRemoved: false },
           required: false,
           include: [
-            { model: User, as: 'author', attributes: ['id', 'name', 'avatar'] },
-            { model: Comment, as: 'replies', required: false, where: { isRemoved: false },
-              include: [{ model: User, as: 'author', attributes: ['id', 'name', 'avatar'] }] },
+            { model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'role'] },
+            {
+              model: Comment, as: 'replies', required: false, where: { isRemoved: false },
+              include: [{ model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'role'] }],
+            },
           ],
           order: [['createdAt', 'ASC']],
         },
@@ -73,11 +91,16 @@ export const getPost = async (req, res, next) => {
     if (!post) return res.status(404).json({ success: false, error: { message: 'Post not found' } });
 
     let userVote = 0;
+    let isBookmarked = false;
     if (req.user) {
-      const v = await PostVote.findOne({ where: { postId: post.id, userId: req.user.id } });
+      const [v, b] = await Promise.all([
+        PostVote.findOne({ where: { postId: post.id, userId: req.user.id } }),
+        Bookmark.findOne({ where: { postId: post.id, userId: req.user.id } }),
+      ]);
       userVote = v?.value || 0;
+      isBookmarked = !!b;
     }
-    res.json({ success: true, data: { ...post.toJSON(), userVote } });
+    res.json({ success: true, data: { ...post.toJSON(), userVote, isBookmarked } });
   } catch (e) { next(e); }
 };
 
@@ -85,15 +108,91 @@ export const createPost = async (req, res, next) => {
   try {
     const { title, body, category, communityId, images, flair } = req.body;
 
+    if (!title || title.trim().length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: 'Title must be at least 3 characters long' },
+      });
+    }
+
+    if (title.trim().length > 300) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: 'Title must not exceed 300 characters' },
+      });
+    }
+
     if (communityId) {
       const member = await CommunityMember.findOne({ where: { communityId, userId: req.user.id } });
       if (!member) return res.status(403).json({ success: false, error: { message: 'Join community to post' } });
     }
 
-    const post = await Post.create({ authorId: req.user.id, title, body, category, communityId, images: images || [], flair });
+    const post = await Post.create({
+      authorId: req.user.id,
+      title: title.trim(),
+      body: body ? body.trim() : null,
+      category: category || 'general',
+      communityId: communityId || null,
+      images: images || [],
+      flair: flair || null,
+    });
     if (communityId) await Community.increment('postCount', { where: { id: communityId } });
 
-    res.status(201).json({ success: true, data: post, message: 'Post created' });
+    const fullPost = await Post.findByPk(post.id, {
+      include: [
+        { model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'role', 'ecoKarmaTotal'] },
+        { model: Community, as: 'community', attributes: ['id', 'name', 'slug'] },
+      ],
+    });
+
+    res.status(201).json({ success: true, data: fullPost || post, message: 'Post created' });
+  } catch (e) { next(e); }
+};
+
+export const toggleBookmark = async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ success: false, error: { message: 'Post not found' } });
+    }
+
+    const existing = await Bookmark.findOne({
+      where: { userId: req.user.id, postId },
+    });
+
+    if (existing) {
+      await existing.destroy();
+      return res.json({ success: true, isBookmarked: false, data: { isBookmarked: false }, message: 'Bookmark removed' });
+    } else {
+      await Bookmark.create({ userId: req.user.id, postId });
+      return res.json({ success: true, isBookmarked: true, data: { isBookmarked: true }, message: 'Post bookmarked' });
+    }
+  } catch (e) { next(e); }
+};
+
+export const getMyBookmarks = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const bookmarks = await Bookmark.findAll({
+      where: { userId: req.user.id },
+      attributes: ['postId', 'createdAt'],
+      order: [['createdAt', 'DESC']],
+      limit: parseInt(limit, 10),
+      offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
+    });
+
+    const postIds = bookmarks.map(b => b.postId);
+    const posts = await Post.findAll({
+      where: { id: postIds, isRemoved: false },
+      include: [
+        { model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'role'] },
+        { model: Community, as: 'community', attributes: ['id', 'name', 'slug'] },
+      ],
+    });
+
+    const items = posts.map(p => ({ ...p.toJSON(), isBookmarked: true }));
+    res.json({ success: true, data: { items, total: bookmarks.length } });
   } catch (e) { next(e); }
 };
 
@@ -153,7 +252,7 @@ export const addComment = async (req, res, next) => {
     }
 
     const full = await Comment.findByPk(comment.id, {
-      include: [{ model: User, as: 'author', attributes: ['id', 'name', 'avatar'] }],
+      include: [{ model: User, as: 'author', attributes: ['id', 'name', 'username', 'avatar', 'role'] }],
     });
     res.status(201).json({ success: true, data: full });
   } catch (e) { next(e); }

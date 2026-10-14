@@ -14,7 +14,7 @@ export const getListings = async (req, res, next) => {
 
     const { rows, count } = await Listing.findAndCountAll({
       where,
-      include: [{ model: User, as: 'user', attributes: ['id', 'name', 'avatar', 'city'] }],
+      include: [{ model: User, as: 'user', attributes: ['id', 'name', 'username', 'avatar', 'role', 'city'] }],
       order: [['createdAt', 'DESC']],
       limit: parseInt(limit),
       offset: (parseInt(page) - 1) * parseInt(limit),
@@ -27,8 +27,8 @@ export const getListing = async (req, res, next) => {
   try {
     const listing = await Listing.findByPk(req.params.id, {
       include: [
-        { model: User, as: 'user', attributes: ['id', 'name', 'avatar', 'city', 'phone'] },
-        { model: ListingRequest, as: 'requests', include: [{ model: User, as: 'requester', attributes: ['id', 'name', 'avatar'] }] },
+        { model: User, as: 'user', attributes: ['id', 'name', 'username', 'avatar', 'role', 'city'] },
+        { model: ListingRequest, as: 'requests', include: [{ model: User, as: 'requester', attributes: ['id', 'name', 'username', 'avatar'] }] },
       ],
     });
     if (!listing) return res.status(404).json({ success: false, error: { message: 'Listing not found' } });

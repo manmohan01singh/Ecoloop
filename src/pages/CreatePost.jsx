@@ -273,8 +273,10 @@ export default function CreatePost() {
               onChange={e => setFormData(p => ({ ...p, body: e.target.value }))}
               placeholder="Write your story, tips, question, or experience..."
               rows={6}
+              maxLength={10000}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
             />
+            <p className="text-xs text-gray-400 mt-1">{formData.body.length}/10,000</p>
           </div>
 
           {/* ── IMAGE UPLOAD ───────────────────────────────────── */}

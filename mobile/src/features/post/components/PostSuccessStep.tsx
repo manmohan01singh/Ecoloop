@@ -27,7 +27,7 @@ export const PostSuccessStep: React.FC<PostSuccessStepProps> = ({
       case 'repair':
         return {
           title: 'Repair Request Submitted!',
-          desc: 'Your diagnostic request has been logged into the EcoLoop network. Certified repairers will contact you with diagnostic quotes.',
+          desc: 'Your diagnostic request has been logged into the Circuvio network. Certified repairers will contact you with diagnostic quotes.',
           badge: 'TICKET ACTIVE',
         };
       case 'recycle':

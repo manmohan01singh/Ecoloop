@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Leaf, User, Phone, MapPin, Mail, Lock, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 import { Button, Input, Badge } from '../components/ui';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', city: '', state: '', role: 'user' });
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get('role') || 'user';
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', city: '', state: '', role: initialRole });
   const { register, loading } = useAuthStore();
   const navigate = useNavigate();
 
@@ -29,8 +31,13 @@ export default function Register() {
     e.preventDefault();
     try {
       await register(form);
-      toast.success('Account created successfully! Welcome to EcoLoop.');
-      navigate(getRoleDashboard(form.role));
+      if (form.role && form.role !== 'user') {
+        toast.success('Account created! Submit your verification application to unlock pro features.');
+        navigate('/apply', { state: { requestedRole: form.role } });
+      } else {
+        toast.success('Account created successfully! Welcome to Circuvio.');
+        navigate('/dashboard');
+      }
     } catch (err) {
       toast.error(err.response?.data?.error?.message || 'Registration failed');
     }
@@ -47,7 +54,7 @@ export default function Register() {
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <Leaf className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-black text-white font-display tracking-tight">EcoLoop</span>
+            <span className="text-2xl font-black text-white font-display tracking-tight">Circuvio</span>
           </Link>
         </div>
 
@@ -77,7 +84,7 @@ export default function Register() {
         </div>
 
         <div className="relative z-10 text-xs text-gray-500 pt-6 border-t border-gray-800/80 flex items-center justify-between">
-          <span>© 2026 EcoLoop Platform</span>
+          <span>© 2026 Circuvio Platform</span>
           <span>Team Jai Mahakaal · Grand Finale</span>
         </div>
       </div>
@@ -92,7 +99,7 @@ export default function Register() {
                 <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
                   <Leaf className="w-5 h-5" />
                 </div>
-                <span className="text-xl font-black text-gray-900 font-display">EcoLoop</span>
+                <span className="text-xl font-black text-gray-900 font-display">Circuvio</span>
               </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-gray-900 font-display">Create Your Account</h1>

@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Attach token to every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('ecoloop_token');
+  const token = localStorage.getItem('circuvio_token') || localStorage.getItem('ecoloop_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,6 +21,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      localStorage.removeItem('circuvio_token');
+      localStorage.removeItem('circuvio_user');
       localStorage.removeItem('ecoloop_token');
       localStorage.removeItem('ecoloop_user');
       window.location.href = '/login';

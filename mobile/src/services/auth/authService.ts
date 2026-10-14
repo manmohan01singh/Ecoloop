@@ -165,7 +165,7 @@ export async function signUpUser(params: SignUpParams): Promise<AuthResult> {
     eventType: 'account_created',
     entityType: 'profile',
     entityId: userId,
-    title: 'Welcome to EcoLoop!',
+    title: 'Welcome to Circuvio!',
     description: 'Your circular electronic passport is active. 50 welcome EcoKarma points awarded.',
     metadata: { welcomeBonus: 50 },
     readAt: null,
@@ -287,16 +287,30 @@ export async function signInUser(params: SignInParams): Promise<AuthResult> {
     return { session, error: null };
   }
 
-  // 3. If not previously registered, create session with new member profile
+  // 3. If not previously registered, create session with new profile matching role
   const userId = generateUUID();
   const user: AuthUser = { id: userId, email };
+  const lowerEmail = email.toLowerCase();
+  const assignedRole: any =
+    lowerEmail.startsWith('admin@')
+      ? 'admin'
+      : lowerEmail.startsWith('moderator@')
+      ? 'moderator'
+      : lowerEmail.startsWith('repair@')
+      ? 'repair_pro'
+      : lowerEmail.startsWith('recycler@')
+      ? 'recycler'
+      : lowerEmail.startsWith('business@')
+      ? 'business'
+      : 'member';
+
   const profile: UserProfile = {
     id: userId,
     email,
     displayName: email.split('@')[0].replace('.', ' '),
     username: email.split('@')[0],
-    city: 'Metro Vancouver',
-    role: 'member',
+    city: 'Metro Bangalore',
+    role: assignedRole,
     karmaPoints: 150,
     co2DivertedKg: 110,
     preferences: { notifications: true, theme: 'system', emailAlerts: false },
@@ -304,6 +318,7 @@ export async function signInUser(params: SignInParams): Promise<AuthResult> {
     updatedAt: new Date().toISOString(),
   };
 
+  saveProfile(profile);
   const session: AuthSession = { user, profile };
   setStoredSessionUser(session);
   return { session, error: null };

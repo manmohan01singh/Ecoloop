@@ -10,6 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../../design-system/theme/theme';
 import { HomeHeader } from '../components/HomeHeader';
 import { WelcomeSection } from '../components/WelcomeSection';
+import { CupertinoValuationTerminal } from '../components/CupertinoValuationTerminal';
+import { CircularLifecycleVisual } from '../components/CircularLifecycleVisual';
 import { CoreActions } from '../components/CoreActions';
 import { PostDeviceBanner } from '../components/PostDeviceBanner';
 import { CircularToolsSection } from '../components/CircularToolsSection';
@@ -137,7 +139,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onNavigateToTab('explore');
           } else {
             Alert.alert(
-              'Search EcoLoop',
+              'Search Circuvio',
               'Search devices, repairs, and recycling depots in ' + selectedRegion,
               [{ text: 'OK' }]
             );
@@ -167,10 +169,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           />
         }
       >
-        {/* Section B: Editorial Heading */}
-        <WelcomeSection />
+        {/* Section B: Apple Cupertino Editorial Heading & Hero Rescue Engine Card */}
+        <WelcomeSection onOpenRescueEngine={triggerDecision} />
 
-        {/* Section C: The 4 Core Actions (Repair, Recycle, Sell, Buy) */}
+        {/* Section C: Interactive iOS Device Valuation Terminal */}
+        <CupertinoValuationTerminal
+          onAssessDevice={(_category, _condition) => {
+            triggerDecision();
+          }}
+        />
+
+        {/* Section D: 6-Step Circular Lifecycle Pathway Visual */}
+        <CircularLifecycleVisual
+          onSelectStep={(actionKey) => {
+            handleSheetAction(actionKey);
+          }}
+        />
+
+        {/* Section E: The 4 Core Actions (Repair, Recycle, Sell, Buy) */}
         <CoreActions
           actions={coreActions}
           onActionPress={handleActionPress}

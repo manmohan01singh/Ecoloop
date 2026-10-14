@@ -54,13 +54,13 @@ export default function LegalPage({ initialTab = 'privacy' }) {
             </div>
             <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
               <p>
-                <strong>1. Data Sanitization Commitment:</strong> Before exchanging, donating, or recycling any device through EcoLoop, users are provided with NIST 800-88 compliant instructions for permanent data destruction. EcoLoop partners never access or harvest personal user files stored on hardware.
+                <strong>1. Data Sanitization Commitment:</strong> Before exchanging, donating, or recycling any device through Circuvio, users are provided with NIST 800-88 compliant instructions for permanent data destruction. Circuvio partners never access or harvest personal user files stored on hardware.
               </p>
               <p>
                 <strong>2. Information Collection:</strong> We collect only necessary account data (name, email, city) to facilitate circular transactions, track environmental impact, and verify accredited recycling centers.
               </p>
               <p>
-                <strong>3. No Sale of User Data:</strong> EcoLoop does not sell, license, or monetize your personal profile data with third-party advertisers. Platform metrics are aggregated anonymously for public sustainability reporting.
+                <strong>3. No Sale of User Data:</strong> Circuvio does not sell, license, or monetize your personal profile data with third-party advertisers. Platform metrics are aggregated anonymously for public sustainability reporting.
               </p>
             </div>
           </Card>
@@ -74,10 +74,10 @@ export default function LegalPage({ initialTab = 'privacy' }) {
             </div>
             <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
               <p>
-                <strong>1. Circular Commerce:</strong> Items listed on the EcoLoop marketplace must be described accurately in terms of operational condition, battery health, and physical cosmetics. Stolen or disputed hardware is strictly prohibited.
+                <strong>1. Circular Commerce:</strong> Items listed on the Circuvio marketplace must be described accurately in terms of operational condition, battery health, and physical cosmetics. Stolen or disputed hardware is strictly prohibited.
               </p>
               <p>
-                <strong>2. Repair Contracts:</strong> Repair quotes provided by technicians on EcoLoop represent independent service agreements. EcoLoop provides reputation scoring and ticket tracking to ensure accountability.
+                <strong>2. Repair Contracts:</strong> Repair quotes provided by technicians on Circuvio represent independent service agreements. Circuvio provides reputation scoring and ticket tracking to ensure accountability.
               </p>
               <p>
                 <strong>3. Hazardous Materials:</strong> Hazardous e-waste (swollen lithium-ion batteries, broken CRT glass) must be deposited only at certified waste bank locations displaying the verified compliance badge.
@@ -90,7 +90,7 @@ export default function LegalPage({ initialTab = 'privacy' }) {
           <Card variant="elevated" className="p-8 sm:p-10 space-y-6">
             <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
               <Mail className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-xl font-bold text-gray-900 font-display">Contact EcoLoop Team</h2>
+              <h2 className="text-xl font-bold text-gray-900 font-display">Contact Circuvio Team</h2>
             </div>
 
             <form onSubmit={handleContactSubmit} className="space-y-4">

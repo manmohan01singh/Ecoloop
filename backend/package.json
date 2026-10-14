@@ -1,14 +1,14 @@
 {
-  "name": "ecoloop-backend",
+  "name": "circuvio-backend",
   "version": "1.0.0",
-  "description": "EcoLoop - Smart E-Waste Platform Backend",
+  "description": "Circuvio - Smart E-Waste & Circular Electronics Platform Backend",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test tests/circuvio_e2e.test.mjs"
   },
   "keywords": [
     "ecoloop",
@@ -34,6 +34,7 @@
     "pg": "^8.13.1",
     "redis": "^4.7.0",
     "sequelize": "^6.37.5",
+    "sqlite3": "^6.0.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {

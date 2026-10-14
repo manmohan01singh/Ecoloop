@@ -395,7 +395,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                 style={{ marginRight: 8, marginTop: 1 }}
               />
               <AppText variant="caption1" color="secondary" style={{ flex: 1, lineHeight: 16 }}>
-                EcoLoop verifies second-life transactions to maximize circular hardware recovery and eliminate electronics landfill waste.
+                Circuvio verifies second-life transactions to maximize circular hardware recovery and eliminate electronics landfill waste.
               </AppText>
             </View>
           </ScrollView>

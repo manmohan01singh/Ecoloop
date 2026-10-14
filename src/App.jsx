@@ -42,6 +42,8 @@ const ReviewsPage = lazy(() => import('./pages/ReviewsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const RescueEngine = lazy(() => import('./pages/RescueEngine'));
+const PublicProfile = lazy(() => import('./pages/PublicProfile'));
+const RoleApplicationPage = lazy(() => import('./pages/RoleApplicationPage'));
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
@@ -89,6 +91,18 @@ export default function App() {
               <Route path="/contact" element={<AppLayout><LegalPage initialTab="contact" /></AppLayout>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+
+              {/* Public Community & Public Profiles */}
+              <Route path="/community" element={<AppLayout><Community /></AppLayout>} />
+              <Route path="/community/post/:id" element={<AppLayout><PostDetail /></AppLayout>} />
+              <Route path="/community/:slug" element={<AppLayout><CommunityDetail /></AppLayout>} />
+              <Route path="/communities" element={<AppLayout><CommunitiesList /></AppLayout>} />
+              <Route path="/u/:username" element={<AppLayout><PublicProfile /></AppLayout>} />
+
+              {/* Authenticated Community Action & Application pages */}
+              <Route path="/apply" element={<ProtectedRoute><AppLayout><RoleApplicationPage /></AppLayout></ProtectedRoute>} />
+              <Route path="/community/create-post" element={<ProtectedRoute><AppLayout><CreatePost /></AppLayout></ProtectedRoute>} />
+              <Route path="/community/create" element={<ProtectedRoute><AppLayout><CreateCommunity /></AppLayout></ProtectedRoute>} />
               
               {/* Authenticated pages with workspace shell */}
               <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -97,14 +111,6 @@ export default function App() {
                 <Route path="/devices/:id" element={<DeviceDetail />} />
                 <Route path="/workspace/rescue" element={<RescueEngine />} />
                 <Route path="/impact" element={<Impact />} />
-                
-                {/* Community & Circular Exchange */}
-                <Route path="/community" element={<Community />} />
-                <Route path="/community/create-post" element={<CreatePost />} />
-                <Route path="/community/create" element={<CreateCommunity />} />
-                <Route path="/community/post/:id" element={<PostDetail />} />
-                <Route path="/community/:slug" element={<CommunityDetail />} />
-                <Route path="/communities" element={<CommunitiesList />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/repair" element={<RepairPage />} />

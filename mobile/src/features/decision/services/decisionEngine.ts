@@ -69,7 +69,7 @@ export function evaluateCircularRoutes(input: DecisionInput): DecisionResult {
       isRecommended: true,
       isHazardBlocked: false,
       rationale:
-        'A swollen lithium-ion battery presents severe thermal runaway and fire risk. Resale, postal courier shipping, and unlicensed disassembly are legally restricted. EcoLoop routes you directly to a licensed municipal hazardous e-waste depot.',
+        'A swollen lithium-ion battery presents severe thermal runaway and fire risk. Resale, postal courier shipping, and unlicensed disassembly are legally restricted. Circuvio routes you directly to a licensed municipal hazardous e-waste depot.',
     };
 
     const blockedRepair: RouteOption = {

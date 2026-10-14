@@ -6,6 +6,8 @@ const config = {
   port: parseInt(process.env.PORT || '5000', 10),
 
   db: {
+    dialect: process.env.DB_DIALECT || (process.env.DATABASE_URL || process.env.NODE_ENV === 'production' ? 'postgres' : 'sqlite'),
+    storage: process.env.DB_STORAGE || './ecoloop.sqlite',
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     name: process.env.DB_NAME || 'ecoloop',

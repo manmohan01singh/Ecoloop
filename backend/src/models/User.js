@@ -66,9 +66,40 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(500),
     allowNull: true,
   },
+  username: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    unique: true,
+  },
+  coverImage: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+  },
+  followerCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  followingCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  isPrivate: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 }, {
   timestamps: true,
   hooks: {
+    beforeValidate: async (user) => {
+      if (!user.username) {
+        const base = (user.name || user.email?.split('@')[0] || 'user')
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, '')
+          .slice(0, 20) || 'user';
+        const rand = Math.random().toString(36).substring(2, 6);
+        user.username = `${base}_${rand}`;
+      }
+    },
     beforeCreate: async (user) => {
       if (user.password) {
         user.password = await bcrypt.hash(user.password, 10);

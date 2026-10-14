@@ -10,7 +10,7 @@ import { useAppTheme } from '../../design-system/theme/theme';
 import { AppText } from '../ui/AppText';
 import { AppIcon, IconName } from '../ui/AppIcon';
 
-export type TabKey = 'home' | 'explore' | 'post' | 'activity' | 'profile';
+export type TabKey = 'home' | 'explore' | 'community' | 'post' | 'activity' | 'profile';
 
 export interface TabItem {
   key: TabKey;
@@ -34,11 +34,10 @@ const TABS: TabItem[] = [
     inactiveIcon: 'compass-outline',
   },
   {
-    key: 'post',
-    label: 'Post',
-    activeIcon: 'add',
-    inactiveIcon: 'add',
-    isAction: true,
+    key: 'community',
+    label: 'Community',
+    activeIcon: 'chatbubbles',
+    inactiveIcon: 'chatbubbles-outline',
   },
   {
     key: 'activity',

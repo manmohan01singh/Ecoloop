@@ -18,7 +18,7 @@ const startServer = async () => {
 
     // Start server
     app.listen(config.port, () => {
-      logger.info(`EcoLoop API running on port ${config.port} [${config.env}]`);
+      logger.info(`Circuvio API running on port ${config.port} [${config.env}]`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

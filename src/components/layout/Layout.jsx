@@ -4,7 +4,7 @@ import {
   Leaf, LayoutDashboard, Smartphone, BarChart3, Menu, X, LogOut,
   Users, Package, MapPin, Wrench, Trophy, Calendar, AlertTriangle,
   Building2, TrendingUp, Shield, Crown, Recycle, Settings, Star,
-  Search, ChevronRight, HelpCircle, Sparkles
+  Search, ChevronRight, HelpCircle, Sparkles, Award
 } from 'lucide-react';
 import useAuthStore from '../../context/authStore';
 import { LoadingState, Badge } from '../ui';
@@ -26,6 +26,7 @@ const NAV_GROUPS = [
       { path: '/rescue',      label: 'Rescue Engine', icon: Sparkles },
       { path: '/marketplace', label: 'Marketplace',   icon: Package },
       { path: '/repair',      label: 'Repair Network',icon: Wrench },
+      { path: '/apply',       label: 'Apply for Pro Role', icon: Award },
       { path: '/map',         label: 'Waste Map',     icon: MapPin },
       { path: '/business',    label: 'B2B Exchange',  icon: Building2 },
     ]
@@ -87,7 +88,7 @@ function SidebarContent({ user, roleNav, location, onNav, onLogout }) {
             <Leaf className="w-4 h-4 text-white" />
           </div>
           <div>
-            <span className="text-base font-extrabold text-gray-900 font-display leading-tight block">EcoLoop</span>
+            <span className="text-base font-extrabold text-gray-900 font-display leading-tight block">Circuvio</span>
             <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">Circular Workspace</span>
           </div>
         </Link>
@@ -212,6 +213,7 @@ export default function Layout() {
     if (pathname.startsWith('/recycler')) return 'Recycling Facility Intake';
     if (pathname.startsWith('/repair-provider')) return 'Repair Provider Hub';
     if (pathname.startsWith('/profile')) return 'Account Profile & Security';
+    if (pathname.startsWith('/apply')) return 'Professional Role Application';
     return 'Citizen Workspace Dashboard';
   };
 
@@ -262,7 +264,7 @@ export default function Layout() {
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="hidden sm:inline-block text-xs font-semibold text-gray-400">EcoLoop</span>
+              <span className="hidden sm:inline-block text-xs font-semibold text-gray-400">Circuvio</span>
               <ChevronRight className="hidden sm:inline-block w-3.5 h-3.5 text-gray-300" />
               <h1 className="text-sm font-bold text-gray-900 font-display">
                 {getPageTitle(location.pathname)}

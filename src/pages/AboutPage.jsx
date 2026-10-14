@@ -14,7 +14,7 @@ export default function AboutPage() {
             Pioneering Indonesia's Circular Tech Future
           </h1>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            EcoLoop was created to solve Indonesia's growing electronic waste challenge by connecting citizens, certified repair technicians, licensed recyclers, and enterprises into one transparent, verifiable ecosystem.
+            Circuvio was created to solve Indonesia's growing electronic waste challenge by connecting citizens, certified repair technicians, licensed recyclers, and enterprises into one transparent, verifiable ecosystem.
           </p>
         </div>
 
@@ -53,13 +53,13 @@ export default function AboutPage() {
 
         {/* Story Section */}
         <Card variant="elevated" className="p-8 sm:p-10 space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900 font-display">The EcoLoop Architecture</h2>
+          <h2 className="text-2xl font-bold text-gray-900 font-display">The Circuvio Architecture</h2>
           <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
             <p>
               In Indonesia, thousands of metric tons of consumer electronics and industrial hardware reach their perceived end-of-life each year without a coordinated recovery framework. Valued components and rare earth minerals often sit forgotten in household storage or end up incinerated in unsafe informal scrap yards.
             </p>
             <p>
-              EcoLoop bridges this divide. Through our <strong>AI Death Clock</strong>, citizens receive predictive guidance on when to service or sell their electronics before irreparable damage occurs. Through our <strong>Resource Map</strong>, anyone can find nearby drop-off bins and waste banks across 38 provinces.
+              Circuvio bridges this divide. Through our <strong>AI Death Clock</strong>, citizens receive predictive guidance on when to service or sell their electronics before irreparable damage occurs. Through our <strong>Resource Map</strong>, anyone can find nearby drop-off bins and waste banks across 38 provinces.
             </p>
           </div>
 

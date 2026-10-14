@@ -25,7 +25,7 @@ export const en = {
   // Admin Dashboard
   admin: {
     title: 'Admin Dashboard',
-    subtitle: 'Manage EcoLoop Platform',
+    subtitle: 'Manage Circuvio Platform',
     tabs: {
       overview: 'Overview',
       users: 'Users',

@@ -294,7 +294,7 @@ export default function Impact() {
               Indonesian Circular Economy Roadmap 2026
             </h3>
             <p className="text-xs text-gray-500 max-w-xl mx-auto leading-relaxed">
-              Every device logged into EcoLoop feeds verifiable data to regional Waste Banks (Bank Sampah) and KLHK accredited recycling centers across Java, Sumatra, Bali, and Sulawesi.
+              Every device logged into Circuvio feeds verifiable data to regional Waste Banks (Bank Sampah) and KLHK accredited recycling centers across Java, Sumatra, Bali, and Sulawesi.
             </p>
           </Card>
         </div>

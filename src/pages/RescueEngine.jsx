@@ -155,7 +155,7 @@ export default function RescueEngine() {
   // Load saved rescues from localStorage
   useEffect(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('ecoloop_rescues') || '[]');
+      const stored = JSON.parse(localStorage.getItem('circuvio_rescues') || localStorage.getItem('ecoloop_rescues') || '[]');
       setSavedRescues(stored);
     } catch {
       setSavedRescues([]);
@@ -308,7 +308,7 @@ export default function RescueEngine() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                  EcoLoop Signature Experience
+                  Circuvio Signature Experience
                 </span>
                 <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
                   Unbiased Decision Engine
@@ -1105,7 +1105,7 @@ export default function RescueEngine() {
                   <span>What Do You Value Most for This Device?</span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  EcoLoop recommends options according to what <strong>you</strong> prioritize—never which partner pays the app the highest affiliate kickback.
+                  Circuvio recommends options according to what <strong>you</strong> prioritize—never which partner pays the app the highest affiliate kickback.
                 </p>
               </div>
 
@@ -1143,7 +1143,7 @@ export default function RescueEngine() {
                   <div className="flex items-center gap-2">
                     <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950 flex items-center gap-1.5 shadow-sm">
                       <Sparkles className="w-3.5 h-3.5" />
-                      EcoLoop Recommended Future
+                      Circuvio Recommended Future
                     </span>
                     <span className="text-xs text-slate-400">
                       Optimized for: <strong>{preferencePriority.toUpperCase()}</strong>
@@ -1511,7 +1511,7 @@ export default function RescueEngine() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(`https://ecoloop.social/proof/${proofOfRescue.rescueId}`);
+                          navigator.clipboard.writeText(`https://circuvio.social/proof/${proofOfRescue.rescueId}`);
                           toast.success('Certificate verification link copied to clipboard!');
                         }}
                         className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
@@ -1535,7 +1535,7 @@ export default function RescueEngine() {
                         className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition-colors shadow-sm"
                       >
                         <Share2 className="w-3.5 h-3.5" />
-                        <span>Share on EcoLoop Feed</span>
+                        <span>Share on Circuvio Feed</span>
                       </Link>
 
                       <button

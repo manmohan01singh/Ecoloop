@@ -93,5 +93,35 @@ export const getPendingLocations = () => api.get('/admin/locations/pending');
 export const verifyLocationAdmin = (id, status) => api.put(`/admin/locations/${id}/verify`, { status });
 export const getPendingProviders = () => api.get('/admin/providers/pending');
 export const verifyProvider = (id, status) => api.put(`/admin/providers/${id}/verify`, { status });
-export const getPendingReports = () => api.get('/admin/reports/pending');
+export const getPendingReports = () => api.get('/reports/pending');
 export const updateReportStatus = (id, data) => api.put(`/reports/${id}/status`, data);
+
+// ── Bookmarks ───────────────────────────────────────────────────
+export const toggleBookmarkPost = (id) => api.post(`/posts/${id}/bookmark`);
+export const getMyBookmarks = (params) => api.get('/posts/bookmarks/mine', { params });
+
+// ── Public User Profiles & Social ───────────────────────────────
+export const getPublicProfile = (identifier) => api.get(`/users/profile/${identifier}`);
+export const getUserPublicPosts = (identifier, params) => api.get(`/users/profile/${identifier}/posts`, { params });
+export const getUserPublicReplies = (identifier, params) => api.get(`/users/profile/${identifier}/replies`, { params });
+export const toggleFollowUser = (userId) => api.post(`/users/${userId}/follow`);
+
+// ── Professional Role Applications ──────────────────────────────
+export const submitApplication = (data) => api.post('/applications', data);
+export const getMyApplications = () => api.get('/applications/mine');
+export const getApplicationById = (id) => api.get(`/applications/${id}`);
+export const updateMyApplication = (id, data) => api.put(`/applications/${id}`, data);
+export const getAdminApplicationsQueue = (params) => api.get('/applications/queue/all', { params });
+export const startApplicationReview = (id) => api.post(`/applications/${id}/review`);
+export const approveApplication = (id, data) => api.post(`/applications/${id}/approve`, data);
+export const rejectApplication = (id, data) => api.post(`/applications/${id}/reject`, data);
+export const requestMoreInfoApplication = (id, data) => api.post(`/applications/${id}/request-info`, data);
+
+// ── Repair Quotes & In-Request Messaging ────────────────────────
+export const getRepairRequestDetails = (id) => api.get(`/providers/repair/requests/${id}`);
+export const submitRepairQuote = (id, data) => api.post(`/providers/repair/requests/${id}/quotes`, data);
+export const getRepairQuotes = (id) => api.get(`/providers/repair/requests/${id}/quotes`);
+export const acceptRepairQuote = (requestId, quoteId) => api.post(`/providers/repair/requests/${requestId}/quotes/${quoteId}/accept`);
+export const getRepairMessages = (id, params) => api.get(`/providers/repair/requests/${id}/messages`, { params });
+export const sendRepairMessage = (id, data) => api.post(`/providers/repair/requests/${id}/messages`, data);
+

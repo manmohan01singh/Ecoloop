@@ -1081,7 +1081,7 @@ function getDefaultPassportEvents(): DevicePassportEvent[] {
       actorRole: 'consumer',
       actorName: 'Original Owner',
       verificationTier: 'user_reported',
-      summary: 'Device registered into EcoLoop Circular Passport ledger with pristine battery state.',
+      summary: 'Device registered into Circuvio Circular Passport ledger with pristine battery state.',
       metadata: { originalPurchaseYear: 2022, batteryCycleCount: 180 },
       createdAt: new Date(Date.now() - 3600000 * 240).toISOString(),
     },

@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowUp, ArrowDown, MessageSquare, ArrowLeft, Loader2, Send } from 'lucide-react';
-import { getPost, votePost, addComment } from '../services/communityService';
+import { getPost, votePost, addComment, toggleBookmarkPost, createReport } from '../services/communityService';
 import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
+import { Bookmark, Share2, Flag } from 'lucide-react';
 
 const CATEGORY_COLORS = { ewaste: 'bg-blue-100 text-blue-700', repair: 'bg-orange-100 text-orange-700', recycling: 'bg-green-100 text-green-700', plastic: 'bg-cyan-100 text-cyan-700', sustainability: 'bg-emerald-100 text-emerald-700', general: 'bg-gray-100 text-gray-700' };
 
-function CommentItem({ comment, depth = 0 }) {
+function CommentItem({ comment, depth = 0, onReplyAdded }) {
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -23,6 +24,7 @@ function CommentItem({ comment, depth = 0 }) {
       toast.success('Reply sent!');
       setReplyText('');
       setShowReply(false);
+      if (onReplyAdded) onReplyAdded();
     } catch { toast.error('Failed to send reply'); }
     finally { setSubmitting(false); }
   };
@@ -34,14 +36,18 @@ function CommentItem({ comment, depth = 0 }) {
     return `${Math.floor(s/86400)}d`;
   };
 
+  const authorHandle = comment.author?.username || comment.author?.name?.toLowerCase().replace(/\s+/g, '_') || 'user';
+
   return (
     <div className={depth > 0 ? 'ml-8 border-l-2 border-gray-100 pl-4' : ''}>
       <div className="py-3">
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+          <Link to={`/u/${authorHandle}`} className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 hover:ring-2 hover:ring-emerald-400">
             <span className="text-xs font-bold text-emerald-700">{comment.author?.name?.[0]}</span>
-          </div>
-          <span className="text-xs font-semibold text-gray-800">{comment.author?.name}</span>
+          </Link>
+          <Link to={`/u/${authorHandle}`} className="text-xs font-semibold text-gray-800 hover:text-emerald-700 hover:underline">
+            @{authorHandle}
+          </Link>
           <span className="text-xs text-gray-400">{timeAgo(comment.createdAt)} ago</span>
         </div>
         <p className="text-sm text-gray-700 leading-relaxed mb-2">{comment.body}</p>
@@ -65,7 +71,7 @@ function CommentItem({ comment, depth = 0 }) {
           </form>
         )}
       </div>
-      {comment.replies?.map(r => <CommentItem key={r.id} comment={r} depth={depth + 1} />)}
+      {comment.replies?.map(r => <CommentItem key={r.id} comment={r} depth={depth + 1} onReplyAdded={onReplyAdded} />)}
     </div>
   );
 }
@@ -78,8 +84,12 @@ export default function PostDetail() {
   const [submitting, setSubmitting] = useState(false);
   const { isAuthenticated } = useAuthStore();
 
-  useEffect(() => {
+  const fetchPost = () => {
     getPost(id).then(r => setPost(r.data.data)).catch(() => toast.error('Post not found')).finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchPost();
   }, [id]);
 
   const handleVote = async (value) => {
@@ -96,10 +106,10 @@ export default function PostDetail() {
     if (!comment.trim()) return;
     setSubmitting(true);
     try {
-      const res = await addComment(id, { body: comment });
-      setPost(p => ({ ...p, comments: [...(p.comments || []), res.data.data], commentCount: p.commentCount + 1 }));
+      await addComment(id, { body: comment });
       setComment('');
       toast.success('Comment added!');
+      fetchPost();
     } catch { toast.error('Failed to send comment'); }
     finally { setSubmitting(false); }
   };
@@ -121,7 +131,12 @@ export default function PostDetail() {
             </Link>
           )}
           <span>•</span>
-          <span>by {post.author?.name}</span>
+          <Link
+            to={`/u/${post.author?.username || post.author?.name?.toLowerCase().replace(/\s+/g, '_') || 'user'}`}
+            className="font-semibold text-emerald-700 hover:underline"
+          >
+            @{post.author?.username || post.author?.name}
+          </Link>
           {post.category && <span className={`px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[post.category] || CATEGORY_COLORS.general}`}>{post.category.replace('_', ' ')}</span>}
         </div>
 
@@ -145,21 +160,56 @@ export default function PostDetail() {
           </div>
         )}
 
-        <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <button onClick={() => handleVote(1)} className={`p-1.5 rounded-lg hover:bg-emerald-50 transition-colors ${post.userVote === 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
-              <ArrowUp className="w-5 h-5" />
-            </button>
-            <span className={`font-bold text-sm ${post.userVote === 1 ? 'text-emerald-600' : post.userVote === -1 ? 'text-red-500' : 'text-gray-700'}`}>
-              {post.upvotes - post.downvotes}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 flex-wrap gap-3">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button onClick={() => handleVote(1)} className={`p-1.5 rounded-lg hover:bg-emerald-50 transition-colors ${post.userVote === 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
+                <ArrowUp className="w-5 h-5" />
+              </button>
+              <span className={`font-bold text-sm ${post.userVote === 1 ? 'text-emerald-600' : post.userVote === -1 ? 'text-red-500' : 'text-gray-700'}`}>
+                {post.upvotes - post.downvotes}
+              </span>
+              <button onClick={() => handleVote(-1)} className={`p-1.5 rounded-lg hover:bg-red-50 transition-colors ${post.userVote === -1 ? 'text-red-500' : 'text-gray-400'}`}>
+                <ArrowDown className="w-5 h-5" />
+              </button>
+            </div>
+            <span className="flex items-center gap-1.5 text-sm text-gray-500">
+              <MessageSquare className="w-4 h-4" />{post.commentCount} comments
             </span>
-            <button onClick={() => handleVote(-1)} className={`p-1.5 rounded-lg hover:bg-red-50 transition-colors ${post.userVote === -1 ? 'text-red-500' : 'text-gray-400'}`}>
-              <ArrowDown className="w-5 h-5" />
+          </div>
+
+          <div className="flex items-center gap-3 text-xs text-gray-500">
+            <button
+              onClick={() => {
+                navigator.clipboard?.writeText(window.location.href);
+                toast.success('Link copied to clipboard!');
+              }}
+              className="flex items-center gap-1 hover:text-gray-800 transition-colors"
+            >
+              <Share2 className="w-4 h-4" /> Share
+            </button>
+            <button
+              onClick={async () => {
+                if (!isAuthenticated()) {
+                  toast.error('Log in to bookmark posts');
+                  return;
+                }
+                const prev = post.isBookmarked;
+                setPost(p => ({ ...p, isBookmarked: !prev }));
+                try {
+                  const res = await toggleBookmarkPost(id);
+                  toast.success(res.data?.isBookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks');
+                } catch {
+                  setPost(p => ({ ...p, isBookmarked: prev }));
+                  toast.error('Failed to update bookmark');
+                }
+              }}
+              className={`flex items-center gap-1 transition-colors ${post.isBookmarked ? 'text-emerald-600 font-semibold' : 'hover:text-gray-800'}`}
+            >
+              <Bookmark className={`w-4 h-4 ${post.isBookmarked ? 'fill-emerald-600 text-emerald-600' : ''}`} />
+              {post.isBookmarked ? 'Saved' : 'Save'}
             </button>
           </div>
-          <span className="flex items-center gap-1.5 text-sm text-gray-500">
-            <MessageSquare className="w-4 h-4" />{post.commentCount} comments
-          </span>
         </div>
       </div>
 
@@ -184,7 +234,7 @@ export default function PostDetail() {
         </h2>
         {post.comments?.length > 0 ? (
           <div className="divide-y divide-gray-50">
-            {post.comments.map(c => <CommentItem key={c.id} comment={c} />)}
+            {post.comments.map(c => <CommentItem key={c.id} comment={c} onReplyAdded={fetchPost} />)}
           </div>
         ) : (
           <p className="text-center text-gray-400 py-8 text-sm">No comments yet. Be the first!</p>

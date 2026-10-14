@@ -1,5 +1,5 @@
 /**
- * EcoLoop Design System Tokens
+ * Circuvio Design System Tokens
  * 
  * Centralized design tokens for consistent visual language.
  * Based on Tailwind CSS values but with semantic naming.

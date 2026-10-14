@@ -6,13 +6,13 @@ import toast from 'react-hot-toast';
 import { Button, Input, Card, Badge } from '../components/ui';
 
 const DEMO_ACCOUNTS = [
-  { label: 'Citizen', role: 'user', email: 'citizen@ecoloop.com', pass: 'user123', name: 'Citizen Contributor', color: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100' },
-  { label: 'Repair Tech', role: 'repair_provider', email: 'repair@ecoloop.com', pass: 'repair123', name: 'Certified Technician', color: 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100' },
-  { label: 'Recycler Hub', role: 'recycler', email: 'recycler@ecoloop.com', pass: 'recycler123', name: 'EcoCycle Facility', color: 'bg-green-50 text-green-800 border-green-200 hover:bg-green-100' },
-  { label: 'Enterprise B2B', role: 'business', email: 'business@ecoloop.com', pass: 'business123', name: 'Enterprise ESG Partner', color: 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100' },
-  { label: 'Organization', role: 'organization', email: 'organization@ecoloop.com', pass: 'organization123', name: 'Bank Sampah Indah', color: 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100' },
-  { label: 'Moderator', role: 'moderator', email: 'moderator@ecoloop.com', pass: 'moderator123', name: 'Safety Moderator', color: 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100' },
-  { label: 'System Admin', role: 'admin', email: 'admin@ecoloop.com', pass: 'admin123', name: 'Master Administrator', color: 'bg-red-50 text-red-800 border-red-200 hover:bg-red-100' },
+  { label: 'Citizen', role: 'user', email: 'citizen@circuvio.com', pass: 'user123', name: 'Citizen Contributor', color: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100' },
+  { label: 'Repair Tech', role: 'repair_provider', email: 'repair@circuvio.com', pass: 'repair123', name: 'Certified Technician', color: 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100' },
+  { label: 'Recycler Hub', role: 'recycler', email: 'recycler@circuvio.com', pass: 'recycler123', name: 'EcoCycle Facility', color: 'bg-green-50 text-green-800 border-green-200 hover:bg-green-100' },
+  { label: 'Enterprise B2B', role: 'business', email: 'business@circuvio.com', pass: 'business123', name: 'Enterprise ESG Partner', color: 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100' },
+  { label: 'Organization', role: 'organization', email: 'organization@circuvio.com', pass: 'organization123', name: 'Bank Sampah Indah', color: 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100' },
+  { label: 'Moderator', role: 'moderator', email: 'moderator@circuvio.com', pass: 'moderator123', name: 'Safety Moderator', color: 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100' },
+  { label: 'System Admin', role: 'admin', email: 'admin@circuvio.com', pass: 'admin123', name: 'Master Administrator', color: 'bg-red-50 text-red-800 border-red-200 hover:bg-red-100' },
 ];
 
 export default function Login() {
@@ -45,7 +45,11 @@ export default function Login() {
     } catch (err) {
       console.warn('API login error, checking fallback:', err);
       // Demo fallback if network/proxy is unavailable
-      const matchedDemo = fallbackAccount || DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === userEmail.toLowerCase());
+      const normalizedInput = userEmail.toLowerCase().replace('@ecoloop.com', '@circuvio.com');
+      const matchedDemo = fallbackAccount || DEMO_ACCOUNTS.find(a => 
+        a.email.toLowerCase() === userEmail.toLowerCase() || 
+        a.email.toLowerCase() === normalizedInput
+      );
       if (matchedDemo) {
         const mockUser = {
           id: 'demo-' + matchedDemo.role,
@@ -57,6 +61,8 @@ export default function Login() {
           state: 'DKI Jakarta'
         };
         const mockToken = 'demo-jwt-token-' + Date.now();
+        localStorage.setItem('circuvio_token', mockToken);
+        localStorage.setItem('circuvio_user', JSON.stringify(mockUser));
         localStorage.setItem('ecoloop_token', mockToken);
         localStorage.setItem('ecoloop_user', JSON.stringify(mockUser));
         useAuthStore.setState({ user: mockUser, token: mockToken, loading: false });
@@ -97,7 +103,7 @@ export default function Login() {
             </div>
             <div className="text-left">
               <span className="text-2xl font-black text-slate-900 font-display tracking-tight block leading-tight">
-                EcoLoop
+                Circuvio
               </span>
               <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">
                 Circular Electronics
@@ -106,7 +112,7 @@ export default function Login() {
           </Link>
 
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 font-display pt-2">
-            Sign In to Workspace
+            Sign In to Circuvio Workspace
           </h1>
           <p className="text-xs sm:text-sm text-slate-500">
             Access your verified circular dashboard, devices, and network
@@ -157,7 +163,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@ecoloop.com"
+                  placeholder="name@circuvio.com"
                   required
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 />

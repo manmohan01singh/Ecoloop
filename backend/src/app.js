@@ -19,16 +19,18 @@ app.use(cors({
 }));
 
 // Rate limiting
-app.use('/api/auth', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests' } },
-}));
+if (config.env !== 'test') {
+  app.use('/api/auth', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests' } },
+  }));
 
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-}));
+  app.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+  }));
+}
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -51,8 +53,8 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'EcoLoop API - From digital waste to ecological worth',
-    version: '1.0.0',
+    message: 'Circuvio API - From digital waste to ecological worth',
+    version: '2.0.0',
     docs: '/api/health',
   });
 });

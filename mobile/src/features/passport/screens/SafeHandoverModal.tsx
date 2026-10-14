@@ -70,7 +70,7 @@ const HANDOVER_STEPS: ChecklistItem[] = [
     id: 'receipt',
     title: '6. Obtain Signed Handover or Drop-Off Receipt',
     description: 'Always request an official tracking number, bill of lading, or digital drop-off receipt from the carrier or shop.',
-    actionHint: 'Save tracking confirmation number in EcoLoop',
+    actionHint: 'Save tracking confirmation number in Circuvio',
     riskIfSkipped: 'Inability to prove custody transfer if lost in transit.',
   },
 ];

@@ -3,9 +3,10 @@ import { Navigate } from 'react-router-dom';
 import {
   Shield, Flag, Users, MessageSquare, Eye, CheckCircle,
   XCircle, Loader2, AlertTriangle, FileText, Pin, Search,
-  Filter, Clock, TrendingUp, UserX, Ban, AlertCircle, Info
+  Filter, Clock, TrendingUp, UserX, Ban, AlertCircle, Info, FileCheck2
 } from 'lucide-react';
 import useAuthStore from '../context/authStore';
+import ApplicationQueueTab from '../components/admin/ApplicationQueueTab';
 import {
   getModeratorDashboard,
   getAllPostsForModeration,
@@ -171,6 +172,7 @@ export default function ModeratorDashboard() {
     { id: 'comments', label: 'Comments', icon: MessageSquare },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'communities', label: 'Communities', icon: Users },
+    { id: 'applications', label: 'Role Applications', icon: FileCheck2 },
   ];
 
   return (
@@ -275,6 +277,11 @@ export default function ModeratorDashboard() {
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
+          )}
+
+          {/* Role Applications Queue Tab */}
+          {tab === 'applications' && (
+            <ApplicationQueueTab />
           )}
         </>
       )}

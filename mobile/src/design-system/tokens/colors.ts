@@ -56,7 +56,7 @@ export const lightColors: ColorPalette = {
   separatorOpaque: '#C6C6C8',
   fill: 'rgba(120, 120, 128, 0.12)',
   fillSecondary: 'rgba(120, 120, 128, 0.08)',
-  tint: '#007A5E', // EcoLoop Apple-calibrated Emerald
+  tint: '#007A5E', // Circuvio Apple-calibrated Emerald
   tintLight: 'rgba(0, 122, 94, 0.09)',
   tintMuted: '#0D8A6C',
   success: '#34C759',
