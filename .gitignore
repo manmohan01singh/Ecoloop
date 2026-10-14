@@ -1,24 +1,50 @@
-# Logs
-logs
-*.log
+# ─── Node ────────────────────────────────────────────────────────────────────
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ─── Build output ─────────────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+.expo/
+mobile/dist-web/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# ─── Environment / secrets ────────────────────────────────────────────────────
+# NEVER commit real .env files — use .env.example as a template
+.env
+.env.*
+!.env.example
+!.env.example.*
+# Explicitly allow committed example files
+!backend/.env.example
+!mobile/.env.example
+
+# ─── Database files ───────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+backend/ecoloop.sqlite
+
+# ─── OS / Editor ─────────────────────────────────────────────────────────────
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.local
+uploads/
