@@ -10,6 +10,8 @@ import { useAppTheme } from '../../design-system/theme/theme';
 import { AppText } from '../ui/AppText';
 import { AppIcon, IconName } from '../ui/AppIcon';
 
+import { WorkspaceKey } from '../../services/storage/localPersistence';
+
 export type TabKey = 'home' | 'explore' | 'community' | 'post' | 'activity' | 'profile';
 
 export interface TabItem {
@@ -20,44 +22,86 @@ export interface TabItem {
   isAction?: boolean;
 }
 
-const TABS: TabItem[] = [
-  {
+function getTabsForRole(role?: WorkspaceKey): TabItem[] {
+  let firstTab: TabItem = {
     key: 'home',
     label: 'Home',
     activeIcon: 'home',
     inactiveIcon: 'home-outline',
-  },
-  {
-    key: 'explore',
-    label: 'Explore',
-    activeIcon: 'compass',
-    inactiveIcon: 'compass-outline',
-  },
-  {
-    key: 'community',
-    label: 'Community',
-    activeIcon: 'chatbubbles',
-    inactiveIcon: 'chatbubbles-outline',
-  },
-  {
-    key: 'activity',
-    label: 'Activity',
-    activeIcon: 'pulse',
-    inactiveIcon: 'pulse-outline',
-  },
-  {
-    key: 'profile',
-    label: 'Profile',
-    activeIcon: 'person',
-    inactiveIcon: 'person-outline',
-  },
-];
+  };
+
+  if (role === 'repair_pro') {
+    firstTab = {
+      key: 'home',
+      label: 'Jobs',
+      activeIcon: 'construct',
+      inactiveIcon: 'construct-outline',
+    };
+  } else if (role === 'recycler') {
+    firstTab = {
+      key: 'home',
+      label: 'Intake',
+      activeIcon: 'sync',
+      inactiveIcon: 'sync-outline',
+    };
+  } else if (role === 'business') {
+    firstTab = {
+      key: 'home',
+      label: 'Inventory',
+      activeIcon: 'file-tray-full',
+      inactiveIcon: 'file-tray-outline',
+    };
+  } else if (role === 'moderator') {
+    firstTab = {
+      key: 'home',
+      label: 'Mod',
+      activeIcon: 'shield-half',
+      inactiveIcon: 'shield-half-outline',
+    };
+  } else if (role === 'admin') {
+    firstTab = {
+      key: 'home',
+      label: 'Admin',
+      activeIcon: 'settings',
+      inactiveIcon: 'settings-outline',
+    };
+  }
+
+  return [
+    firstTab,
+    {
+      key: 'explore',
+      label: 'Explore',
+      activeIcon: 'compass',
+      inactiveIcon: 'compass-outline',
+    },
+    {
+      key: 'community',
+      label: 'Community',
+      activeIcon: 'chatbubbles',
+      inactiveIcon: 'chatbubbles-outline',
+    },
+    {
+      key: 'activity',
+      label: 'Activity',
+      activeIcon: 'pulse',
+      inactiveIcon: 'pulse-outline',
+    },
+    {
+      key: 'profile',
+      label: 'Profile',
+      activeIcon: 'person',
+      inactiveIcon: 'person-outline',
+    },
+  ];
+}
 
 export interface AppTabBarProps {
   activeTab: TabKey;
   onTabPress: (tab: TabKey) => void;
   onPostPress?: () => void;
   unreadActivityCount?: number;
+  workspaceRole?: WorkspaceKey;
 }
 
 export const AppTabBar: React.FC<AppTabBarProps> = ({
@@ -65,9 +109,11 @@ export const AppTabBar: React.FC<AppTabBarProps> = ({
   onTabPress,
   onPostPress,
   unreadActivityCount = 0,
+  workspaceRole,
 }) => {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
+  const tabs = getTabsForRole(workspaceRole);
 
   const handlePress = (tab: TabItem) => {
     if (tab.key === 'post' && onPostPress) {
@@ -82,7 +128,7 @@ export const AppTabBar: React.FC<AppTabBarProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: theme.colors.secondaryBackground,
+          backgroundColor: theme.isDark ? 'rgba(18, 18, 20, 0.96)' : 'rgba(255, 255, 255, 0.96)',
           borderTopColor: theme.colors.separator,
           borderTopWidth: theme.hairlineWidth,
           paddingBottom: Math.max(insets.bottom, 12),
@@ -90,7 +136,7 @@ export const AppTabBar: React.FC<AppTabBarProps> = ({
       ]}
     >
       <View style={styles.tabRow}>
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = activeTab === tab.key;
 
           if (tab.isAction) {
@@ -108,11 +154,10 @@ export const AppTabBar: React.FC<AppTabBarProps> = ({
                     styles.actionIconCircle,
                     {
                       backgroundColor: theme.colors.tint,
-                      ...theme.getGlow('primaryAction'),
                     },
                   ]}
                 >
-                  <AppIcon name="add" size={24} color="#FFFFFF" />
+                  <AppIcon name="add" size={24} color={theme.isDark ? '#000000' : '#FFFFFF'} />
                 </View>
                 <AppText
                   variant="caption2"
@@ -150,7 +195,6 @@ export const AppTabBar: React.FC<AppTabBarProps> = ({
                       styles.tabUnreadBadge,
                       {
                         backgroundColor: theme.colors.tint,
-                        ...theme.getGlow('unreadIndicator'),
                       },
                     ]}
                   />

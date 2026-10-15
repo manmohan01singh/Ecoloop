@@ -88,9 +88,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
         base.backgroundColor = effectiveTint;
         break;
       case 'tinted':
-        base.backgroundColor = theme.isDark
-          ? 'rgba(16, 185, 129, 0.16)'
-          : theme.colors.tintLight;
+        base.backgroundColor = theme.colors.tintLight;
         break;
       case 'gray':
         base.backgroundColor = theme.colors.fill;
@@ -107,15 +105,15 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const getTextColor = (): { colorName: TextColor; custom?: string } => {
     switch (resolvedVariant) {
       case 'filled':
-        return { colorName: 'white' };
+        return { colorName: 'custom', custom: theme.isDark ? '#000000' : '#FFFFFF' };
       case 'tinted':
-        return { colorName: 'custom', custom: effectiveTint };
+        return { colorName: 'custom', custom: theme.colors.labelPrimary };
       case 'gray':
         return { colorName: 'primary' };
       case 'plain':
         return { colorName: 'custom', custom: effectiveTint };
       default:
-        return { colorName: 'white' };
+        return { colorName: 'custom', custom: theme.isDark ? '#000000' : '#FFFFFF' };
     }
   };
 
@@ -123,7 +121,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const iconSize = size === 'large' ? 20 : size === 'medium' ? 18 : 15;
   const iconColor =
     resolvedVariant === 'filled'
-      ? '#FFFFFF'
+      ? theme.isDark ? '#000000' : '#FFFFFF'
       : textConfig.custom || theme.colors.labelPrimary;
 
   return (
@@ -137,7 +135,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={resolvedVariant === 'filled' ? '#FFFFFF' : effectiveTint}
+          color={resolvedVariant === 'filled' ? (theme.isDark ? '#000000' : '#FFFFFF') : effectiveTint}
         />
       ) : (
         <>

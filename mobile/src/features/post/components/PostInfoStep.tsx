@@ -116,13 +116,13 @@ export const PostInfoStep: React.FC<PostInfoStepProps> = ({
                   <AppIcon
                     name={cat.icon}
                     size={16}
-                    color={selected ? '#FFFFFF' : theme.colors.labelSecondary}
+                    color={selected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                     style={{ marginRight: 6 }}
                   />
                   <AppText
                     variant="footnote"
                     weight={selected ? '600' : '500'}
-                    customColor={selected ? '#FFFFFF' : theme.colors.labelPrimary}
+                    customColor={selected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                   >
                     {cat.label}
                   </AppText>
@@ -185,9 +185,7 @@ export const PostInfoStep: React.FC<PostInfoStepProps> = ({
                     styles.conditionOptionCard,
                     {
                       backgroundColor: selected
-                        ? theme.isDark
-                          ? 'rgba(16, 185, 129, 0.16)'
-                          : theme.colors.tintLight
+                        ? theme.colors.fillSecondary
                         : theme.colors.secondaryBackground,
                       borderColor: selected
                         ? theme.colors.tint

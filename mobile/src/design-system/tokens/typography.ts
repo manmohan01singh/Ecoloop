@@ -6,6 +6,12 @@ export const fontFamily = Platform.select({
   default: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
 });
 
+export const monoFontFamily = Platform.select({
+  ios: 'Menlo',
+  android: 'monospace',
+  default: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+});
+
 export interface TypographyTokens {
   largeTitle: TextStyle;
   title1: TextStyle;

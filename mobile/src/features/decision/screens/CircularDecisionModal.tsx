@@ -148,9 +148,7 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                         styles.catPill,
                         {
                           backgroundColor: isSel
-                            ? theme.isDark
-                              ? 'rgba(16, 185, 129, 0.20)'
-                              : 'rgba(0, 122, 94, 0.12)'
+                            ? theme.colors.fillSecondary
                             : theme.colors.secondaryBackground,
                           borderColor: isSel ? theme.colors.tint : theme.colors.separator,
                           borderWidth: isSel ? 1.5 : theme.hairlineWidth,
@@ -188,7 +186,7 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                         },
                       ]}
                     >
-                      <AppText variant="callout" weight="700" customColor={ageYears === y ? '#ffffff' : theme.colors.labelPrimary}>
+                      <AppText variant="callout" weight="700" customColor={ageYears === y ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}>
                         {y}y
                       </AppText>
                     </TouchableOpacity>
@@ -289,47 +287,43 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                       {
                         backgroundColor:
                           batteryCondition === b.id
-                            ? b.id === 'swollen'
-                              ? 'rgba(239, 68, 68, 0.20)'
-                              : theme.colors.fill
+                            ? theme.colors.fill
                             : theme.colors.secondaryBackground,
-                        borderColor:
-                          batteryCondition === b.id
-                            ? b.id === 'swollen'
-                              ? '#ef4444'
-                              : theme.colors.tint
-                            : theme.colors.separator,
-                        borderWidth: batteryCondition === b.id ? 1.5 : theme.hairlineWidth,
-                      },
-                    ]}
-                  >
-                    <AppText
-                      variant="subheadline"
-                      weight={batteryCondition === b.id ? '700' : '500'}
-                      customColor={b.id === 'swollen' && batteryCondition === 'swollen' ? '#ef4444' : undefined}
-                    >
-                      {b.label}
-                    </AppText>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              {batteryCondition === 'swollen' && (
-                <View
-                  style={[
-                    styles.warningBox,
-                    {
-                      backgroundColor: 'rgba(239, 68, 68, 0.12)',
-                      borderColor: '#ef4444',
-                    },
-                  ]}
+                    borderColor:
+                      batteryCondition === b.id
+                        ? theme.colors.tint
+                        : theme.colors.separator,
+                    borderWidth: batteryCondition === b.id ? 1.5 : theme.hairlineWidth,
+                  },
+                ]}
+              >
+                <AppText
+                  variant="subheadline"
+                  weight={batteryCondition === b.id ? '700' : '500'}
                 >
-                  <AppIcon name="warning" size={20} color="#ef4444" />
-                  <AppText variant="caption1" weight="600" customColor="#ef4444" style={{ marginLeft: 8, flex: 1 }}>
-                    Hazard Warning: Swollen batteries pose a combustion risk. Normal shipping & resale will be disabled.
-                  </AppText>
-                </View>
-              )}
+                  {b.label}
+                </AppText>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {batteryCondition === 'swollen' && (
+            <View
+              style={[
+                styles.warningBox,
+                {
+                  backgroundColor: theme.colors.fillSecondary,
+                  borderColor: theme.colors.separator,
+                  borderWidth: theme.hairlineWidth,
+                },
+              ]}
+            >
+              <AppIcon name="warning" size={20} color={theme.colors.labelPrimary} />
+              <AppText variant="caption1" weight="600" color="primary" style={{ marginLeft: 8, flex: 1 }}>
+                Hazard Warning: Swollen batteries pose a combustion risk. Normal shipping & resale will be disabled.
+              </AppText>
+            </View>
+          )}
 
               <View style={styles.btnRow}>
                 <AppButton title="Back" variant="secondary" onPress={() => setStep(1)} style={{ flex: 1, marginRight: 8 }} />
@@ -397,9 +391,7 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                           styles.priorityIcon,
                           {
                             backgroundColor: isSel
-                              ? theme.isDark
-                                ? 'rgba(16, 185, 129, 0.20)'
-                                : 'rgba(0, 122, 94, 0.12)'
+                              ? theme.colors.fillSecondary
                               : theme.colors.fill,
                           },
                         ]}
@@ -434,16 +426,17 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                   style={[
                     styles.hazardHero,
                     {
-                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                      borderColor: '#ef4444',
+                      backgroundColor: theme.colors.fillSecondary,
+                      borderColor: theme.colors.labelPrimary,
+                      borderWidth: 1.5,
                     },
                   ]}
                 >
-                  <AppIcon name="warning" size={32} color="#ef4444" />
-                  <AppText variant="headline" weight="700" customColor="#ef4444" style={{ marginTop: 8 }}>
+                  <AppIcon name="warning" size={32} color={theme.colors.labelPrimary} />
+                  <AppText variant="headline" weight="700" color="primary" style={{ marginTop: 8 }}>
                     HAZARDOUS LITHIUM-ION BATTERY
                   </AppText>
-                  <AppText variant="footnote" customColor="#ef4444" style={{ textAlign: 'center', marginTop: 4 }}>
+                  <AppText variant="footnote" color="secondary" style={{ textAlign: 'center', marginTop: 4 }}>
                     {result.hazardNotice}
                   </AppText>
                 </View>
@@ -549,8 +542,8 @@ export const CircularDecisionModal: React.FC<CircularDecisionModalProps> = ({
                           {route.title}
                         </AppText>
                         {route.isHazardBlocked && (
-                          <View style={styles.blockedPill}>
-                            <AppText variant="caption2" weight="700" customColor="#ef4444">
+                          <View style={[styles.blockedPill, { backgroundColor: theme.colors.fill, borderColor: theme.colors.separatorOpaque, borderWidth: theme.hairlineWidth }]}>
+                            <AppText variant="caption2" weight="700" color="primary">
                               BLOCKED
                             </AppText>
                           </View>
@@ -709,7 +702,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   blockedPill: {
-    backgroundColor: 'rgba(239, 68, 68, 0.20)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,

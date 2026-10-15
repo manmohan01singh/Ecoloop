@@ -203,7 +203,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
           {/* Scrollable Body */}
           <ScrollView showsVerticalScrollIndicator={false} style={styles.body}>
             {/* Main Image */}
-            <View style={styles.mediaWrapper}>
+            <View style={[styles.mediaWrapper, { backgroundColor: theme.isDark ? '#1C1C1E' : '#F5F5F7' }]}>
               <Image
                 source={{ uri: modalImageSrc || getCategoryFallbackImage(item.category) }}
                 style={styles.mediaImage}
@@ -216,6 +216,32 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                 }}
               />
             </View>
+
+            {/* Image Gallery Thumbnails */}
+            {item.additionalImages && item.additionalImages.length > 0 ? (
+              <View style={styles.thumbnailRow}>
+                {[item.imageUrl, ...item.additionalImages].map((imgUri, idx) => {
+                  const isSelected = modalImageSrc === imgUri;
+                  return (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => setModalImageSrc(imgUri)}
+                      activeOpacity={0.7}
+                      style={[
+                        styles.thumbnailItem,
+                        {
+                          borderColor: isSelected ? theme.colors.tint : theme.colors.separator,
+                          borderWidth: isSelected ? 2 : theme.hairlineWidth,
+                          backgroundColor: theme.isDark ? '#1C1C1E' : '#F5F5F7',
+                        },
+                      ]}
+                    >
+                      <Image source={{ uri: imgUri }} style={styles.thumbImage} resizeMode="cover" />
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : null}
 
             {/* Price & Environmental Highlights Bar */}
             <View
@@ -252,7 +278,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                   weight="700"
                   customColor={theme.colors.tint}
                 >
-                  🌿 {item.co2SavedKg} kg
+                  {item.co2SavedKg} kg CO₂
                 </AppText>
               </View>
 
@@ -477,8 +503,23 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 14,
     overflow: 'hidden',
+    marginBottom: 10,
+    backgroundColor: 'transparent',
+  },
+  thumbnailRow: {
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: 14,
-    backgroundColor: '#000000',
+  },
+  thumbnailItem: {
+    width: 52,
+    height: 52,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  thumbImage: {
+    width: '100%',
+    height: '100%',
   },
   mediaImage: {
     width: '100%',

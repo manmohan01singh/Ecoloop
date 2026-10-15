@@ -218,7 +218,7 @@ export const SafeHandoverModal: React.FC<SafeHandoverModalProps> = ({
                         },
                       ]}
                     >
-                      {isChecked && <AppIcon name="checkmark" size={14} color="#ffffff" />}
+                      {isChecked && <AppIcon name="checkmark" size={14} color={theme.isDark ? '#000000' : '#FFFFFF'} />}
                     </View>
 
                     <AppText

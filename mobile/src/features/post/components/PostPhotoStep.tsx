@@ -182,9 +182,7 @@ export const PostPhotoStep: React.FC<PostPhotoStepProps> = ({
             style={[
               styles.warningBanner,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(255, 159, 10, 0.15)'
-                  : '#FFF6E6',
+                backgroundColor: theme.colors.fill,
                 borderColor: theme.colors.warning,
                 borderWidth: theme.hairlineWidth,
                 borderRadius: theme.radii.md,
@@ -331,6 +329,7 @@ export const PostPhotoStep: React.FC<PostPhotoStepProps> = ({
                   style={[
                     styles.photoThumbnailWrapper,
                     {
+                      backgroundColor: theme.isDark ? '#1C1C1E' : '#F5F5F7',
                       borderColor: item.isPrimary
                         ? theme.colors.tint
                         : theme.colors.separator,
@@ -349,7 +348,7 @@ export const PostPhotoStep: React.FC<PostPhotoStepProps> = ({
                         { backgroundColor: theme.colors.tint },
                       ]}
                     >
-                      <AppText variant="caption2" weight="700" customColor="#FFFFFF">
+                      <AppText variant="caption2" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
                         COVER
                       </AppText>
                     </View>
@@ -510,7 +509,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   photoThumbnail: {
     width: '100%',
@@ -539,7 +538,7 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: 'rgba(255, 59, 48, 0.85)',
+    backgroundColor: 'rgba(0, 0, 0, 0.70)',
     alignItems: 'center',
     justifyContent: 'center',
   },

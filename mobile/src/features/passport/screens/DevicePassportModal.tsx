@@ -99,13 +99,13 @@ export const DevicePassportModal: React.FC<DevicePassportModalProps> = ({
   const getTierColor = (tier: DevicePassportEvent['verificationTier']) => {
     switch (tier) {
       case 'certified':
-        return '#10b981';
+        return theme.colors.tint;
       case 'evidence_backed':
-        return '#f59e0b';
+        return theme.isDark ? '#C7C7CC' : '#3A3A3C';
       case 'provider_reported':
-        return '#8b5cf6';
+        return theme.isDark ? '#8E8E93' : '#636366';
       default:
-        return '#3b82f6';
+        return theme.colors.labelTertiary;
     }
   };
 
@@ -179,14 +179,14 @@ export const DevicePassportModal: React.FC<DevicePassportModalProps> = ({
                 style={[
                   styles.deviceAvatar,
                   {
-                    backgroundColor: theme.isDark ? 'rgba(16, 185, 129, 0.20)' : 'rgba(0, 122, 94, 0.12)',
+                    backgroundColor: theme.colors.fillSecondary,
                   },
                 ]}
               >
                 <AppIcon name="shield-checkmark" size={24} color={theme.colors.tint} />
               </View>
               <View style={{ marginLeft: 12, flex: 1 }}>
-                <AppText variant="subheadline" weight="700">
+                <AppText variant="subheadline" weight="700" mono={Boolean(searchQuery)}>
                   {searchQuery || 'Unregistered Hardware'}
                 </AppText>
                 <AppText variant="caption2" color="secondary">
@@ -197,19 +197,19 @@ export const DevicePassportModal: React.FC<DevicePassportModalProps> = ({
 
             <View style={styles.tierLegend}>
               <View style={styles.legendItem}>
-                <View style={[styles.dot, { backgroundColor: '#3b82f6' }]} />
+                <View style={[styles.dot, { backgroundColor: theme.colors.labelTertiary }]} />
                 <AppText variant="caption2" color="secondary">
                   User Reported
                 </AppText>
               </View>
               <View style={styles.legendItem}>
-                <View style={[styles.dot, { backgroundColor: '#f59e0b' }]} />
+                <View style={[styles.dot, { backgroundColor: theme.isDark ? '#C7C7CC' : '#3A3A3C' }]} />
                 <AppText variant="caption2" color="secondary">
                   Evidence Backed
                 </AppText>
               </View>
               <View style={styles.legendItem}>
-                <View style={[styles.dot, { backgroundColor: '#10b981' }]} />
+                <View style={[styles.dot, { backgroundColor: theme.colors.tint }]} />
                 <AppText variant="caption2" color="secondary">
                   Certified
                 </AppText>

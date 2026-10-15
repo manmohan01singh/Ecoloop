@@ -171,25 +171,25 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
         return {
           icon: 'leaf',
           color: theme.colors.tint,
-          bg: theme.isDark ? 'rgba(16, 185, 129, 0.18)' : 'rgba(0, 122, 94, 0.10)',
+          bg: theme.colors.fillSecondary,
         };
       case 'account_created':
         return {
           icon: 'shield-checkmark',
-          color: '#0071E3',
-          bg: theme.isDark ? 'rgba(10, 132, 255, 0.18)' : 'rgba(0, 113, 227, 0.10)',
+          color: theme.colors.tint,
+          bg: theme.colors.fillSecondary,
         };
       case 'karma_earned':
         return {
           icon: 'flame',
-          color: '#FF9500',
-          bg: theme.isDark ? 'rgba(255, 159, 10, 0.18)' : 'rgba(255, 149, 0, 0.10)',
+          color: theme.colors.tint,
+          bg: theme.colors.fillSecondary,
         };
       default:
         return {
           icon: 'notifications',
           color: theme.colors.labelSecondary,
-          bg: theme.colors.fill,
+          bg: theme.colors.fillSecondary,
         };
     }
   };
@@ -209,9 +209,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
             styles.eventRow,
             {
               backgroundColor: isUnread
-                ? theme.isDark
-                  ? 'rgba(16, 185, 129, 0.05)'
-                  : 'rgba(0, 122, 94, 0.03)'
+                ? (theme.isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)')
                 : 'transparent',
             },
           ]}
@@ -249,14 +247,13 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
             </AppText>
           </View>
 
-          {/* Unread Indicator with Selective Glow */}
+          {/* Unread Indicator */}
           {isUnread ? (
             <View
               style={[
                 styles.unreadDot,
                 {
                   backgroundColor: theme.colors.tint,
-                  ...theme.getGlow('unreadIndicator'),
                 },
               ]}
             />
@@ -315,11 +312,10 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
                     styles.unreadBadgePill,
                     {
                       backgroundColor: theme.colors.tint,
-                      ...theme.getGlow('unreadIndicator'),
                     },
                   ]}
                 >
-                  <AppText variant="caption2" weight="700" customColor="#FFFFFF">
+                  <AppText variant="caption2" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
                     {unreadCount} NEW
                   </AppText>
                 </View>
@@ -352,7 +348,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
             style={[
               styles.errorCard,
               {
-                backgroundColor: theme.isDark ? 'rgba(255, 69, 58, 0.15)' : 'rgba(255, 59, 48, 0.08)',
+                backgroundColor: theme.colors.fill,
                 borderColor: theme.colors.destructive,
               },
             ]}
@@ -402,9 +398,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
               style={[
                 styles.promptIconCircle,
                 {
-                  backgroundColor: theme.isDark
-                    ? 'rgba(16, 185, 129, 0.18)'
-                    : 'rgba(0, 122, 94, 0.10)',
+                  backgroundColor: theme.colors.fillSecondary,
                 },
               ]}
             >
@@ -458,7 +452,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
                     <AppText
                       variant="subheadline"
                       weight={isSelected ? '600' : '500'}
-                      customColor={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+                      customColor={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                     >
                       {cat.label}
                     </AppText>
@@ -485,9 +479,7 @@ export const ActivityScreen: React.FC<ActivityScreenProps> = ({
                   style={[
                     styles.emptyIconCircle,
                     {
-                      backgroundColor: theme.isDark
-                        ? 'rgba(16, 185, 129, 0.15)'
-                        : 'rgba(0, 122, 94, 0.08)',
+                      backgroundColor: theme.colors.fillSecondary,
                     },
                   ]}
                 >

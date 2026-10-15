@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAppTheme } from '../../../design-system/theme/theme';
 import { AppText } from '../../../components/ui/AppText';
-import { AppIcon } from '../../../components/ui/AppIcon';
+import { AppIcon, IconName } from '../../../components/ui/AppIcon';
 
 export interface CircularToolsSectionProps {
   onOpenDecisionEngine: () => void;
@@ -19,144 +19,99 @@ export const CircularToolsSection: React.FC<CircularToolsSectionProps> = ({
 }) => {
   const theme = useAppTheme();
 
+  const tools: Array<{
+    id: string;
+    title: string;
+    subtitle: string;
+    icon: IconName;
+    badge?: string;
+    onPress: () => void;
+  }> = [
+    {
+      id: 'passport',
+      title: 'Device Passport',
+      subtitle: 'IMEI history & replaced OEM parts',
+      icon: 'shield-checkmark',
+      onPress: onOpenPassport,
+    },
+    {
+      id: 'handover',
+      title: 'Safe Handover',
+      subtitle: 'Cryptographic data wipe & custody check',
+      icon: 'lock-closed',
+      onPress: onOpenHandover,
+    },
+    {
+      id: 'decision',
+      title: 'Circular Advisor',
+      subtitle: 'Compare repair, resell & recycle routes',
+      icon: 'sparkles',
+      badge: 'SMART',
+      onPress: onOpenDecisionEngine,
+    },
+    {
+      id: 'workspace',
+      title: 'Operational Workspaces',
+      subtitle: 'Access Repair Pro, Recycler & Business',
+      icon: 'business',
+      onPress: onOpenWorkspaceSwitcher,
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.sectionHeader}>
         <AppText variant="title3" weight="700">
-          Circular Trust & Tools
+          Trust & Security
         </AppText>
         <AppText variant="caption1" color="secondary" style={{ marginTop: 2 }}>
-          Scientific diagnosis, lifecycle passports & safe custody
+          Hardware verification, data protection & custody tools
         </AppText>
       </View>
 
-      {/* Hero Decision Engine Card with selective glow */}
-      <TouchableOpacity
-        activeOpacity={0.85}
-        onPress={onOpenDecisionEngine}
-        style={[
-          styles.heroDecisionCard,
-          {
-            backgroundColor: theme.colors.secondaryBackground,
-            borderColor: theme.isDark ? theme.colors.tint : theme.colors.separator,
-            borderWidth: theme.isDark ? 1.5 : theme.hairlineWidth,
-            ...theme.shadows.card,
-          },
-        ]}
-      >
-        <View style={styles.heroDecisionContent}>
-          <View
+      <View style={styles.grid}>
+        {tools.map((tool) => (
+          <TouchableOpacity
+            key={tool.id}
+            accessibilityRole="button"
+            accessibilityLabel={`${tool.title}, ${tool.subtitle}`}
+            activeOpacity={0.75}
+            onPress={tool.onPress}
             style={[
-              styles.sparkleIconBox,
+              styles.tile,
               {
-                backgroundColor: theme.isDark ? 'rgba(16, 185, 129, 0.22)' : 'rgba(0, 122, 94, 0.12)',
+                backgroundColor: theme.colors.card,
+                borderColor: theme.colors.separator,
+                borderWidth: theme.hairlineWidth,
+                borderRadius: theme.radii.lg,
+                ...theme.shadows.card,
               },
             ]}
           >
-            <AppIcon name="sparkles" size={22} color={theme.colors.tint} />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <AppText variant="headline" weight="700">
-                Circular Decision Engine
-              </AppText>
-              <View style={[styles.newBadge, { backgroundColor: theme.colors.tint }]}>
-                <AppText variant="caption2" weight="700" customColor="#ffffff">
-                  SMART
-                </AppText>
+            <View style={styles.tileTop}>
+              <View style={[styles.tileIcon, { backgroundColor: theme.colors.fillSecondary }]}>
+                <AppIcon name={tool.icon} size={18} color={theme.colors.labelPrimary} />
               </View>
+              {tool.badge ? (
+                <View style={[styles.tileBadge, { backgroundColor: theme.colors.fill }]}>
+                  <AppText variant="caption2" weight="700" color="primary">
+                    {tool.badge}
+                  </AppText>
+                </View>
+              ) : (
+                <AppIcon name="chevron-forward" size={14} color={theme.colors.labelTertiary} />
+              )}
             </View>
-            <AppText variant="footnote" color="secondary" style={{ marginTop: 2 }}>
-              Don't know what to do with a device? Compare repair cost vs resale value vs certified recycling.
+
+            <AppText variant="subheadline" weight="700" style={styles.tileTitle} numberOfLines={1}>
+              {tool.title}
             </AppText>
-          </View>
-        </View>
-
-        <View style={[styles.cardCtaRow, { borderTopColor: theme.colors.separator, borderTopWidth: theme.hairlineWidth }]}>
-          <AppText variant="caption1" weight="600" customColor={theme.colors.tint}>
-            Diagnose Device Now
-          </AppText>
-          <AppIcon name="chevron-forward" size={14} color={theme.colors.tint} />
-        </View>
-      </TouchableOpacity>
-
-      {/* Grid of Secondary Circular Utilities */}
-      <View style={styles.toolsGrid}>
-        {/* Device Passport */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onOpenPassport}
-          style={[
-            styles.toolTile,
-            {
-              backgroundColor: theme.colors.secondaryBackground,
-              borderColor: theme.colors.separator,
-              borderWidth: theme.hairlineWidth,
-              ...theme.shadows.card,
-            },
-          ]}
-        >
-          <View style={[styles.tileIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-            <AppIcon name="shield-checkmark" size={18} color="#3b82f6" />
-          </View>
-          <AppText variant="subheadline" weight="700" style={{ marginTop: 8 }}>
-            Device Passport
-          </AppText>
-          <AppText variant="caption2" color="secondary" style={{ marginTop: 2 }}>
-            Verify IMEI history & replaced OEM parts
-          </AppText>
-        </TouchableOpacity>
-
-        {/* Safe Handover */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onOpenHandover}
-          style={[
-            styles.toolTile,
-            {
-              backgroundColor: theme.colors.secondaryBackground,
-              borderColor: theme.colors.separator,
-              borderWidth: theme.hairlineWidth,
-              ...theme.shadows.card,
-            },
-          ]}
-        >
-          <View style={[styles.tileIcon, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-            <AppIcon name="lock-closed" size={18} color="#f59e0b" />
-          </View>
-          <AppText variant="subheadline" weight="700" style={{ marginTop: 8 }}>
-            Safe Handover
-          </AppText>
-          <AppText variant="caption2" color="secondary" style={{ marginTop: 2 }}>
-            6-step cryptographic wipe & safety check
-          </AppText>
-        </TouchableOpacity>
+            <AppText variant="caption2" color="secondary" numberOfLines={2} style={styles.tileSubtitle}>
+              {tool.subtitle}
+            </AppText>
+          </TouchableOpacity>
+        ))}
       </View>
-
-      {/* Workspace Switcher Entry Banner */}
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onOpenWorkspaceSwitcher}
-        style={[
-          styles.workspaceBanner,
-          {
-            backgroundColor: theme.isDark ? 'rgba(16, 185, 129, 0.08)' : 'rgba(0, 122, 94, 0.06)',
-            borderColor: theme.colors.tint,
-            borderWidth: theme.hairlineWidth,
-          },
-        ]}
-      >
-        <AppIcon name="business" size={20} color={theme.colors.tint} />
-        <View style={{ flex: 1, marginLeft: 10 }}>
-          <AppText variant="caption1" weight="700">
-            Switch Operational Workspace
-          </AppText>
-          <AppText variant="caption2" color="secondary">
-            Access Repair Specialist, Recycler, or Business Inventory
-          </AppText>
-        </View>
-        <AppIcon name="chevron-forward" size={16} color={theme.colors.tint} />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -168,59 +123,42 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionHeader: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  heroDecisionCard: {
-    borderRadius: 16,
-    overflow: 'hidden',
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  heroDecisionContent: {
+  tile: {
+    width: '48.5%',
+    padding: 13,
+    minHeight: 110,
+    justifyContent: 'space-between',
+  },
+  tileTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
-  sparkleIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  tileIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  newBadge: {
+  tileBadge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
-    marginLeft: 8,
   },
-  cardCtaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+  tileTitle: {
+    marginBottom: 2,
+    letterSpacing: -0.2,
   },
-  toolsGrid: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 10,
-  },
-  toolTile: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 14,
-  },
-  tileIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  workspaceBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    marginTop: 10,
+  tileSubtitle: {
+    lineHeight: 15,
   },
 });

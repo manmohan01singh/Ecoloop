@@ -100,7 +100,7 @@ export const CommunityActivitySection: React.FC<CommunityActivitySectionProps> =
             style={[
               styles.groupedCard,
               {
-                backgroundColor: theme.colors.secondaryBackground,
+                backgroundColor: theme.colors.card,
                 borderColor: theme.colors.separator,
                 borderWidth: theme.hairlineWidth,
                 borderRadius: theme.radii.lg,
@@ -208,7 +208,7 @@ export const CommunityActivitySection: React.FC<CommunityActivitySectionProps> =
           style={[
             styles.emptyHubCard,
             {
-              backgroundColor: theme.colors.secondaryBackground,
+              backgroundColor: theme.colors.card,
               borderColor: theme.colors.separator,
               borderWidth: theme.hairlineWidth,
               borderRadius: theme.radii.lg,
@@ -235,7 +235,7 @@ export const CommunityActivitySection: React.FC<CommunityActivitySectionProps> =
               style={[
                 styles.statCard,
                 {
-                  backgroundColor: theme.colors.secondaryBackground,
+                  backgroundColor: theme.colors.card,
                   borderColor: theme.colors.separator,
                   borderWidth: theme.hairlineWidth,
                   borderRadius: theme.radii.lg,
@@ -247,9 +247,7 @@ export const CommunityActivitySection: React.FC<CommunityActivitySectionProps> =
                 style={[
                   styles.statIconBadge,
                   {
-                    backgroundColor: theme.isDark
-                      ? 'rgba(16, 185, 129, 0.16)'
-                      : 'rgba(0, 122, 94, 0.08)',
+                    backgroundColor: theme.colors.fillSecondary,
                   },
                 ]}
               >

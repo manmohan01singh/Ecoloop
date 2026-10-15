@@ -100,9 +100,7 @@ export const PostDeviceSheet: React.FC<PostDeviceSheetProps> = ({
                   style={[
                     styles.phaseBadge,
                     {
-                      backgroundColor: theme.isDark
-                        ? 'rgba(16, 185, 129, 0.20)'
-                        : 'rgba(0, 122, 94, 0.10)',
+                      backgroundColor: theme.colors.fillSecondary,
                     },
                   ]}
                 >
@@ -140,9 +138,7 @@ export const PostDeviceSheet: React.FC<PostDeviceSheetProps> = ({
                   style={[
                     styles.stepBadge,
                     {
-                      backgroundColor: theme.isDark
-                        ? 'rgba(16, 185, 129, 0.16)'
-                        : 'rgba(0, 122, 94, 0.08)',
+                      backgroundColor: theme.colors.fillSecondary,
                     },
                   ]}
                 >

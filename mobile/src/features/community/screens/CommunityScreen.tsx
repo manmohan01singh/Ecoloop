@@ -133,8 +133,8 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
             activeOpacity={0.8}
             style={[styles.composeHeaderButton, { backgroundColor: theme.colors.tint }]}
           >
-            <AppIcon name="add" size={18} color="#FFFFFF" />
-            <AppText variant="caption1" weight="700" customColor="#FFFFFF" style={{ marginLeft: 3 }}>
+            <AppIcon name="add" size={18} color={theme.isDark ? '#000000' : '#FFFFFF'} />
+            <AppText variant="caption1" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'} style={{ marginLeft: 3 }}>
               Post
             </AppText>
           </TouchableOpacity>
@@ -185,18 +185,18 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
               <AppText
                 variant="subheadline"
                 weight={activeFeed === 'repair_help' ? '800' : '500'}
-                customColor={activeFeed === 'repair_help' ? '#0071E3' : theme.colors.labelSecondary}
+                color={activeFeed === 'repair_help' ? 'primary' : 'secondary'}
               >
                 Repair Help
               </AppText>
-              <View style={[styles.repairHelpBadge, { backgroundColor: '#0071E3' }]}>
-                <AppText variant="caption2" weight="800" customColor="#FFFFFF" style={{ fontSize: 9 }}>
+              <View style={[styles.repairHelpBadge, { backgroundColor: theme.colors.fillSecondary }]}>
+                <AppText variant="caption2" weight="800" color="secondary" style={{ fontSize: 9 }}>
                   @REPAIR
                 </AppText>
               </View>
             </View>
             {activeFeed === 'repair_help' && (
-              <View style={[styles.activeTabIndicator, { backgroundColor: '#0071E3' }]} />
+              <View style={[styles.activeTabIndicator, { backgroundColor: theme.colors.tint }]} />
             )}
           </TouchableOpacity>
         </View>
@@ -220,15 +220,15 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
             style={[
               styles.repairBannerCard,
               {
-                backgroundColor: theme.isDark ? 'rgba(0, 113, 227, 0.12)' : 'rgba(0, 113, 227, 0.06)',
-                borderColor: theme.isDark ? 'rgba(0, 113, 227, 0.28)' : 'rgba(0, 113, 227, 0.16)',
+                backgroundColor: theme.colors.fillSecondary,
+                borderColor: theme.colors.separator,
                 borderWidth: theme.hairlineWidth,
               },
             ]}
           >
-            <AppIcon name="construct" size={18} color="#0071E3" style={{ marginRight: 8, marginTop: 1 }} />
+            <AppIcon name="construct" size={18} color={theme.colors.tint} style={{ marginRight: 8, marginTop: 1 }} />
             <View style={{ flex: 1 }}>
-              <AppText variant="footnote" weight="700" customColor="#0071E3">
+              <AppText variant="footnote" weight="700" color="primary">
                 @repair Broadcast Channel
               </AppText>
               <AppText variant="caption2" color="secondary" style={{ marginTop: 2 }}>
@@ -261,18 +261,13 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                     style={[
                       styles.avatarBox,
                       {
-                        backgroundColor:
-                          post.author.role === 'repair_pro'
-                            ? '#0071E3'
-                            : post.author.role === 'recycler'
-                            ? '#007A5E'
-                            : post.author.role === 'business'
-                            ? '#AF52DE'
-                            : theme.colors.tint,
+                        backgroundColor: theme.colors.fill,
+                        borderWidth: theme.hairlineWidth,
+                        borderColor: theme.colors.separator,
                       },
                     ]}
                   >
-                    <AppText variant="caption1" weight="800" customColor="#FFFFFF">
+                    <AppText variant="caption1" weight="800" color="primary">
                       {post.author.avatarInitials}
                     </AppText>
                   </View>
@@ -290,7 +285,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                         <AppIcon
                           name="checkmark-circle"
                           size={14}
-                          color="#0071E3"
+                          color={theme.colors.tint}
                           style={{ marginLeft: 3, marginRight: 4 }}
                         />
                       )}
@@ -304,25 +299,14 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                       style={[
                         styles.rolePill,
                         {
-                          backgroundColor:
-                            post.author.role === 'repair_pro'
-                              ? 'rgba(0, 113, 227, 0.1)'
-                              : post.author.role === 'recycler'
-                              ? 'rgba(0, 122, 94, 0.1)'
-                              : 'rgba(120, 120, 128, 0.08)',
+                          backgroundColor: theme.colors.fillSecondary,
                         },
                       ]}
                     >
                       <AppText
                         variant="caption2"
                         weight="700"
-                        customColor={
-                          post.author.role === 'repair_pro'
-                            ? '#0071E3'
-                            : post.author.role === 'recycler'
-                            ? '#007A5E'
-                            : theme.colors.labelSecondary
-                        }
+                        color="secondary"
                       >
                         {post.author.roleLabel}
                       </AppText>
@@ -335,16 +319,14 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                       style={[
                         styles.broadcastCallout,
                         {
-                          backgroundColor: theme.isDark
-                            ? 'rgba(0, 113, 227, 0.16)'
-                            : 'rgba(0, 113, 227, 0.08)',
-                          borderColor: theme.isDark ? 'rgba(0, 113, 227, 0.3)' : 'rgba(0, 113, 227, 0.18)',
+                          backgroundColor: theme.colors.fillSecondary,
+                          borderColor: theme.colors.separator,
                           borderWidth: theme.hairlineWidth,
                         },
                       ]}
                     >
-                      <AppIcon name="radio-outline" size={13} color="#0071E3" style={{ marginRight: 5 }} />
-                      <AppText variant="caption2" weight="700" customColor="#0071E3">
+                      <AppIcon name="radio-outline" size={13} color={theme.colors.tint} style={{ marginRight: 5 }} />
+                      <AppText variant="caption2" weight="700" color="primary">
                         Broadcast to {post.repairSpecialistsNotifiedCount || 42} certified repair specialists
                       </AppText>
                     </View>
@@ -412,11 +394,11 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                       <AppIcon
                         name={post.isLiked ? 'heart' : 'heart-outline'}
                         size={17}
-                        color={post.isLiked ? '#FF3B30' : theme.colors.labelSecondary}
+                        color={post.isLiked ? theme.colors.tint : theme.colors.labelSecondary}
                       />
                       <AppText
                         variant="caption1"
-                        customColor={post.isLiked ? '#FF3B30' : theme.colors.labelSecondary}
+                        customColor={post.isLiked ? theme.colors.tint : theme.colors.labelSecondary}
                         style={styles.actionCount}
                       >
                         {post.likesCount || 0}
@@ -448,24 +430,6 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
         })}
       </ScrollView>
 
-      {/* Floating Compose Button */}
-      <TouchableOpacity
-        onPress={() => setComposerVisible(true)}
-        activeOpacity={0.88}
-        style={[
-          styles.fabButton,
-          {
-            backgroundColor: theme.colors.tint,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 4,
-          },
-        ]}
-      >
-        <AppIcon name="create-outline" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
 
       {/* Tweet / Post Composer Modal */}
       <Modal visible={composerVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setComposerVisible(false)}>
@@ -497,7 +461,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                 <AppText
                   variant="subheadline"
                   weight="700"
-                  customColor={composerText.trim() ? '#FFFFFF' : theme.colors.labelTertiary}
+                  customColor={composerText.trim() ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelTertiary}
                 >
                   Publish
                 </AppText>
@@ -533,18 +497,18 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                     styles.tagHelperPill,
                     {
                       backgroundColor: isRepairBroadcastActive
-                        ? 'rgba(0, 113, 227, 0.15)'
+                        ? theme.colors.tint
                         : theme.colors.fillSecondary,
-                      borderColor: isRepairBroadcastActive ? '#0071E3' : 'transparent',
+                      borderColor: isRepairBroadcastActive ? theme.colors.tint : 'transparent',
                       borderWidth: 1,
                     },
                   ]}
                 >
-                  <AppIcon name="construct" size={13} color={isRepairBroadcastActive ? '#0071E3' : theme.colors.labelSecondary} style={{ marginRight: 4 }} />
+                  <AppIcon name="construct" size={13} color={isRepairBroadcastActive ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary} style={{ marginRight: 4 }} />
                   <AppText
                     variant="caption1"
                     weight="700"
-                    customColor={isRepairBroadcastActive ? '#0071E3' : theme.colors.labelSecondary}
+                    customColor={isRepairBroadcastActive ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                   >
                     + Tag @repair
                   </AppText>
@@ -557,10 +521,10 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
 
               {/* Broadcast Alert Box if @repair is present */}
               {isRepairBroadcastActive && (
-                <View style={[styles.broadcastNoticeBox, { backgroundColor: 'rgba(0, 113, 227, 0.1)' }]}>
-                  <AppIcon name="radio" size={16} color="#0071E3" style={{ marginRight: 8 }} />
+                <View style={[styles.broadcastNoticeBox, { backgroundColor: theme.colors.fillSecondary, borderColor: theme.colors.separator, borderWidth: theme.hairlineWidth }]}>
+                  <AppIcon name="radio" size={16} color={theme.colors.tint} style={{ marginRight: 8 }} />
                   <View style={{ flex: 1 }}>
-                    <AppText variant="footnote" weight="700" customColor="#0071E3">
+                    <AppText variant="footnote" weight="700" color="primary">
                       Specialist Broadcast Active
                     </AppText>
                     <AppText variant="caption2" color="secondary" style={{ marginTop: 2 }}>
@@ -587,7 +551,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                     <AppText
                       variant="caption2"
                       weight={selectedHashTag === tag ? '700' : '500'}
-                      customColor={selectedHashTag === tag ? '#FFFFFF' : theme.colors.labelSecondary}
+                      customColor={selectedHashTag === tag ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                     >
                       #{tag}
                     </AppText>
@@ -657,13 +621,13 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                           {comment.author.name}
                         </AppText>
                         {comment.author.isVerified && (
-                          <AppIcon name="checkmark-circle" size={13} color="#0071E3" style={{ marginLeft: 3 }} />
+                          <AppIcon name="checkmark-circle" size={13} color={theme.colors.tint} style={{ marginLeft: 3 }} />
                         )}
                         <AppText variant="caption2" color="tertiary" style={{ marginLeft: 6 }}>
                           {comment.createdAt}
                         </AppText>
                       </View>
-                      <AppText variant="caption2" weight="700" customColor="#0071E3">
+                      <AppText variant="caption2" weight="700" color="secondary">
                         {comment.author.roleLabel}
                       </AppText>
                     </View>
@@ -720,7 +684,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = () => {
                 <AppIcon
                   name="send"
                   size={16}
-                  color={newCommentText.trim() ? '#FFFFFF' : theme.colors.labelTertiary}
+                  color={newCommentText.trim() ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelTertiary}
                 />
               </TouchableOpacity>
             </View>
@@ -866,16 +830,6 @@ const styles = StyleSheet.create({
   actionCount: {
     marginLeft: 5,
     fontSize: 12,
-  },
-  fabButton: {
-    position: 'absolute',
-    bottom: 96,
-    right: 20,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,

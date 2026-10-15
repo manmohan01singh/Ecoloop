@@ -66,7 +66,7 @@ export const AppFilterPills: React.FC<AppFilterPillsProps> = ({
           <AppIcon
             name={item.icon}
             size={14}
-            color={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+            color={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
             style={{ marginRight: 5 }}
           />
         ) : null}
@@ -74,7 +74,7 @@ export const AppFilterPills: React.FC<AppFilterPillsProps> = ({
         <AppText
           variant="footnote"
           weight={isSelected ? '600' : '500'}
-          customColor={isSelected ? '#FFFFFF' : theme.colors.labelPrimary}
+          customColor={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
         >
           {item.label}
         </AppText>
@@ -85,7 +85,9 @@ export const AppFilterPills: React.FC<AppFilterPillsProps> = ({
               styles.countBadge,
               {
                 backgroundColor: isSelected
-                  ? 'rgba(255, 255, 255, 0.25)'
+                  ? theme.isDark
+                    ? 'rgba(0, 0, 0, 0.15)'
+                    : 'rgba(255, 255, 255, 0.25)'
                   : theme.colors.fill,
               },
             ]}
@@ -93,7 +95,7 @@ export const AppFilterPills: React.FC<AppFilterPillsProps> = ({
             <AppText
               variant="caption2"
               weight="600"
-              customColor={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+              customColor={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
             >
               {item.count}
             </AppText>

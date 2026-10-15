@@ -117,7 +117,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                     borderWidth: isSelected ? 2 : theme.hairlineWidth,
                     borderRadius: theme.radii.lg,
                     ...(isSelected
-                      ? theme.getGlow('selectedPathway')
+                      ? theme.shadows.subtle
                       : theme.shadows.card),
                   },
                 ]}
@@ -135,7 +135,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                   <AppIcon
                     name={tab.icon}
                     size={20}
-                    color={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+                    color={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                   />
                 </View>
 
@@ -271,7 +271,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                       <AppText
                         variant="footnote"
                         weight={sel ? '600' : '500'}
-                        customColor={sel ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={sel ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {method === 'both' ? 'Both Pickup & Meetup' : method === 'pickup' ? 'Local Pickup Only' : 'Shipping'}
                       </AppText>
@@ -350,7 +350,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                       <AppText
                         variant="footnote"
                         weight={sel ? '600' : '500'}
-                        customColor={sel ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={sel ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {issue}
                       </AppText>
@@ -400,7 +400,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                       <AppText
                         variant="footnote"
                         weight={sel ? '600' : '500'}
-                        customColor={sel ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={sel ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {u.label}
                       </AppText>
@@ -469,7 +469,7 @@ export const PostActionStep: React.FC<PostActionStepProps> = ({
                       <AppText
                         variant="footnote"
                         weight={sel ? '600' : '500'}
-                        customColor={sel ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={sel ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {reason}
                       </AppText>

@@ -57,7 +57,7 @@ const DeviceCard: React.FC<{
       style={[
         styles.deviceCard,
         {
-          backgroundColor: theme.colors.secondaryBackground,
+          backgroundColor: theme.colors.card,
           borderColor: theme.colors.separator,
           borderWidth: theme.hairlineWidth,
           borderRadius: theme.radii.lg,
@@ -70,7 +70,7 @@ const DeviceCard: React.FC<{
         style={[
           styles.imageContainer,
           {
-            backgroundColor: theme.colors.fill,
+            backgroundColor: theme.isDark ? '#1C1C1E' : '#F5F5F7',
           },
         ]}
       >

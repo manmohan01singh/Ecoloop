@@ -95,4 +95,44 @@ describe('Design Tokens Architecture', () => {
     assert.ok(shadows.modal);
     assert.ok(shadows.none);
   });
+
+  test('AppFilterPills and AppSegmentedControl guarantee high-contrast monochrome rendering', () => {
+    const React = require('react');
+    const ReactDOMServer = require('react-dom/server');
+    const { AppFilterPills } = require('../components/ui/AppFilterPills');
+    const { AppSegmentedControl } = require('../components/ui/AppSegmentedControl');
+    const { ThemeProvider } = require('./theme/theme');
+
+    // 1. AppFilterPills in Dark Mode: selected pill must use dark text/icon on light active pill
+    const pillsDarkHtml = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(
+        ThemeProvider,
+        { initialMode: 'dark' },
+        React.createElement(AppFilterPills, {
+          items: [{ id: 'all', label: 'All', count: 12 }],
+          selectedId: 'all',
+          onSelect: () => {},
+        })
+      )
+    );
+    assert.ok(
+      pillsDarkHtml.includes('rgba(0,0,0,1.00)') || pillsDarkHtml.includes('rgb(0, 0, 0)') || pillsDarkHtml.includes('#000000'),
+      'Dark mode selected filter pill must render black text/icon for contrast'
+    );
+
+    // 2. AppSegmentedControl in Light Mode: active segment badge must be visible
+    const segLightHtml = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(
+        ThemeProvider,
+        { initialMode: 'light' },
+        React.createElement(AppSegmentedControl, {
+          options: [{ value: 'v1', label: 'Option 1', badge: 'NEW' }],
+          selectedValue: 'v1',
+          onChange: () => {},
+        })
+      )
+    );
+    assert.ok(segLightHtml.includes('NEW'), 'Segmented control must render badge');
+    assert.ok(!segLightHtml.includes('rgba(255, 255, 255, 0.25)'), 'Light mode active segment must not render invisible white-on-white badge background');
+  });
 });

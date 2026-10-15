@@ -246,9 +246,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 style={[
                   styles.noticeBox,
                   {
-                    backgroundColor: theme.isDark
-                      ? 'rgba(255, 69, 58, 0.16)'
-                      : 'rgba(255, 59, 48, 0.10)',
+                    backgroundColor: theme.colors.fill,
                     borderColor: theme.colors.destructive,
                   },
                 ]}
@@ -276,10 +274,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 style={[
                   styles.noticeBox,
                   {
-                    backgroundColor: theme.isDark
-                      ? 'rgba(52, 211, 153, 0.16)'
-                      : 'rgba(0, 122, 94, 0.10)',
-                    borderColor: theme.colors.tint,
+                    backgroundColor: theme.colors.fillSecondary,
+                    borderColor: theme.colors.separator,
                   },
                 ]}
               >

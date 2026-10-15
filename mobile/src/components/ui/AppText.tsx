@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TextProps, TextStyle, StyleSheet } from 'react-native';
 import { useAppTheme } from '../../design-system/theme/theme';
+import { monoFontFamily } from '../../design-system/tokens/typography';
 
 export type TextVariant =
   | 'largeTitle'
@@ -33,6 +34,7 @@ export interface AppTextProps extends TextProps {
   customColor?: string;
   weight?: TextStyle['fontWeight'];
   align?: TextStyle['textAlign'];
+  mono?: boolean;
   children: React.ReactNode;
 }
 
@@ -42,6 +44,7 @@ export const AppText: React.FC<AppTextProps> = ({
   customColor,
   weight,
   align,
+  mono = false,
   style,
   children,
   ...rest
@@ -77,6 +80,7 @@ export const AppText: React.FC<AppTextProps> = ({
   const textStyle: TextStyle = {
     ...theme.typography[variant],
     color: getColor(),
+    ...(mono ? { fontFamily: monoFontFamily, letterSpacing: 0.2 } : {}),
     ...(weight ? { fontWeight: weight } : {}),
     ...(align ? { textAlign: align } : {}),
   };

@@ -49,10 +49,8 @@ export const AppCard: React.FC<AppCardProps> = ({
       case 'tinted':
         base.backgroundColor =
           tintBackground ||
-          (theme.isDark ? 'rgba(16, 185, 129, 0.12)' : theme.colors.tintLight);
-        base.borderColor = theme.isDark
-          ? 'rgba(16, 185, 129, 0.24)'
-          : 'rgba(0, 122, 94, 0.15)';
+          (theme.isDark ? 'rgba(255, 255, 255, 0.06)' : theme.colors.tintLight);
+        base.borderColor = theme.colors.separator;
         break;
       case 'flat':
         base.backgroundColor = theme.colors.fill;

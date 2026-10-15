@@ -74,7 +74,7 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
           },
         ]}
       >
-        <AppIcon name="shield-outline" size={54} color="#f59e0b" />
+        <AppIcon name="shield-outline" size={54} color={theme.colors.tint} />
         <AppText variant="title2" weight="700" style={{ marginTop: 16 }}>
           Moderation Access Restricted
         </AppText>
@@ -148,8 +148,8 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onOpenWorkspaceSwitcher} style={styles.workspacePill}>
-          <View style={[styles.modIcon, { backgroundColor: 'rgba(59, 130, 246, 0.20)' }]}>
-            <AppIcon name="shield-checkmark" size={16} color="#3b82f6" />
+          <View style={[styles.modIcon, { backgroundColor: theme.colors.fillSecondary }]}>
+            <AppIcon name="shield-checkmark" size={16} color={theme.colors.tint} />
           </View>
           <View style={{ marginLeft: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -174,7 +174,7 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
       {/* Metrics Banner */}
       <View style={[styles.metricsBanner, { backgroundColor: theme.colors.secondaryBackground }]}>
         <View style={styles.metricCol}>
-          <AppText variant="headline" weight="700" customColor="#ef4444">
+          <AppText variant="headline" weight="700" color="primary">
             {pendingReports.length}
           </AppText>
           <AppText variant="caption2" color="secondary">
@@ -258,25 +258,14 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
                       style={[
                         styles.catBadge,
                         {
-                          backgroundColor:
-                            rep.category === 'hazardous_item'
-                              ? 'rgba(239, 68, 68, 0.15)'
-                              : rep.category === 'fraud'
-                              ? 'rgba(245, 158, 11, 0.15)'
-                              : theme.colors.fill,
+                          backgroundColor: theme.colors.fill,
                         },
                       ]}
                     >
                       <AppText
                         variant="caption2"
                         weight="700"
-                        customColor={
-                          rep.category === 'hazardous_item'
-                            ? '#ef4444'
-                            : rep.category === 'fraud'
-                            ? '#f59e0b'
-                            : theme.colors.tint
-                        }
+                        color="primary"
                       >
                         {rep.category.replace('_', ' ').toUpperCase()}
                       </AppText>
@@ -289,7 +278,7 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
                   <AppText variant="headline" weight="700" style={{ marginTop: 6 }}>
                     {rep.targetTitle}
                   </AppText>
-                  <AppText variant="footnote" color="secondary" style={{ marginTop: 2 }}>
+                  <AppText variant="footnote" color="secondary" mono style={{ marginTop: 2 }}>
                     Reported by: {rep.reporterName} • Target: {rep.targetType} #{rep.targetId.slice(-6)}
                   </AppText>
                   <AppText variant="footnote" color="primary" style={{ marginTop: 4, fontStyle: 'italic' }}>
@@ -326,8 +315,8 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
                 ]}
               >
                 <View style={styles.reportTop}>
-                  <View style={[styles.catBadge, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-                    <AppText variant="caption2" weight="700" customColor="#3b82f6">
+                  <View style={[styles.catBadge, { backgroundColor: theme.colors.fill }]}>
+                    <AppText variant="caption2" weight="700" color="primary">
                       {act.actionTaken.replace('_', ' ').toUpperCase()}
                     </AppText>
                   </View>
@@ -336,7 +325,7 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
                   </AppText>
                 </View>
 
-                <AppText variant="footnote" weight="600" style={{ marginTop: 6 }}>
+                <AppText variant="footnote" weight="600" mono style={{ marginTop: 6 }}>
                   Target: {act.targetType} #{act.targetId.slice(-6)}
                 </AppText>
                 <AppText variant="caption1" color="secondary" style={{ marginTop: 2 }}>
@@ -354,7 +343,7 @@ export const ModeratorWorkspace: React.FC<ModeratorWorkspaceProps> = ({
       {/* Action Enforcement Modal */}
       <Modal visible={actionModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.cardElevated }]}>
             <AppText variant="title3" weight="700">
               Enforce Moderation Action
             </AppText>

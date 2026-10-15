@@ -20,12 +20,8 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
         style={[
           styles.pillBadge,
           {
-            backgroundColor: theme.isDark
-              ? 'rgba(16, 185, 129, 0.16)'
-              : 'rgba(0, 122, 94, 0.08)',
-            borderColor: theme.isDark
-              ? 'rgba(16, 185, 129, 0.3)'
-              : 'rgba(0, 122, 94, 0.14)',
+            backgroundColor: theme.colors.fill,
+            borderColor: theme.colors.separator,
             borderWidth: theme.hairlineWidth,
           },
         ]}
@@ -34,7 +30,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
         <AppText
           variant="caption1"
           weight="700"
-          customColor={theme.colors.tint}
+          customColor={theme.colors.labelPrimary}
           style={{ letterSpacing: 0.2 }}
         >
           Live Circular Hub • 1,420+ devices rescued this week
@@ -55,7 +51,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
       <AppText
         variant="subheadline"
         weight="700"
-        customColor={theme.colors.tint}
+        customColor={theme.colors.labelPrimary}
         style={{ marginBottom: 4 }}
       >
         Give your devices a second life.
@@ -75,14 +71,14 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
         style={[
           styles.heroCard,
           {
-            backgroundColor: theme.colors.secondaryBackground,
-            borderColor: theme.isDark ? 'rgba(0, 122, 94, 0.3)' : 'rgba(0, 122, 94, 0.16)',
-            borderWidth: 1.5,
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.separator,
+            borderWidth: theme.hairlineWidth,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: theme.isDark ? 0.35 : 0.07,
-            shadowRadius: 14,
-            elevation: 3,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: theme.isDark ? 0.3 : 0.05,
+            shadowRadius: 12,
+            elevation: 2,
           },
         ]}
       >
@@ -91,14 +87,12 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
             style={[
               styles.rescueTag,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(0, 122, 94, 0.22)'
-                  : 'rgba(0, 122, 94, 0.10)',
+                backgroundColor: theme.colors.fill,
               },
             ]}
           >
-            <AppIcon name="sparkles" size={12} color={theme.colors.tint} style={{ marginRight: 4 }} />
-            <AppText variant="caption2" weight="800" customColor={theme.colors.tint} style={{ letterSpacing: 0.5 }}>
+            <AppIcon name="sparkles" size={12} color={theme.colors.labelPrimary} style={{ marginRight: 4 }} />
+            <AppText variant="caption2" weight="800" color="primary" style={{ letterSpacing: 0.5 }}>
               SIGNATURE EXPERIENCE
             </AppText>
           </View>
@@ -106,7 +100,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
             style={[
               styles.evidenceTag,
               {
-                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                backgroundColor: theme.colors.fillSecondary,
               },
             ]}
           >
@@ -132,19 +126,19 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
             styles.heroCtaButton,
             {
               backgroundColor: theme.colors.tint,
-              shadowColor: theme.colors.tint,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 10,
-              elevation: 3,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: theme.isDark ? 0.3 : 0.1,
+              shadowRadius: 8,
+              elevation: 2,
             },
           ]}
         >
-          <AppIcon name="compass" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
-          <AppText variant="headline" weight="700" customColor="#FFFFFF">
+          <AppIcon name="compass" size={18} color={theme.isDark ? '#000000' : '#FFFFFF'} style={{ marginRight: 8 }} />
+          <AppText variant="headline" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
             Find My Device's Best Future
           </AppText>
-          <AppIcon name="chevron-forward" size={18} color="rgba(255,255,255,0.8)" style={{ marginLeft: 6 }} />
+          <AppIcon name="chevron-forward" size={18} color={theme.isDark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)'} style={{ marginLeft: 6 }} />
         </TouchableOpacity>
 
         {/* 3 Value Pillars */}

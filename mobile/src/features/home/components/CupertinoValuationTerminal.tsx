@@ -271,7 +271,7 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
         <View
           style={[
             styles.liveIndicator,
-            { backgroundColor: theme.isDark ? 'rgba(52, 199, 89, 0.2)' : 'rgba(52, 199, 89, 0.12)' },
+            { backgroundColor: theme.colors.fill },
           ]}
         >
           <View style={[styles.pulseDot, { backgroundColor: theme.colors.success }]} />
@@ -322,13 +322,13 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
                 <AppIcon
                   name={cat.icon}
                   size={14}
-                  color={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+                  color={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                   style={{ marginRight: 5 }}
                 />
                 <AppText
                   variant="caption1"
                   weight={isSelected ? '700' : '500'}
-                  customColor={isSelected ? '#FFFFFF' : theme.colors.labelSecondary}
+                  customColor={isSelected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelSecondary}
                 >
                   {cat.label}
                 </AppText>
@@ -378,9 +378,7 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
             style={[
               styles.metricCard,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(255, 255, 255, 0.04)'
-                  : 'rgba(0, 122, 94, 0.04)',
+                backgroundColor: theme.colors.fillSecondary,
                 borderColor: theme.colors.separator,
                 borderWidth: theme.hairlineWidth,
               },
@@ -405,9 +403,7 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
             style={[
               styles.metricCard,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(255, 255, 255, 0.04)'
-                  : 'rgba(52, 199, 89, 0.05)',
+                backgroundColor: theme.colors.fillSecondary,
                 borderColor: theme.colors.separator,
                 borderWidth: theme.hairlineWidth,
               },
@@ -433,10 +429,8 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
           style={[
             styles.recommendationBanner,
             {
-              backgroundColor: theme.isDark
-                ? 'rgba(0, 122, 255, 0.12)'
-                : 'rgba(0, 122, 255, 0.06)',
-              borderColor: theme.isDark ? 'rgba(0, 122, 255, 0.3)' : 'rgba(0, 122, 255, 0.18)',
+              backgroundColor: theme.colors.fillSecondary,
+              borderColor: theme.colors.separator,
               borderWidth: theme.hairlineWidth,
             },
           ]}
@@ -475,11 +469,11 @@ export const CupertinoValuationTerminal: React.FC<CupertinoValuationTerminalProp
             },
           ]}
         >
-          <AppIcon name="scan-outline" size={16} color="#FFFFFF" style={{ marginRight: 8 }} />
-          <AppText variant="subheadline" weight="700" customColor="#FFFFFF">
+          <AppIcon name="scan-outline" size={16} color={theme.isDark ? '#000000' : '#FFFFFF'} style={{ marginRight: 8 }} />
+          <AppText variant="subheadline" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
             Launch Rescue Assessment
           </AppText>
-          <AppIcon name="chevron-forward" size={16} color="rgba(255,255,255,0.7)" style={{ marginLeft: 6 }} />
+          <AppIcon name="chevron-forward" size={16} color={theme.isDark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)'} style={{ marginLeft: 6 }} />
         </TouchableOpacity>
       </View>
     </View>

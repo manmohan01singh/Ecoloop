@@ -17,6 +17,7 @@ export interface AppTextInputProps extends Omit<TextInputProps, 'style'> {
   helperText?: string;
   errorMessage?: string;
   prefix?: string;
+  prefixIcon?: import('./AppIcon').IconName;
   suffix?: string;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
@@ -29,6 +30,7 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
   helperText,
   errorMessage,
   prefix,
+  prefixIcon,
   suffix,
   containerStyle,
   inputStyle,
@@ -93,7 +95,11 @@ export const AppTextInput: React.FC<AppTextInputProps> = ({
           },
         ]}
       >
-        {prefix ? (
+        {prefixIcon ? (
+          <View style={[styles.prefixIconWrapper, multiline ? { marginTop: 4 } : undefined]}>
+            <AppIcon name={prefixIcon} size={16} color={theme.colors.labelTertiary} />
+          </View>
+        ) : prefix ? (
           <AppText
             variant="body"
             weight="500"
@@ -202,6 +208,11 @@ const styles = StyleSheet.create({
   multilineInput: {
     textAlignVertical: 'top',
     minHeight: 68,
+  },
+  prefixIconWrapper: {
+    marginRight: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   prefixText: {
     marginRight: 4,

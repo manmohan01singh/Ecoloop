@@ -143,10 +143,10 @@ export const WorkspaceSwitcherModal: React.FC<WorkspaceSwitcherModalProps> = ({
                         styles.workspaceIconCircle,
                         {
                           backgroundColor: isActive
-                            ? theme.isDark
-                              ? 'rgba(16, 185, 129, 0.20)'
-                              : 'rgba(0, 122, 94, 0.12)'
+                            ? theme.colors.fillSecondary
                             : theme.colors.fill,
+                          borderColor: isActive ? theme.colors.tint : 'transparent',
+                          borderWidth: isActive ? 1 : 0,
                         },
                       ]}
                     >
@@ -167,14 +167,14 @@ export const WorkspaceSwitcherModal: React.FC<WorkspaceSwitcherModalProps> = ({
                             style={[
                               styles.roleBadge,
                               {
-                                backgroundColor: isAuthorized ? 'rgba(16, 185, 129, 0.15)' : theme.colors.fill,
+                                backgroundColor: isAuthorized ? theme.colors.fillSecondary : theme.colors.fill,
                               },
                             ]}
                           >
                             <AppText
                               variant="caption2"
                               weight="700"
-                              customColor={isAuthorized ? theme.colors.tint : theme.colors.labelSecondary}
+                              color={isAuthorized ? 'primary' : 'secondary'}
                             >
                               {ws.badge}
                             </AppText>
@@ -189,7 +189,7 @@ export const WorkspaceSwitcherModal: React.FC<WorkspaceSwitcherModalProps> = ({
 
                     {isActive ? (
                       <View style={[styles.activePill, { backgroundColor: theme.colors.tint }]}>
-                        <AppText variant="caption2" weight="700" customColor="#ffffff">
+                        <AppText variant="caption2" weight="700" customColor={theme.isDark ? '#000000' : '#ffffff'}>
                           ACTIVE
                         </AppText>
                       </View>
@@ -215,8 +215,8 @@ export const WorkspaceSwitcherModal: React.FC<WorkspaceSwitcherModalProps> = ({
               style={[
                 styles.partnerCard,
                 {
-                  backgroundColor: theme.isDark ? 'rgba(16, 185, 129, 0.08)' : 'rgba(0, 122, 94, 0.05)',
-                  borderColor: theme.colors.tint,
+                  backgroundColor: theme.colors.secondaryBackground,
+                  borderColor: theme.colors.separator,
                   borderWidth: theme.hairlineWidth,
                 },
               ]}
@@ -234,7 +234,7 @@ export const WorkspaceSwitcherModal: React.FC<WorkspaceSwitcherModalProps> = ({
                 onPress={() => setProviderModalVisible(true)}
                 style={[styles.applyBtn, { backgroundColor: theme.colors.tint }]}
               >
-                <AppText variant="caption1" weight="700" customColor="#ffffff">
+                <AppText variant="caption1" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
                   Apply Now
                 </AppText>
               </TouchableOpacity>

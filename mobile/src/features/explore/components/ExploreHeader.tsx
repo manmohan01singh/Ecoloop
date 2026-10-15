@@ -70,7 +70,7 @@ export const ExploreHeader: React.FC<ExploreHeaderProps> = ({
                 { backgroundColor: theme.colors.tint },
               ]}
             >
-              <AppText variant="caption2" weight="700" customColor="#FFFFFF">
+              <AppText variant="caption2" weight="700" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
                 {activeFiltersCount}
               </AppText>
             </View>
@@ -86,7 +86,7 @@ export const ExploreHeader: React.FC<ExploreHeaderProps> = ({
           placeholder="Search devices, brands, models..."
           showClearButton
           containerStyle={{ marginBottom: 0 }}
-          prefix="🔍"
+          prefixIcon="search"
           returnKeyType="search"
           autoCorrect={false}
           autoCapitalize="none"

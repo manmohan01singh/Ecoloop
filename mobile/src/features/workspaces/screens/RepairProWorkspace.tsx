@@ -132,7 +132,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
     const res = updateRepairStatus(user?.id || 'pro-default', req.id, nextStatus as any, 'Status advanced by technician.');
     if (res.success) {
       if (nextStatus === 'completed') {
-        Alert.alert('Job Completed! 🎉', 'Repair certified. Customer notified and Device Passport event generated.');
+        Alert.alert('Job Completed', 'Repair certified. Customer notified and Device Passport event generated.');
       }
     }
   };
@@ -152,7 +152,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onOpenWorkspaceSwitcher} style={styles.workspacePill}>
-          <View style={[styles.proIcon, { backgroundColor: 'rgba(16, 185, 129, 0.20)' }]}>
+          <View style={[styles.proIcon, { backgroundColor: theme.colors.fillSecondary }]}>
             <AppIcon name="construct" size={16} color={theme.colors.tint} />
           </View>
           <View style={{ marginLeft: 8 }}>
@@ -251,7 +251,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
                   style={[
                     styles.ticketCard,
                     {
-                      backgroundColor: theme.colors.secondaryBackground,
+                      backgroundColor: theme.colors.card,
                       borderColor: theme.colors.separator,
                       borderWidth: theme.hairlineWidth,
                       ...theme.shadows.card,
@@ -260,8 +260,8 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
                 >
                   <View style={styles.ticketTop}>
                     <View style={styles.ticketBadgeRow}>
-                      <View style={[styles.urgencyPill, { backgroundColor: req.urgency === 'express' ? 'rgba(239, 68, 68, 0.15)' : theme.colors.fill }]}>
-                        <AppText variant="caption2" weight="700" customColor={req.urgency === 'express' ? '#ef4444' : theme.colors.tint}>
+                      <View style={[styles.urgencyPill, { backgroundColor: req.urgency === 'express' ? theme.colors.fill : theme.colors.fillSecondary }]}>
+                        <AppText variant="caption2" weight="700" customColor={req.urgency === 'express' ? theme.colors.labelPrimary : theme.colors.labelSecondary}>
                           {req.urgency.toUpperCase()}
                         </AppText>
                       </View>
@@ -321,7 +321,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
                   style={[
                     styles.ticketCard,
                     {
-                      backgroundColor: theme.colors.secondaryBackground,
+                      backgroundColor: theme.colors.card,
                       borderColor: theme.colors.separator,
                       borderWidth: theme.hairlineWidth,
                       ...theme.shadows.card,
@@ -329,12 +329,12 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
                   ]}
                 >
                   <View style={styles.ticketTop}>
-                    <View style={[styles.urgencyPill, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                    <View style={[styles.urgencyPill, { backgroundColor: theme.colors.fillSecondary }]}>
                       <AppText variant="caption2" weight="700" customColor={theme.colors.tint}>
                         {req.status.replace('_', ' ').toUpperCase()}
                       </AppText>
                     </View>
-                    <AppText variant="caption2" color="secondary">
+                    <AppText variant="caption2" color="secondary" mono>
                       Ticket #{req.id.slice(-6)}
                     </AppText>
                   </View>
@@ -384,7 +384,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
                 style={[
                   styles.ticketCard,
                   {
-                    backgroundColor: theme.colors.secondaryBackground,
+                    backgroundColor: theme.colors.card,
                     borderColor: theme.colors.separator,
                     borderWidth: theme.hairlineWidth,
                   },
@@ -415,7 +415,7 @@ export const RepairProWorkspace: React.FC<RepairProWorkspaceProps> = ({
       {/* Quote Builder Modal */}
       <Modal visible={quoteModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.cardElevated }]}>
             <AppText variant="title3" weight="700">
               Itemized Quote Builder
             </AppText>

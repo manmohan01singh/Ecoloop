@@ -41,28 +41,28 @@ export const AppBadge: React.FC<AppBadgeProps> = ({
     switch (variant) {
       case 'tint':
         return {
-          bg: theme.isDark ? 'rgba(16, 185, 129, 0.16)' : theme.colors.tintLight,
-          text: theme.colors.tint,
+          bg: theme.colors.fill,
+          text: theme.colors.labelPrimary,
         };
       case 'success':
         return {
-          bg: theme.isDark ? 'rgba(48, 209, 88, 0.16)' : 'rgba(52, 199, 89, 0.12)',
-          text: theme.colors.success,
+          bg: theme.colors.fill,
+          text: theme.colors.labelPrimary,
         };
       case 'warning':
         return {
-          bg: theme.isDark ? 'rgba(255, 159, 10, 0.16)' : 'rgba(255, 149, 0, 0.12)',
-          text: theme.colors.warning,
+          bg: theme.colors.fill,
+          text: theme.colors.labelSecondary,
         };
       case 'info':
         return {
-          bg: theme.isDark ? 'rgba(10, 132, 255, 0.16)' : 'rgba(0, 122, 255, 0.12)',
-          text: theme.colors.info,
+          bg: theme.colors.fill,
+          text: theme.colors.labelPrimary,
         };
       case 'neutral':
       default:
         return {
-          bg: theme.colors.fill,
+          bg: theme.colors.fillSecondary,
           text: theme.colors.labelSecondary,
         };
     }

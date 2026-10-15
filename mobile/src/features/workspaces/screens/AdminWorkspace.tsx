@@ -77,7 +77,7 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
           },
         ]}
       >
-        <AppIcon name="lock-closed" size={54} color="#ef4444" />
+        <AppIcon name="lock-closed" size={54} color={theme.colors.tint} />
         <AppText variant="title2" weight="700" style={{ marginTop: 16 }}>
           Administrative Access Restricted
         </AppText>
@@ -133,8 +133,8 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onOpenWorkspaceSwitcher} style={styles.workspacePill}>
-          <View style={[styles.adminIcon, { backgroundColor: 'rgba(239, 68, 68, 0.20)' }]}>
-            <AppIcon name="settings" size={16} color="#ef4444" />
+          <View style={[styles.adminIcon, { backgroundColor: theme.colors.fillSecondary }]}>
+            <AppIcon name="settings" size={16} color={theme.colors.tint} />
           </View>
           <View style={{ marginLeft: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -248,7 +248,7 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
                   },
                 ]}
               >
-                <AppText variant="title1" weight="700" customColor="#3b82f6">
+                <AppText variant="title1" weight="700" color="primary">
                   {metrics.totalRecycledWeightKg} kg
                 </AppText>
                 <AppText variant="subheadline" weight="600" color="primary" style={{ marginTop: 2 }}>
@@ -269,7 +269,7 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
                   },
                 ]}
               >
-                <AppText variant="title1" weight="700" customColor="#f59e0b">
+                <AppText variant="title1" weight="700" color="primary">
                   {metrics.verifiedProvidersCount}
                 </AppText>
                 <AppText variant="subheadline" weight="600" color="primary" style={{ marginTop: 2 }}>
@@ -324,21 +324,16 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
                         style={[
                           styles.statusPill,
                           {
-                            backgroundColor:
-                              app.status === 'approved'
-                                ? 'rgba(16, 185, 129, 0.15)'
-                                : app.status === 'rejected'
-                                ? 'rgba(239, 68, 68, 0.15)'
-                                : 'rgba(245, 158, 11, 0.15)',
+                            backgroundColor: theme.colors.fillSecondary,
+                            borderColor: theme.colors.separator,
+                            borderWidth: theme.hairlineWidth,
                           },
                         ]}
                       >
                         <AppText
                           variant="caption2"
                           weight="700"
-                          customColor={
-                            app.status === 'approved' ? '#10b981' : app.status === 'rejected' ? '#ef4444' : '#f59e0b'
-                          }
+                          color={app.status === 'approved' ? 'primary' : 'secondary'}
                         >
                           {app.status.toUpperCase()}
                         </AppText>
@@ -416,7 +411,7 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
                   <AppText variant="footnote" weight="600" style={{ marginTop: 6 }}>
                     Actor: {log.actorName} ({log.actorRole.toUpperCase()})
                   </AppText>
-                  <AppText variant="caption1" color="secondary" style={{ marginTop: 2 }}>
+                  <AppText variant="caption1" color="secondary" mono style={{ marginTop: 2 }}>
                     Entity: {log.entityType} #{log.entityId.slice(-6)}
                   </AppText>
                   <AppText variant="caption2" color="secondary" style={{ marginTop: 4, fontFamily: 'monospace' }}>
@@ -432,7 +427,7 @@ export const AdminWorkspace: React.FC<AdminWorkspaceProps> = ({
       {/* Review Modal */}
       <Modal visible={reviewModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.cardElevated }]}>
             <AppText variant="title3" weight="700">
               Verify Partner Application
             </AppText>

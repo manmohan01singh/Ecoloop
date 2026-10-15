@@ -179,7 +179,7 @@ export const ExploreFilterModal: React.FC<ExploreFilterModalProps> = ({
                       <AppText
                         variant="footnote"
                         weight={selected ? '600' : '500'}
-                        customColor={selected ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={selected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {opt.label}
                       </AppText>
@@ -221,7 +221,7 @@ export const ExploreFilterModal: React.FC<ExploreFilterModalProps> = ({
                       <AppText
                         variant="footnote"
                         weight={selected ? '600' : '500'}
-                        customColor={selected ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={selected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {opt.label}
                       </AppText>
@@ -263,7 +263,7 @@ export const ExploreFilterModal: React.FC<ExploreFilterModalProps> = ({
                       <AppText
                         variant="footnote"
                         weight={selected ? '600' : '500'}
-                        customColor={selected ? '#FFFFFF' : theme.colors.labelPrimary}
+                        customColor={selected ? (theme.isDark ? '#000000' : '#FFFFFF') : theme.colors.labelPrimary}
                       >
                         {opt.label}
                       </AppText>

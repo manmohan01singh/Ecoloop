@@ -27,12 +27,8 @@ export const PostDeviceBanner: React.FC<PostDeviceBannerProps> = ({
         style={[
           styles.bannerCard,
           {
-            backgroundColor: theme.isDark
-              ? 'rgba(16, 185, 129, 0.12)'
-              : theme.colors.tintLight,
-            borderColor: theme.isDark
-              ? 'rgba(52, 211, 153, 0.25)'
-              : theme.colors.separator,
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.separator,
             borderWidth: theme.hairlineWidth,
             borderRadius: theme.radii.xl,
             ...theme.shadows.card,
@@ -49,7 +45,7 @@ export const PostDeviceBanner: React.FC<PostDeviceBannerProps> = ({
               },
             ]}
           >
-            <AppIcon name="camera" size={24} color="#FFFFFF" />
+            <AppIcon name="camera" size={24} color={theme.isDark ? '#000000' : '#FFFFFF'} />
           </View>
 
           {/* Center Text Area */}
@@ -62,16 +58,14 @@ export const PostDeviceBanner: React.FC<PostDeviceBannerProps> = ({
                 style={[
                   styles.quickPill,
                   {
-                    backgroundColor: theme.isDark
-                      ? 'rgba(16, 185, 129, 0.22)'
-                      : theme.colors.tintLight,
+                    backgroundColor: theme.colors.fill,
                   },
                 ]}
               >
                 <AppText
                   variant="caption2"
                   weight="700"
-                  customColor={theme.colors.tint}
+                  color="primary"
                 >
                   NEW
                 </AppText>
@@ -98,8 +92,8 @@ export const PostDeviceBanner: React.FC<PostDeviceBannerProps> = ({
                   },
                 ]}
               >
-                <AppIcon name="camera-outline" size={15} color="#FFFFFF" style={{ marginRight: 6 }} />
-                <AppText variant="subheadline" weight="600" color="white">
+                <AppIcon name="camera-outline" size={15} color={theme.isDark ? '#000000' : '#FFFFFF'} style={{ marginRight: 6 }} />
+                <AppText variant="subheadline" weight="600" customColor={theme.isDark ? '#000000' : '#FFFFFF'}>
                   Snap & Classify
                 </AppText>
               </View>

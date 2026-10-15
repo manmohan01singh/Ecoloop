@@ -20,15 +20,12 @@ export interface LifecycleStep {
   actionKey: string;
 }
 
-const STEPS: LifecycleStep[] = [
+const STEPS: { step: string; name: string; tagline: string; icon: any; actionKey: string }[] = [
   {
     step: '01',
     name: 'Repair',
     tagline: 'Extend device lifespan with accredited technician fixes.',
     icon: 'construct-outline',
-    tint: '#0071E3',
-    bgLight: 'rgba(0, 113, 227, 0.08)',
-    bgDark: 'rgba(0, 113, 227, 0.16)',
     actionKey: 'repair',
   },
   {
@@ -36,9 +33,6 @@ const STEPS: LifecycleStep[] = [
     name: 'Reuse',
     tagline: 'Pass along or repurpose working hardware for secondary tasks.',
     icon: 'repeat-outline',
-    tint: '#34C759',
-    bgLight: 'rgba(52, 199, 89, 0.08)',
-    bgDark: 'rgba(52, 199, 89, 0.16)',
     actionKey: 'sell',
   },
   {
@@ -46,9 +40,6 @@ const STEPS: LifecycleStep[] = [
     name: 'Resell',
     tagline: 'Verified buyers, doorstep pickup, and guaranteed NIST wipe.',
     icon: 'pricetag-outline',
-    tint: '#007A5E',
-    bgLight: 'rgba(0, 122, 94, 0.08)',
-    bgDark: 'rgba(0, 122, 94, 0.16)',
     actionKey: 'sell',
   },
   {
@@ -56,9 +47,6 @@ const STEPS: LifecycleStep[] = [
     name: 'Refurbish',
     tagline: 'Factory-grade restoration, battery calibration & warranty.',
     icon: 'sparkles-outline',
-    tint: '#AF52DE',
-    bgLight: 'rgba(175, 82, 222, 0.08)',
-    bgDark: 'rgba(175, 82, 222, 0.16)',
     actionKey: 'sell',
   },
   {
@@ -66,9 +54,6 @@ const STEPS: LifecycleStep[] = [
     name: 'Recover',
     tagline: 'Harvest functional chips, displays & donor motherboards.',
     icon: 'hardware-chip-outline',
-    tint: '#FF9500',
-    bgLight: 'rgba(255, 149, 0, 0.08)',
-    bgDark: 'rgba(255, 149, 0, 0.16)',
     actionKey: 'repair',
   },
   {
@@ -76,9 +61,6 @@ const STEPS: LifecycleStep[] = [
     name: 'Recycle',
     tagline: 'Certified zero-landfill copper, gold & lithium reclamation.',
     icon: 'leaf-outline',
-    tint: '#30B0C7',
-    bgLight: 'rgba(48, 176, 199, 0.08)',
-    bgDark: 'rgba(48, 176, 199, 0.16)',
     actionKey: 'recycle',
   },
 ];
@@ -113,7 +95,6 @@ export const CircularLifecycleVisual: React.FC<CircularLifecycleVisualProps> = (
         contentContainerStyle={styles.scrollContainer}
       >
         {STEPS.map((step) => {
-          const bg = theme.isDark ? step.bgDark : step.bgLight;
           return (
             <TouchableOpacity
               key={step.step}
@@ -134,8 +115,8 @@ export const CircularLifecycleVisual: React.FC<CircularLifecycleVisualProps> = (
               ]}
             >
               <View style={styles.topRow}>
-                <View style={[styles.iconBox, { backgroundColor: bg }]}>
-                  <AppIcon name={step.icon} size={18} color={step.tint} />
+                <View style={[styles.iconBox, { backgroundColor: theme.colors.fillSecondary }]}>
+                  <AppIcon name={step.icon} size={18} color={theme.colors.tint} />
                 </View>
                 <AppText variant="caption2" weight="800" color="tertiary">
                   {step.step}
@@ -150,10 +131,10 @@ export const CircularLifecycleVisual: React.FC<CircularLifecycleVisualProps> = (
               </AppText>
 
               <View style={styles.bottomArrow}>
-                <AppText variant="caption2" weight="700" customColor={step.tint}>
+                <AppText variant="caption2" weight="700" customColor={theme.colors.tint}>
                   Explore
                 </AppText>
-                <AppIcon name="chevron-forward" size={12} color={step.tint} style={{ marginLeft: 2 }} />
+                <AppIcon name="chevron-forward" size={12} color={theme.colors.tint} style={{ marginLeft: 2 }} />
               </View>
             </TouchableOpacity>
           );

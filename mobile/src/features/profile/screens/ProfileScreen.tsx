@@ -112,7 +112,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     {
       id: 'dark',
       title: 'Dark',
-      subtitle: 'True OLED black with calibrated emerald accents',
+      subtitle: 'True OLED black with calibrated monochrome accents',
       icon: 'moon-outline',
     },
   ];
@@ -164,9 +164,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               style={[
                 styles.avatarCircle,
                 {
-                  backgroundColor: theme.isDark
-                    ? 'rgba(16, 185, 129, 0.20)'
-                    : 'rgba(0, 122, 94, 0.12)',
+                  backgroundColor: theme.colors.fillSecondary,
                 },
               ]}
             >
@@ -325,9 +323,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                       style={[
                         styles.listingIconCircle,
                         {
-                          backgroundColor: theme.isDark
-                            ? 'rgba(16, 185, 129, 0.16)'
-                            : 'rgba(0, 122, 94, 0.08)',
+                          backgroundColor: theme.colors.fillSecondary,
                         },
                       ]}
                     >
@@ -500,9 +496,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                       styles.optionIconCircle,
                       {
                         backgroundColor: isSelected
-                          ? theme.isDark
-                            ? 'rgba(16, 185, 129, 0.20)'
-                            : 'rgba(0, 122, 94, 0.12)'
+                          ? theme.colors.fillSecondary
                           : theme.colors.fill,
                       },
                     ]}
@@ -528,9 +522,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                           style={[
                             styles.activeBadge,
                             {
-                              backgroundColor: theme.isDark
-                                ? 'rgba(16, 185, 129, 0.20)'
-                                : 'rgba(0, 122, 94, 0.10)',
+                              backgroundColor: theme.colors.fillSecondary,
                             },
                           ]}
                         >
@@ -562,7 +554,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                           { backgroundColor: theme.colors.tint },
                         ]}
                       >
-                        <AppIcon name="checkmark" size={14} color="#FFFFFF" />
+                        <AppIcon name="checkmark" size={14} color={theme.isDark ? '#000000' : '#FFFFFF'} />
                       </View>
                     ) : (
                       <View

@@ -81,9 +81,7 @@ export const DeferredTabPlaceholder: React.FC<DeferredTabPlaceholderProps> = ({
           style={[
             styles.iconCircle,
             {
-              backgroundColor: theme.isDark
-                ? 'rgba(16, 185, 129, 0.20)'
-                : 'rgba(0, 122, 94, 0.12)',
+              backgroundColor: theme.colors.fillSecondary,
             },
           ]}
         >

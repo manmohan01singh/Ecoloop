@@ -24,6 +24,14 @@ function isLocalStorageAvailable(): boolean {
 export function getStoredThemeMode(): ThemeMode {
   if (isLocalStorageAvailable()) {
     try {
+      if (typeof window !== 'undefined' && window.location && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        const modeParam = params.get('mode');
+        if (modeParam === 'light' || modeParam === 'dark' || modeParam === 'system') {
+          memoryCache = modeParam;
+          return modeParam;
+        }
+      }
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored === 'light' || stored === 'dark' || stored === 'system') {
         memoryCache = stored;

@@ -99,7 +99,7 @@ export const ExploreProductCard: React.FC<ExploreProductCardProps> = ({
       style={[
         styles.card,
         {
-          backgroundColor: theme.colors.secondaryBackground,
+          backgroundColor: theme.colors.card,
           borderColor: theme.colors.separator,
           borderWidth: theme.hairlineWidth,
           borderRadius: theme.radii.lg,
@@ -108,7 +108,7 @@ export const ExploreProductCard: React.FC<ExploreProductCardProps> = ({
       ]}
     >
       {/* Top Media Container */}
-      <View style={[styles.imageContainer, { backgroundColor: theme.colors.fill }]}>
+      <View style={[styles.imageContainer, { backgroundColor: theme.isDark ? '#1C1C1E' : '#F5F5F7' }]}>
         <Image
           source={{ uri: imageSrc }}
           style={styles.image}
@@ -266,9 +266,7 @@ export const ExploreProductCard: React.FC<ExploreProductCardProps> = ({
             style={[
               styles.co2Pill,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(16, 185, 129, 0.16)'
-                  : 'rgba(0, 122, 94, 0.08)',
+                backgroundColor: theme.colors.fill,
               },
             ]}
           >
@@ -302,7 +300,7 @@ const styles = StyleSheet.create({
     height: 170,
     width: '100%',
     position: 'relative',
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   image: {
     width: '100%',

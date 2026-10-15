@@ -136,7 +136,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
     if (res.success) {
       setIntakeModalVisible(false);
       Alert.alert(
-        'Certificate Issued! 🌱',
+        'Certificate Issued',
         `Official Certificate #${res.collectionEvent?.certificateNumber} generated. Measured weight of ${weightNum} kg credited to circular diversion.`
       );
     } else {
@@ -159,7 +159,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onOpenWorkspaceSwitcher} style={styles.workspacePill}>
-          <View style={[styles.recIcon, { backgroundColor: 'rgba(16, 185, 129, 0.20)' }]}>
+          <View style={[styles.recIcon, { backgroundColor: theme.colors.fillSecondary }]}>
             <AppIcon name="leaf" size={16} color={theme.colors.tint} />
           </View>
           <View style={{ marginLeft: 8 }}>
@@ -258,7 +258,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                   style={[
                     styles.ticketCard,
                     {
-                      backgroundColor: theme.colors.secondaryBackground,
+                      backgroundColor: theme.colors.card,
                       borderColor: theme.colors.separator,
                       borderWidth: theme.hairlineWidth,
                       ...theme.shadows.card,
@@ -273,9 +273,9 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                         </AppText>
                       </View>
                       {req.hasHazardousBattery && (
-                        <View style={[styles.hazardPill, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-                          <AppText variant="caption2" weight="700" customColor="#ef4444">
-                            ⚠️ HAZARDOUS BATTERY
+                        <View style={[styles.hazardPill, { backgroundColor: theme.colors.fill, borderColor: theme.colors.separator, borderWidth: theme.hairlineWidth }]}>
+                          <AppText variant="caption2" weight="700" customColor={theme.colors.labelPrimary}>
+                            HAZARDOUS BATTERY
                           </AppText>
                         </View>
                       )}
@@ -323,7 +323,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                   style={[
                     styles.ticketCard,
                     {
-                      backgroundColor: theme.colors.secondaryBackground,
+                      backgroundColor: theme.colors.card,
                       borderColor: theme.colors.separator,
                       borderWidth: theme.hairlineWidth,
                       ...theme.shadows.card,
@@ -331,7 +331,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                   ]}
                 >
                   <View style={styles.ticketTop}>
-                    <View style={[styles.catPill, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                    <View style={[styles.catPill, { backgroundColor: theme.colors.fillSecondary }]}>
                       <AppText variant="caption2" weight="700" customColor={theme.colors.tint}>
                         READY FOR SCALE INTAKE
                       </AppText>
@@ -371,7 +371,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                 style={[
                   styles.ticketCard,
                   {
-                    backgroundColor: theme.colors.secondaryBackground,
+                    backgroundColor: theme.colors.card,
                     borderColor: theme.colors.separator,
                     borderWidth: theme.hairlineWidth,
                   },
@@ -379,7 +379,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
               >
                 <View style={styles.ticketTop}>
                   <View style={[styles.catPill, { backgroundColor: theme.colors.fill }]}>
-                    <AppText variant="caption2" weight="700" customColor={theme.colors.tint}>
+                    <AppText variant="caption2" weight="700" customColor={theme.colors.tint} mono>
                       {c.certificateNumber}
                     </AppText>
                   </View>
@@ -396,7 +396,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
                 </AppText>
 
                 {c.hazardousNotes && (
-                  <AppText variant="caption2" customColor="#ef4444" style={{ marginTop: 4 }}>
+                  <AppText variant="caption2" color="secondary" style={{ marginTop: 4 }}>
                     Hazard: {c.hazardousNotes}
                   </AppText>
                 )}
@@ -409,7 +409,7 @@ export const RecyclerWorkspace: React.FC<RecyclerWorkspaceProps> = ({
       {/* Scale Weighing & Certificate Issuance Modal */}
       <Modal visible={intakeModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.cardElevated }]}>
             <AppText variant="title3" weight="700">
               Verified Scale Intake & Certificate
             </AppText>

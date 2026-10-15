@@ -99,7 +99,11 @@ export function AppSegmentedControl<T extends string = string>({
                   styles.badge,
                   {
                     backgroundColor: isSelected
-                      ? 'rgba(255, 255, 255, 0.25)'
+                      ? option.activeColor
+                        ? theme.isDark
+                          ? 'rgba(0, 0, 0, 0.15)'
+                          : 'rgba(255, 255, 255, 0.25)'
+                        : theme.colors.fill
                       : theme.colors.fillSecondary,
                   },
                 ]}
@@ -108,7 +112,13 @@ export function AppSegmentedControl<T extends string = string>({
                   variant="caption2"
                   weight="600"
                   customColor={
-                    isSelected ? '#FFFFFF' : theme.colors.labelTertiary
+                    isSelected
+                      ? option.activeColor
+                        ? theme.isDark
+                          ? '#000000'
+                          : '#FFFFFF'
+                        : theme.colors.labelPrimary
+                      : theme.colors.labelTertiary
                   }
                 >
                   {option.badge}

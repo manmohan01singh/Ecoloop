@@ -77,96 +77,45 @@ function MainAppShell() {
     setActiveWorkspace(ws);
   };
 
-  // Render specialized operational workspace if active workspace != consumer
-  if (activeWorkspace === 'repair_pro') {
-    return (
-      <View style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        <RepairProWorkspace
-          onReturnToConsumer={() => setActiveWorkspace('consumer')}
-          onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
-        />
-        <WorkspaceSwitcherModal
-          visible={workspaceSwitcherVisible}
-          onClose={() => setWorkspaceSwitcherVisible(false)}
-          onWorkspaceSelected={handleWorkspaceSelected}
-        />
-      </View>
-    );
-  }
-
-  if (activeWorkspace === 'recycler') {
-    return (
-      <View style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        <RecyclerWorkspace
-          onReturnToConsumer={() => setActiveWorkspace('consumer')}
-          onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
-        />
-        <WorkspaceSwitcherModal
-          visible={workspaceSwitcherVisible}
-          onClose={() => setWorkspaceSwitcherVisible(false)}
-          onWorkspaceSelected={handleWorkspaceSelected}
-        />
-      </View>
-    );
-  }
-
-  if (activeWorkspace === 'business') {
-    return (
-      <View style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        <BusinessWorkspace
-          onReturnToConsumer={() => setActiveWorkspace('consumer')}
-          onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
-        />
-        <WorkspaceSwitcherModal
-          visible={workspaceSwitcherVisible}
-          onClose={() => setWorkspaceSwitcherVisible(false)}
-          onWorkspaceSelected={handleWorkspaceSelected}
-        />
-      </View>
-    );
-  }
-
-  if (activeWorkspace === 'moderator') {
-    return (
-      <View style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        <ModeratorWorkspace
-          onReturnToConsumer={() => setActiveWorkspace('consumer')}
-          onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
-        />
-        <WorkspaceSwitcherModal
-          visible={workspaceSwitcherVisible}
-          onClose={() => setWorkspaceSwitcherVisible(false)}
-          onWorkspaceSelected={handleWorkspaceSelected}
-        />
-      </View>
-    );
-  }
-
-  if (activeWorkspace === 'admin') {
-    return (
-      <View style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        <AdminWorkspace
-          onReturnToConsumer={() => setActiveWorkspace('consumer')}
-          onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
-        />
-        <WorkspaceSwitcherModal
-          visible={workspaceSwitcherVisible}
-          onClose={() => setWorkspaceSwitcherVisible(false)}
-          onWorkspaceSelected={handleWorkspaceSelected}
-        />
-      </View>
-    );
-  }
-
-  // Consumer Hub Workspace (Default)
-  const renderActiveScreen = () => {
-    switch (activeTab) {
-      case 'home':
+  // Render role-specific workspace or consumer home screen
+  const renderHomeWorkspace = () => {
+    switch (activeWorkspace) {
+      case 'repair_pro':
+        return (
+          <RepairProWorkspace
+            onReturnToConsumer={() => setActiveWorkspace('consumer')}
+            onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
+          />
+        );
+      case 'recycler':
+        return (
+          <RecyclerWorkspace
+            onReturnToConsumer={() => setActiveWorkspace('consumer')}
+            onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
+          />
+        );
+      case 'business':
+        return (
+          <BusinessWorkspace
+            onReturnToConsumer={() => setActiveWorkspace('consumer')}
+            onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
+          />
+        );
+      case 'moderator':
+        return (
+          <ModeratorWorkspace
+            onReturnToConsumer={() => setActiveWorkspace('consumer')}
+            onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
+          />
+        );
+      case 'admin':
+        return (
+          <AdminWorkspace
+            onReturnToConsumer={() => setActiveWorkspace('consumer')}
+            onOpenWorkspaceSwitcher={() => setWorkspaceSwitcherVisible(true)}
+          />
+        );
+      default:
         return (
           <HomeScreen
             onNavigateToTab={(tab) => setActiveTab(tab as TabKey)}
@@ -175,6 +124,13 @@ function MainAppShell() {
             onWorkspaceSelected={handleWorkspaceSelected}
           />
         );
+    }
+  };
+
+  const renderActiveScreen = () => {
+    switch (activeTab) {
+      case 'home':
+        return renderHomeWorkspace();
       case 'explore':
         return (
           <ExploreScreen
@@ -226,9 +182,10 @@ function MainAppShell() {
         {renderActiveScreen()}
       </View>
 
-      {/* Native-feeling Apple Tab Bar with Selective Glow & Unread Indicator */}
+      {/* Native-feeling Apple Tab Bar with Role-Aware Tabs & Unread Indicator */}
       <AppTabBar
         activeTab={activeTab}
+        workspaceRole={activeWorkspace}
         onTabPress={handleTabPress}
         onPostPress={handlePostPress}
         unreadActivityCount={unreadCount}

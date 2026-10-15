@@ -129,7 +129,7 @@ export const ProviderApplicationModal: React.FC<ProviderApplicationModalProps> =
                 style={[
                   styles.successIconCircle,
                   {
-                    backgroundColor: theme.isDark ? 'rgba(16, 185, 129, 0.20)' : 'rgba(0, 122, 94, 0.12)',
+                    backgroundColor: theme.colors.fillSecondary,
                   },
                 ]}
               >
@@ -170,9 +170,7 @@ export const ProviderApplicationModal: React.FC<ProviderApplicationModalProps> =
                         styles.trackCard,
                         {
                           backgroundColor: isSel
-                            ? theme.isDark
-                              ? 'rgba(16, 185, 129, 0.20)'
-                              : 'rgba(0, 122, 94, 0.12)'
+                            ? theme.colors.fillSecondary
                             : theme.colors.secondaryBackground,
                           borderColor: isSel ? theme.colors.tint : theme.colors.separator,
                           borderWidth: isSel ? 1.5 : theme.hairlineWidth,

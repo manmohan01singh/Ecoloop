@@ -285,10 +285,8 @@ export const PostReviewStep: React.FC<PostReviewStepProps> = ({
           style={[
             styles.co2Card,
             {
-              backgroundColor: theme.isDark
-                ? 'rgba(16, 185, 129, 0.16)'
-                : 'rgba(0, 122, 94, 0.08)',
-              borderColor: theme.colors.tint,
+              backgroundColor: theme.colors.fillSecondary,
+              borderColor: theme.colors.separator,
               borderWidth: theme.hairlineWidth,
               borderRadius: theme.radii.lg,
             },
@@ -300,7 +298,7 @@ export const PostReviewStep: React.FC<PostReviewStepProps> = ({
               { backgroundColor: theme.colors.tint },
             ]}
           >
-            <AppIcon name="leaf" size={20} color="#FFFFFF" />
+            <AppIcon name="leaf" size={20} color={theme.isDark ? '#000000' : '#FFFFFF'} />
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="subheadline" weight="700" customColor={theme.colors.tint}>

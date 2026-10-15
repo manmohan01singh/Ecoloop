@@ -33,7 +33,7 @@ export const ActionCard: React.FC<ActionCardProps> = ({
       style={[
         styles.card,
         {
-          backgroundColor: theme.colors.secondaryBackground,
+          backgroundColor: theme.colors.card,
           borderColor: theme.colors.separator,
           borderWidth: theme.hairlineWidth,
           borderRadius: theme.radii.xl,

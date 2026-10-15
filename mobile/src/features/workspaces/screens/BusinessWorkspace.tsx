@@ -169,7 +169,7 @@ export const BusinessWorkspace: React.FC<BusinessWorkspaceProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onOpenWorkspaceSwitcher} style={styles.workspacePill}>
-          <View style={[styles.bizIcon, { backgroundColor: 'rgba(16, 185, 129, 0.20)' }]}>
+          <View style={[styles.bizIcon, { backgroundColor: theme.colors.fillSecondary }]}>
             <AppIcon name="briefcase" size={16} color={theme.colors.tint} />
           </View>
           <View style={{ marginLeft: 8 }}>
@@ -280,7 +280,7 @@ export const BusinessWorkspace: React.FC<BusinessWorkspaceProps> = ({
                       SKU: {item.sku}
                     </AppText>
                   </View>
-                  <View style={[styles.gradePill, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
+                  <View style={[styles.gradePill, { backgroundColor: theme.colors.fillSecondary }]}>
                     <AppText variant="caption2" weight="700" customColor={theme.colors.tint}>
                       GRADE {item.conditionGrade}
                     </AppText>
@@ -374,7 +374,7 @@ export const BusinessWorkspace: React.FC<BusinessWorkspaceProps> = ({
                   <AppText variant="footnote" customColor={theme.colors.tint}>
                     ✓ {importResult.successful} Successfully Imported
                   </AppText>
-                  <AppText variant="footnote" customColor={importResult.failed > 0 ? '#ef4444' : theme.colors.labelSecondary}>
+                  <AppText variant="footnote" color={importResult.failed > 0 ? 'primary' : 'secondary'} weight={importResult.failed > 0 ? '600' : '400'}>
                     ✕ {importResult.failed} Errors
                   </AppText>
                 </View>
@@ -382,7 +382,7 @@ export const BusinessWorkspace: React.FC<BusinessWorkspaceProps> = ({
                 {importResult.errors.length > 0 && (
                   <View style={styles.errorList}>
                     {importResult.errors.map((err, idx) => (
-                      <AppText key={idx} variant="caption2" customColor="#ef4444" style={{ marginTop: 2 }}>
+                      <AppText key={idx} variant="caption2" color="secondary" mono style={{ marginTop: 2 }}>
                         Row {err.row}: {err.error}
                       </AppText>
                     ))}
@@ -435,7 +435,7 @@ export const BusinessWorkspace: React.FC<BusinessWorkspaceProps> = ({
       {/* Add SKU Modal */}
       <Modal visible={addModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { backgroundColor: theme.colors.secondaryBackground }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.colors.cardElevated }]}>
             <AppText variant="title3" weight="700">
               New Inventory Item
             </AppText>

@@ -68,7 +68,6 @@ export const PostSuccessStep: React.FC<PostSuccessStepProps> = ({
             styles.iconCircle,
             {
               backgroundColor: theme.colors.tintLight,
-              ...theme.getGlow('successCelebration'),
             },
           ]}
         >
@@ -80,9 +79,7 @@ export const PostSuccessStep: React.FC<PostSuccessStepProps> = ({
           style={[
             styles.statusBadge,
             {
-              backgroundColor: theme.isDark
-                ? 'rgba(16, 185, 129, 0.20)'
-                : 'rgba(0, 122, 94, 0.10)',
+              backgroundColor: theme.colors.fillSecondary,
             },
           ]}
         >

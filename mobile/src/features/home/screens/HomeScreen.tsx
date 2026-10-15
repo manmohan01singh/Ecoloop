@@ -10,8 +10,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../../design-system/theme/theme';
 import { HomeHeader } from '../components/HomeHeader';
 import { WelcomeSection } from '../components/WelcomeSection';
-import { CupertinoValuationTerminal } from '../components/CupertinoValuationTerminal';
-import { CircularLifecycleVisual } from '../components/CircularLifecycleVisual';
 import { CoreActions } from '../components/CoreActions';
 import { PostDeviceBanner } from '../components/PostDeviceBanner';
 import { CircularToolsSection } from '../components/CircularToolsSection';
@@ -172,30 +170,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* Section B: Apple Cupertino Editorial Heading & Hero Rescue Engine Card */}
         <WelcomeSection onOpenRescueEngine={triggerDecision} />
 
-        {/* Section C: Interactive iOS Device Valuation Terminal */}
-        <CupertinoValuationTerminal
-          onAssessDevice={(_category, _condition) => {
-            triggerDecision();
-          }}
-        />
-
-        {/* Section D: 6-Step Circular Lifecycle Pathway Visual */}
-        <CircularLifecycleVisual
-          onSelectStep={(actionKey) => {
-            handleSheetAction(actionKey);
-          }}
-        />
-
-        {/* Section E: The 4 Core Actions (Repair, Recycle, Sell, Buy) */}
+        {/* Section C: The 4 Core Actions (Repair, Recycle, Sell, Buy) */}
         <CoreActions
           actions={coreActions}
           onActionPress={handleActionPress}
         />
 
-        {/* Section D: Primary Post Action Banner */}
+        {/* Section D: Devices Finding Their Next Life */}
+        <RecentDevicesSection
+          devices={recentDevices}
+          onDevicePress={handleDevicePress}
+          onExploreAll={() => onNavigateToTab?.('explore')}
+        />
+
+        {/* Section E: Primary Post Action Banner */}
         <PostDeviceBanner onPostPress={onOpenPostSheet || (() => setPostSheetVisible(true))} />
 
-        {/* Section E: Circular Trust & Specialized Tools */}
+        {/* Section F: Circular Trust & Specialized Tools */}
         <CircularToolsSection
           onOpenDecisionEngine={triggerDecision}
           onOpenPassport={triggerPassport}
@@ -203,19 +194,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           onOpenWorkspaceSwitcher={triggerSwitcher}
         />
 
-        {/* Section F: Community Activity & Verified Hubs */}
+        {/* Section G: Community Activity & Verified Hubs */}
         <CommunityActivitySection
           hubs={communityHubs}
           stats={circularStats}
           onHubPress={handleHubPress}
           onViewAll={() => onNavigateToTab?.('explore')}
-        />
-
-        {/* Section G: Devices Finding Their Next Life */}
-        <RecentDevicesSection
-          devices={recentDevices}
-          onDevicePress={handleDevicePress}
-          onExploreAll={() => onNavigateToTab?.('explore')}
         />
       </ScrollView>
 
